@@ -62,6 +62,7 @@ nav button.on{color:var(--teal);font-weight:800}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>if(typeof firebase==="undefined"){["app","auth","firestore"].forEach(function(n){document.write('<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-'+n+'-compat.js"><\/script>')})}</script>
 <script>
 /* ===== FASE 1: FONDASI ===== */
 const CONFIG={nama:"SERBA JASA",slogan:"Cari Jasa. Pesan Mudah. Selesai.",komisi:0.1};
@@ -124,7 +125,8 @@ function render(){$("#m").innerHTML=view();$("#n").innerHTML=NAV[S.role].map(x=>
 /* --- Mulai aplikasi --- */
 setTimeout(()=>{const s=$("#splash");if(!s)return;s.style.opacity=0;setTimeout(()=>s.remove(),400)},1300);
 render();
-</script><script>
+</script><script>if(typeof firebase==="undefined"){document.getElementById("m").innerHTML='<h2>Firebase gagal dimuat</h2><p class="mute">Koneksi ke layanan login terblokir. Matikan Data Saver Chrome, pemblokir iklan, atau DNS pribadi, lalu muat ulang.</p><button class="btn" onclick="location.reload()">Muat ulang</button>';document.getElementById("n").style.display="none"}</script>
+<script>
 /* ===== FASE 2: AKUN (Firebase Auth + Firestore) ===== */
 firebase.initializeApp({apiKey:"AIzaSyAcp03rTmdn-lcvqtd6OG0lD2mI1C6BlHA",authDomain:"serba-jasa.firebaseapp.com",projectId:"serba-jasa",appId:"1:949487663228:web:7f33f574afca4a576b71f9"});
 const auth=firebase.auth(),db=firebase.firestore();
