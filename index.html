@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Serba Jasa</title>
+<style>
+:root{--bg:#f4f7f8;--card:#fff;--ink:#14272e;--mute:#5d737b;--teal:#0f4c5c;--yel:#ffc229;--line:#dde6e9;--ok:#1f8a5b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1a1f;--card:#14272e;--ink:#eaf2f4;--mute:#9bb2ba;--line:#244049;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1a1f;--card:#14272e;--ink:#eaf2f4;--mute:#9bb2ba;--line:#244049;color-scheme:dark}
+html,body{height:100%}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px}
+#app{max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;background:var(--bg)}
+header{background:var(--teal);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--yel);color:var(--teal);font-weight:800;display:grid;place-items:center}
+header b{font-size:18px;letter-spacing:.3px;flex:1}
+header small{display:block;font-weight:400;font-size:11px;opacity:.85}
+main{flex:1;padding:16px;overflow-y:auto}
+h2{font-size:20px;margin:0 0 4px}h3{font-size:16px;margin:20px 0 10px}
+.mute{color:var(--mute);font-size:13px}
+input,select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;margin:6px 0 10px}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--yel);outline-offset:1px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 4px;text-align:center;font:inherit;color:var(--ink);cursor:pointer}
+.kat span{display:block;font-size:26px;margin-bottom:4px}
+.kat.on{border-color:var(--teal);background:var(--yel);color:#14272e}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.card.tap{cursor:pointer}
+.foto{height:84px;background:linear-gradient(135deg,var(--teal),#2b7a8c);display:grid;place-items:center;font-size:34px}
+.card .in{padding:12px 14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.price{font-weight:800;color:var(--teal)}
+:root[data-theme="dark"] .price{color:var(--yel)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .price{color:var(--yel)}}
+.btn{background:var(--teal);color:#fff;border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:700;cursor:pointer;width:100%}
+.btn.y{background:var(--yel);color:#14272e}
+.btn.s{width:auto;padding:8px 12px;font-size:13px}
+.btn.o{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--yel);color:#14272e}
+.tag.ok{background:var(--ok);color:#fff}
+.hero{background:var(--teal);color:#fff;border-radius:16px;padding:18px;margin-bottom:14px}
+.hero p{margin:4px 0 0;opacity:.9}
+nav{position:sticky;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;background:none;border:0;color:var(--mute);font:inherit;font-size:11px;padding:6px 0;cursor:pointer}
+nav button span{display:block;font-size:20px}
+nav button.on{color:var(--teal);font-weight:800}
+:root[data-theme="dark"] nav button.on{color:var(--yel)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav button.on{color:var(--yel)}}
+.bub{max-width:80%;padding:10px 12px;border-radius:14px;margin:6px 0;background:var(--card);border:1px solid var(--line)}
+.bub.me{margin-left:auto;background:var(--teal);color:#fff;border-color:var(--teal)}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:13px;z-index:9}
+.back{background:none;border:0;color:var(--teal);font:inherit;font-weight:700;padding:0 0 10px;cursor:pointer}
+:root[data-theme="dark"] .back{color:var(--yel)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .back{color:var(--yel)}}
+.seg{display:flex;gap:8px;margin:10px 0}
+.seg .btn{padding:10px 6px;font-size:13px}
+#splash{position:fixed;inset:0;z-index:99;background:var(--teal);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:opacity .4s}
+#splash .logo{width:72px;height:72px;font-size:28px;border-radius:20px}
+#splash h1{margin:10px 0 0;font-size:26px;letter-spacing:1px}
+#splash p{margin:0;opacity:.85}
+</style></head>
+<body><div id="splash"><div class="logo">SJ</div><h1>SERBA JASA</h1><p>Cari Jasa. Pesan Mudah. Selesai.</p></div><div id="app"><header><div class="logo">SJ</div><b>SERBA JASA<small>Cari Jasa. Pesan Mudah. Selesai.</small></b><span aria-label="Notifikasi">🔔</span></header><main id="m"></main><nav id="n"></nav></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ===== FASE 1: FONDASI ===== */
+const CONFIG={nama:"SERBA JASA",slogan:"Cari Jasa. Pesan Mudah. Selesai.",komisi:0.1};
+/* --- Data kategori dan contoh jasa (Fase 3: diganti Firebase) --- */
+const KAT=[["Bangunan","🔨"],["Otomotif","🚗"],["Digital","💻"],["Bersih","🧹"],["Foto","📸"],["Servis","🔧"]];
+const IK=Object.fromEntries(KAT);
+let J=[
+{id:1,n:"Servis AC Rumah",k:"Servis",h:75000,r:4.9,l:"Mertoyudan",p:"Budi Teknik",own:1},
+{id:2,n:"Cat dan Renovasi Ruangan",k:"Bangunan",h:150000,r:4.8,l:"Magelang",p:"Karya Mandiri"},
+{id:3,n:"Cuci dan Poles Motor",k:"Otomotif",h:35000,r:4.7,l:"Mertoyudan",p:"Joss Auto"},
+{id:4,n:"Desain Logo UMKM",k:"Digital",h:120000,r:4.9,l:"Online",p:"Dina Kreatif"},
+{id:5,n:"Bersih Rumah Harian",k:"Bersih",h:90000,r:4.6,l:"Magelang",p:"Bersih Kilat"},
+{id:6,n:"Foto Produk dan Acara",k:"Foto",h:200000,r:4.8,l:"Mertoyudan",p:"Lensa Kita"}];
+let S={role:"c",tab:"home",q:"",kat:"",det:null,oid:1,orders:[],msg:[["them","Halo, kapan bisa datang?"]]};
+/* --- Navigasi per peran: c=Pencari, p=Penyedia, a=Admin --- */
+const NAV={
+c:[["home","🏠","Beranda"],["cari","🔎","Cari"],["pesanan","📋","Pesanan"],["chat","💬","Chat"],["profil","👤","Saya"]],
+p:[["jasa","🧰","Jasa Saya"],["tambah","➕","Tambah"],["masuk","📥","Masuk"],["profil","👤","Profil"]],
+a:[["pengguna","👥","Pengguna"],["penyedia","👷","Penyedia"],["ajasa","🛠️","Jasa"],["apesanan","📋","Pesanan"]]};
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const rp=h=>"Rp"+Number(h).toLocaleString("id-ID");
+const jb=id=>J.find(x=>x.id===id);
+function toast(t){const e=document.createElement("div");e.className="toast";e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),1800)}
+function go(t){S.tab=t;S.det=null;render()}
+function setRole(r){S.role=r;S.tab=NAV[r][0][0];S.det=null;render()}
+/* --- Komponen tampilan --- */
+function card(j){return `<div class="card tap" onclick="S.det=${j.id};render()"><div class="foto">${IK[j.k]||"🛠️"}</div><div class="in"><b>${esc(j.n)}</b><div class="row" style="margin-top:4px"><span class="mute">⭐ ${j.r} · 📍 ${esc(j.l)}</span><span class="price">${rp(j.h)}</span></div></div></div>`}
+function list(q,k){const r=J.filter(j=>(!k||j.k===k)&&(j.n+j.k+j.l).toLowerCase().includes(q.toLowerCase()));return r.length?r.map(card).join(""):`<p class="mute">Jasa tidak ditemukan. Coba kata kunci atau kategori lain.</p>`}
+function stBtn(o){return o.st==="Menunggu"?`<button class="btn s" onclick="ord(${o.id},'Diproses')">Terima</button>`:o.st==="Diproses"?`<button class="btn s y" onclick="ord(${o.id},'Selesai')">Tandai selesai</button>`:`<span class="tag ok">Selesai</span>`}
+function ord(id,st){S.orders.find(o=>o.id===id).st=st;toast("Pesanan "+st.toLowerCase());render()}
+function oRow(o,act){const j=jb(o.j);return `<div class="card"><div class="in row"><div><b>${esc(j?j.n:"Jasa dihapus")}</b><div class="mute">${esc(j?j.p:"")} · ${j?rp(j.h):""}</div></div>${act?stBtn(o):`<span class="tag">${o.st}</span>`}</div></div>`}
+function view(){
+const t=S.tab,r=S.role;
+if(S.det){const j=jb(S.det);return `<button class="back" onclick="S.det=null;render()">‹ Kembali</button><div class="card"><div class="foto" style="height:130px;font-size:52px">${IK[j.k]||"🛠️"}</div><div class="in"><h2>${esc(j.n)}</h2><p class="mute">${esc(j.k)} · ⭐ ${j.r} · 📍 ${esc(j.l)}<br>Penyedia: ${esc(j.p)}</p><p class="price" style="font-size:20px;margin:8px 0 14px">${rp(j.h)}</p><button class="btn y" onclick="pesan(${j.id})">Pesan sekarang</button><button class="btn o" style="margin-top:8px" onclick="S.tab='chat';S.det=null;render()">Chat penyedia</button></div></div>`}
+if(r==="c"){
+if(t==="home")return `<div class="hero"><h2>Halo 👋</h2><p>Butuh jasa apa hari ini?</p></div><input id="hq" placeholder="🔍 Cari jasa..." oninput="S.q=this.value;go('cari')"><h3>Kategori</h3><div class="grid">${KAT.map(k=>`<button class="kat" onclick="S.kat='${k[0]}';go('cari')"><span>${k[1]}</span>${k[0]}</button>`).join("")}</div><h3>Jasa populer</h3>${J.slice().sort((a,b)=>b.r-a.r).slice(0,3).map(card).join("")}`;
+if(t==="cari")return `<h2>Cari jasa</h2><input id="q" value="${esc(S.q)}" placeholder="Ketik nama jasa atau lokasi" oninput="S.q=this.value;$('#res').innerHTML=list(S.q,S.kat)"><div class="grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">${KAT.map(k=>`<button class="kat ${S.kat===k[0]?"on":""}" style="padding:8px 2px" onclick="S.kat=S.kat==='${k[0]}'?'':'${k[0]}';render()">${k[1]} ${k[0]}</button>`).join("")}</div><div id="res">${list(S.q,S.kat)}</div>`;
+if(t==="pesanan")return `<h2>Pesanan saya</h2><br>${S.orders.length?S.orders.map(o=>oRow(o,0)).join(""):`<p class="mute">Belum ada pesanan. Cari jasa lalu pilih Pesan sekarang.</p><button class="btn" onclick="go('cari')">Cari jasa</button>`}`;
+if(t==="chat")return `<h2>Chat</h2><div style="margin:10px 0">${S.msg.map(m=>`<div class="bub ${m[0]==="me"?"me":""}">${esc(m[1])}</div>`).join("")}</div><input id="cm" placeholder="Tulis pesan..." onkeydown="if(event.key==='Enter')kirim()"><button class="btn" onclick="kirim()">Kirim</button>`}
+if(t==="profil")return `<h2>Profil</h2><p class="mute">Ganti mode untuk mencoba tampilan lain.</p><div class="seg"><button class="btn ${r==="c"?"y":"o"}" onclick="setRole('c')">Pencari</button><button class="btn ${r==="p"?"y":"o"}" onclick="setRole('p')">Penyedia</button><button class="btn ${r==="a"?"y":"o"}" onclick="setRole('a')">Admin</button></div>`;
+if(r==="p"){
+const mine=J.filter(j=>j.own);
+if(t==="jasa")return `<h2>Jasa saya</h2><br>${mine.length?mine.map(card).join(""):`<p class="mute">Belum ada jasa. Tambah jasa pertama Anda.</p>`}`;
+if(t==="tambah")return `<h2>Tambah jasa</h2><input id="fn" placeholder="Nama jasa"><select id="fk">${KAT.map(k=>`<option>${k[0]}</option>`).join("")}</select><input id="fh" type="number" placeholder="Harga (Rp)"><input id="fl" placeholder="Lokasi"><button class="btn y" onclick="tambah()">Simpan jasa</button>`;
+if(t==="masuk"){const o=S.orders.filter(o=>jb(o.j)&&jb(o.j).own);return `<h2>Pesanan masuk</h2><br>${o.length?o.map(x=>oRow(x,1)).join(""):`<p class="mute">Belum ada pesanan masuk. Pesanan untuk jasa Anda muncul di sini.</p>`}`}}
+if(r==="a"){
+if(t==="pengguna")return `<h2>Pengguna</h2><br>${["Rina","Agus","Siti"].map(n=>`<div class="card"><div class="in row"><b>${n}</b><span class="tag">Aktif</span></div></div>`).join("")}`;
+if(t==="penyedia")return `<h2>Penyedia</h2><br>${[...new Set(J.map(j=>j.p))].map(n=>`<div class="card"><div class="in row"><b>${esc(n)}</b><span class="mute">${J.filter(j=>j.p===n).length} jasa</span></div></div>`).join("")}`;
+if(t==="ajasa")return `<h2>Jasa</h2><br>${J.map(j=>`<div class="card"><div class="in row"><div><b>${esc(j.n)}</b><div class="mute">${esc(j.p)}</div></div><button class="btn s o" onclick="hapus(${j.id})">Hapus</button></div></div>`).join("")}`;
+if(t==="apesanan")return `<h2>Pesanan</h2><br>${S.orders.length?S.orders.map(o=>oRow(o,0)).join(""):`<p class="mute">Belum ada pesanan.</p>`}`}
+}
+/* --- Aksi pengguna (Fase 4: dihubungkan ke database) --- */
+function pesan(id){S.orders.unshift({id:S.oid++,j:id,st:"Menunggu"});S.tab="pesanan";S.det=null;toast("Pesanan dikirim");render()}
+function kirim(){const v=$("#cm").value.trim();if(!v)return;S.msg.push(["me",v]);render();setTimeout(()=>{S.msg.push(["them","Baik, saya konfirmasi sebentar lagi."]);if(S.tab==="chat"&&S.role==="c")render()},900)}
+function tambah(){const n=$("#fn").value.trim(),h=+$("#fh").value,l=$("#fl").value.trim();if(!n||!h||!l){toast("Isi semua kolom dulu");return}
+J.push({id:Date.now(),n,k:$("#fk").value,h,r:5.0,l,p:"Budi Teknik",own:1});toast("Jasa disimpan");go("jasa")}
+function hapus(id){J=J.filter(j=>j.id!==id);toast("Jasa dihapus");render()}
+function render(){$("#m").innerHTML=view();$("#n").innerHTML=NAV[S.role].map(x=>`<button class="${S.tab===x[0]&&!S.det?"on":""}" onclick="go('${x[0]}')"><span>${x[1]}</span>${x[2]}</button>`).join("");window.scrollTo(0,0)}
+/* --- Mulai aplikasi --- */
+setTimeout(()=>{const s=$("#splash");if(!s)return;s.style.opacity=0;setTimeout(()=>s.remove(),400)},1300);
+render();
+</script><script>
+/* ===== FASE 2: AKUN (Firebase Auth + Firestore) ===== */
+firebase.initializeApp({apiKey:"AIzaSyAcp03rTmdn-lcvqtd6OG0lD2mI1C6BlHA",authDomain:"serba-jasa.firebaseapp.com",projectId:"serba-jasa",appId:"1:949487663228:web:7f33f574afca4a576b71f9"});
+const auth=firebase.auth(),db=firebase.firestore();
+let U=null,UD=null,READY=false,AM="masuk",FOT={ktp:"",selfie:""},unsub=null,LOADED=0,PK=[],PP=[],SEL=null;
+NAV.a.push(["profil","👤","Profil"]);
+const _view=view,_render=render;
+const ERR={"auth/email-already-in-use":"Email sudah terdaftar","auth/invalid-credential":"Email atau sandi salah","auth/wrong-password":"Email atau sandi salah","auth/user-not-found":"Email atau sandi salah","auth/weak-password":"Sandi minimal 6 karakter","auth/invalid-email":"Format email salah","auth/network-request-failed":"Tidak ada koneksi internet","permission-denied":"Akses ditolak (periksa aturan Firestore)"};
+const err=e=>ERR[e.code]||e.code||e.message;
+const IMG=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
+function kecil(file){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const s=Math.min(1,800/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=i.width*s;c.height=i.height*s;c.getContext("2d").drawImage(i,0,0,c.width,c.height);ok(c.toDataURL("image/jpeg",.6))};i.onerror=no;i.src=r.result};r.onerror=no;r.readAsDataURL(file)})}
+async function foto(k,el){const f=el.files[0];if(!f)return;try{FOT[k]=await kecil(f);toast("Foto "+k+" siap")}catch(e){toast("Foto gagal dibaca")}}
+function ganti(m){AM=m;render()}
+function fotoIn(){return `<label class="mute">Foto KTP</label><input type="file" accept="image/*" onchange="foto('ktp',this)"><label class="mute">Foto selfie memegang KTP</label><input type="file" accept="image/*" onchange="foto('selfie',this)">`}
+function authView(){const d=AM==="daftar";return `<div class="hero"><h2>${d?"Daftar akun":"Masuk"}</h2><p>${CONFIG.slogan}</p></div>${d?`<input id="an" placeholder="Nama lengkap"><input id="ah" type="tel" placeholder="Nomor HP">`:""}<input id="ae" type="email" placeholder="Email"><input id="ap" type="password" placeholder="Sandi (min. 6 karakter)">${d?fotoIn()+`<p class="mute">Foto KTP dipakai hanya untuk verifikasi dan hanya bisa dilihat admin.</p>`:""}<button class="btn y" onclick="${d?"daftar()":"masuk()"}">${d?"Daftar":"Masuk"}</button><button class="btn o" style="margin-top:8px" onclick="ganti('${d?"masuk":"daftar"}')">${d?"Sudah punya akun? Masuk":"Belum punya akun? Daftar"}</button>`}
+async function masuk(){try{await auth.signInWithEmailAndPassword($("#ae").value.trim(),$("#ap").value)}catch(e){toast(err(e))}}
+async function daftar(){const n=$("#an").value.trim(),h=$("#ah").value.trim(),e=$("#ae").value.trim(),p=$("#ap").value;
+if(!n||!h||!e||p.length<6){toast("Lengkapi data, sandi min. 6 karakter");return}
+if(!FOT.ktp||!FOT.selfie){toast("Foto KTP dan selfie wajib");return}
+toast("Mendaftarkan...");
+try{const c=await auth.createUserWithEmailAndPassword(e,p),id=c.user.uid;
+await db.doc("kyc/"+id).set({ktp:FOT.ktp,selfie:FOT.selfie,at:Date.now()});
+await db.doc("users/"+id).set({nama:n,hp:h,email:e,role:"user",penyedia:"tidak",ktp:"menunggu",at:Date.now()});FOT={ktp:"",selfie:""}}catch(x){toast(err(x))}}
+async function kirimUlang(){if(!FOT.ktp||!FOT.selfie){toast("Foto KTP dan selfie wajib");return}
+try{await db.doc("kyc/"+U.uid).set({ktp:FOT.ktp,selfie:FOT.selfie,at:Date.now()});await db.doc("users/"+U.uid).update({ktp:"menunggu"});toast("Dikirim ulang")}catch(x){toast(err(x))}}
+async function ajukan(){try{await db.doc("users/"+U.uid).update({penyedia:"menunggu"});toast("Pengajuan dikirim")}catch(x){toast(err(x))}}
+function profilView(){const d=UD,ok=d.ktp==="disetujui",adm=d.role==="admin";
+const st={menunggu:"Menunggu verifikasi",disetujui:"Terverifikasi",ditolak:"Ditolak"}[d.ktp];
+let h=`<h2>${esc(d.nama)}</h2><p class="mute">${esc(d.email)} · ${esc(d.hp)}</p><div class="card"><div class="in row"><span>Verifikasi KTP</span><span class="tag ${ok?"ok":""}">${st}</span></div></div>`;
+if(d.ktp==="ditolak")h+=`<p class="mute">KTP ditolak. Unggah ulang foto yang lebih jelas.</p>${fotoIn()}<button class="btn y" onclick="kirimUlang()">Kirim ulang</button>`;
+if(adm||d.penyedia==="disetujui")h+=`<h3>Mode</h3><div class="seg"><button class="btn ${S.role==="c"?"y":"o"}" onclick="setRole('c')">Pencari</button><button class="btn ${S.role==="p"?"y":"o"}" onclick="setRole('p')">Penyedia</button>${adm?`<button class="btn ${S.role==="a"?"y":"o"}" onclick="setRole('a')">Admin</button>`:""}</div>`;
+else if(d.penyedia==="menunggu")h+=`<div class="card"><div class="in">Pengajuan penyedia jasa sedang ditinjau admin.</div></div>`;
+else if(ok)h+=`<h3>Jadi penyedia jasa</h3><button class="btn y" onclick="ajukan()">${d.penyedia==="ditolak"?"Ajukan lagi":"Ajukan jadi penyedia"}</button>`;
+else if(d.ktp!=="ditolak")h+=`<p class="mute">Anda bisa menjadi penyedia jasa setelah KTP terverifikasi.</p>`;
+return h+`<button class="btn o" style="margin-top:16px" onclick="auth.signOut()">Keluar</button>`}
+async function muat(){try{const a=await db.collection("users").where("ktp","==","menunggu").get(),b=await db.collection("users").where("penyedia","==","menunggu").get();PK=a.docs.map(d=>({id:d.id,...d.data()}));PP=b.docs.map(d=>({id:d.id,...d.data()}))}catch(e){toast(err(e))}render()}
+async function lihat(id){try{const s=await db.doc("kyc/"+id).get(),d=s.data();if(!d||!IMG.test(d.ktp)||!IMG.test(d.selfie)){toast("Foto tidak valid");return}SEL={id,ktp:d.ktp,selfie:d.selfie};render()}catch(e){toast(err(e))}}
+async function setuju(id,t,ok){try{await db.doc("users/"+id).update(t==="k"?{ktp:ok?"disetujui":"ditolak"}:{penyedia:ok?"disetujui":"ditolak"});SEL=null;LOADED=0;toast(ok?"Disetujui":"Ditolak");render()}catch(e){toast(err(e))}}
+function uRow(u,t){return `<div class="card"><div class="in"><b>${esc(u.nama)}</b><div class="mute">${esc(u.email)} · ${esc(u.hp)}</div>${t==="k"?`<button class="btn s o" style="margin-top:8px" onclick="lihat('${esc(u.id)}')">Lihat KTP dan selfie</button>`:""}${SEL&&SEL.id===u.id?`<img alt="KTP" src="${SEL.ktp}" style="width:100%;border-radius:10px;margin-top:8px"><img alt="Selfie" src="${SEL.selfie}" style="width:100%;border-radius:10px;margin-top:8px">`:""}<div class="row" style="margin-top:10px;justify-content:flex-start"><button class="btn s" onclick="setuju('${esc(u.id)}','${t}',1)">Setujui</button><button class="btn s o" onclick="setuju('${esc(u.id)}','${t}',0)">Tolak</button></div></div></div>`}
+function adminView(){if(!LOADED){LOADED=1;muat()}return `<h2>Verifikasi</h2><h3>KTP menunggu (${PK.length})</h3>${PK.map(u=>uRow(u,"k")).join("")||`<p class="mute">Tidak ada.</p>`}<h3>Pengajuan penyedia (${PP.length})</h3>${PP.map(u=>uRow(u,"p")).join("")||`<p class="mute">Tidak ada.</p>`}`}
+view=function(){if(!READY)return `<p class="mute">Memuat...</p>`;if(!U)return authView();
+if(!UD)return `<p class="mute">Memuat akun...</p><button class="btn o" onclick="auth.signOut()">Keluar</button>`;
+if(S.tab==="profil"&&!S.det)return profilView();
+if(S.role==="a"&&S.tab==="penyedia"&&!S.det)return adminView();return _view()};
+render=function(){_render();$("#n").style.display=(U&&UD)?"":"none"};
+auth.onAuthStateChanged(u=>{U=u;READY=true;if(unsub){unsub();unsub=null}UD=null;
+if(u){unsub=db.doc("users/"+u.uid).onSnapshot(s=>{UD=s.exists?s.data():null;if(UD&&S.role==="p"&&UD.penyedia!=="disetujui"&&UD.role!=="admin")S.role="c";render()},e=>toast(err(e)))}
+else{S.role="c";S.tab="home";LOADED=0}render()});
+</script></body></html>
