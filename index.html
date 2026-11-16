@@ -174,4 +174,37 @@ render=function(){_render();$("#n").style.display=(U&&UD)?"":"none"};
 auth.onAuthStateChanged(u=>{U=u;READY=true;if(unsub){unsub();unsub=null}UD=null;
 if(u){unsub=db.doc("users/"+u.uid).onSnapshot(s=>{UD=s.exists?s.data():null;if(UD&&S.role==="p"&&UD.penyedia!=="disetujui"&&UD.role!=="admin")S.role="c";render()},e=>toast(err(e)))}
 else{S.role="c";S.tab="home";LOADED=0}render()});
+</script><script>
+/* ===== FASE 3: MARKETPLACE (jasa tersimpan di Firestore) ===== */
+let FOTJ="",jUnsub=null;
+function kecilJ(file){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const s=Math.min(1,640/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=i.width*s;c.height=i.height*s;c.getContext("2d").drawImage(i,0,0,c.width,c.height);let q=.55,d=c.toDataURL("image/jpeg",q);while(d.length>140000&&q>.2){q-=.1;d=c.toDataURL("image/jpeg",q)}ok(d)};i.onerror=no;i.src=r.result};r.onerror=no;r.readAsDataURL(file)})}
+async function fotoJ(el){const f=el.files[0];if(!f)return;try{FOTJ=await kecilJ(f);toast("Foto siap")}catch(e){toast("Foto gagal dibaca")}}
+const imgJ=(j,h,x)=>j.foto&&IMG.test(j.foto)?`<img alt="" src="${j.foto}" style="width:100%;height:${h}px;object-fit:cover;display:block">`:`<div class="foto" style="height:${h}px;${x||""}">${IK[j.k]||"🛠️"}</div>`;
+card=function(j){return `<div class="card tap" onclick="S.det=${j.id};render()">${imgJ(j,110)}<div class="in"><b>${esc(j.n)}</b><div class="row" style="margin-top:4px"><span class="mute">${j.r?"⭐ "+j.r:"Baru"} · 📍 ${esc(j.l)}</span><span class="price">${rp(j.h)}</span></div></div></div>`};
+function kembali(){go(NAV[S.role][0][0])}
+function detailView(j){const n=J.filter(x=>x.uid===j.uid).length;
+return `<button class="back" onclick="S.det=null;render()">‹ Kembali</button><div class="card">${imgJ(j,200,"font-size:52px")}<div class="in"><h2>${esc(j.n)}</h2><p class="mute">${esc(j.k)} · ${j.r?"⭐ "+j.r:"Belum ada ulasan"} · 📍 ${esc(j.l)}</p><p class="price" style="font-size:20px;margin:8px 0">${rp(j.h)}</p><p>${esc(j.deskripsi||"Belum ada deskripsi.")}</p><div class="card" style="margin:12px 0"><div class="in row"><div><b>${esc(j.p)}</b><div class="mute">${n} jasa</div></div><span class="tag ok">Terverifikasi</span><button class="btn s o" onclick="S.prov='${esc(j.uid)}';S.det=null;S.tab='pp';render()">Profil</button></div></div>${U&&j.uid===U.uid?`<p class="mute">Ini jasa Anda.</p>`:`<button class="btn y" onclick="pesan(${j.id})">Pesan sekarang</button>`}</div></div>`}
+function provView(){const l=J.filter(x=>x.uid===S.prov),b=`<button class="back" onclick="kembali()">‹ Kembali</button>`;
+if(!l.length)return b+`<p class="mute">Penyedia ini belum punya jasa.</p>`;
+return b+`<h2>${esc(l[0].p)}</h2><p class="mute">${l.length} jasa · <span class="tag ok">Terverifikasi</span></p><br>${l.map(card).join("")}`}
+function jasaSaya(){const m=J.filter(j=>U&&j.uid===U.uid);return `<h2>Jasa saya</h2><br>${m.length?m.map(j=>card(j)+`<button class="btn s o" style="margin:-4px 0 14px" onclick="hapusJasa(${j.id})">Hapus jasa</button>`).join(""):`<p class="mute">Belum ada jasa. Tekan Tambah untuk membuat jasa pertama.</p>`}`}
+function tambahView(){return `<h2>Tambah jasa</h2><input id="fn" placeholder="Nama jasa"><select id="fk">${KAT.map(k=>`<option>${k[0]}</option>`).join("")}</select><input id="fh" type="number" inputmode="numeric" placeholder="Harga mulai (Rp)"><input id="fl" placeholder="Lokasi atau area layanan"><input id="fd" maxlength="300" placeholder="Deskripsi singkat"><label class="mute">Foto jasa (opsional)</label><input type="file" accept="image/*" onchange="fotoJ(this)"><button class="btn y" onclick="simpanJasa()">Simpan jasa</button>`}
+async function simpanJasa(){const n=$("#fn").value.trim(),h=+$("#fh").value,l=$("#fl").value.trim();
+if(n.length<3||!(h>0)||!l){toast("Isi nama, harga, dan lokasi");return}
+const id=Date.now();
+try{await db.doc("jasa/"+id).set({id,n,k:$("#fk").value,h,l,p:UD.nama,uid:U.uid,deskripsi:$("#fd").value.trim().slice(0,300),foto:FOTJ,r:0,at:id});FOTJ="";toast("Jasa disimpan");go("jasa")}catch(e){toast(err(e))}}
+async function hapusJasa(id){if(!confirm("Hapus jasa ini?"))return;try{await db.doc("jasa/"+id).delete();toast("Jasa dihapus")}catch(e){toast(err(e))}}
+hapus=function(id){hapusJasa(id)};
+auth.onAuthStateChanged(u=>{if(jUnsub){jUnsub();jUnsub=null}J=[];
+if(u)jUnsub=db.collection("jasa").onSnapshot(s=>{J=s.docs.map(d=>{const x=d.data();x.own=x.uid===u.uid?1:0;return x}).sort((a,b)=>b.at-a.at);render()},e=>toast(err(e)));
+else render()});
+const _v2=view;
+view=function(){if(U&&UD){
+if(S.det&&!jb(S.det))S.det=null;
+if(S.det)return detailView(jb(S.det));
+if(S.tab==="pp")return provView();
+if(S.role==="p"&&S.tab==="jasa")return jasaSaya();
+if(S.role==="p"&&S.tab==="tambah")return tambahView();
+if(S.role==="c"&&S.tab==="home"){const h=_v2();return J.length?h:h+`<p class="mute">Belum ada jasa. Penyedia bisa menambahkannya dari mode Penyedia.</p>`}}
+return _v2()};
 </script></body></html>
