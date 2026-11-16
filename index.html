@@ -513,4 +513,50 @@ const _ak9=aksi;
 aksi=function(o,m){const h=_ak9(o,m);if(m!=="p"||o.st!=="selesai")return h;const u=ULP[String(o.id)];
 return h+(u?`<div class="card" style="margin:10px 0 0"><div class="in"><div class="row"><b>Ulasan pelanggan</b><span style="color:#d99a00">${bin(u.r)}</span></div>${u.t?`<div>${esc(u.t)}</div>`:""}</div></div>`:`<div class="mute" style="margin-top:6px">⭐ Pelanggan belum memberi ulasan</div>`)};
 render();
+</script><script>
+/* ===== FASE 8: PANEL ADMIN (dashboard, pengguna, jasa, pesanan, CSV, moderasi, blokir) ===== */
+NAV.a.unshift(["dash","📊","Dashboard"]);
+let UAL=[],uaUn=null,uUn9=null,QU="",QJ="",FP="",ULA=null;
+const sm=(a,f)=>a.reduce((x,o)=>x+f(o),0);
+auth.onAuthStateChanged(u=>{if(uUn9){uUn9();uUn9=null}if(uaUn){uaUn();uaUn=null}UAL=[];
+if(u)uUn9=db.doc("users/"+u.uid).onSnapshot(s=>{const a=!!(s.exists&&s.data().role==="admin");
+if(a&&!uaUn)uaUn=db.collection("users").onSnapshot(q=>{UAL=q.docs.map(d=>({id:d.id,...d.data()}));soft()},()=>{});
+if(!a&&uaUn){uaUn();uaUn=null;UAL=[]}})});
+function tile(ic,v,l,t){return `<div class="card tap" style="margin:0" onclick="go('${t}')"><div class="in"><div style="font-size:22px">${ic}</div><div style="font-size:21px;font-weight:800">${v}</div><div class="mute">${l}</div></div></div>`}
+function chart7(){const d=[],now=new Date();for(let i=6;i>=0;i--){const x=new Date(now);x.setDate(now.getDate()-i);x.setHours(0,0,0,0);d.push({t:x.getTime(),l:x.toLocaleDateString("id-ID",{weekday:"short"}),n:0})}
+OA.forEach(o=>{for(let i=d.length-1;i>=0;i--)if(o.at>=d[i].t){d[i].n++;break}});const m=Math.max(1,...d.map(x=>x.n));
+return `<h3>Pesanan 7 hari terakhir</h3><div class="card"><div class="in row" style="align-items:flex-end;height:130px;gap:6px">${d.map(x=>`<div style="flex:1;text-align:center"><div style="font-size:11px">${x.n}</div><div style="height:${Math.round(x.n/m*70)+2}px;background:#2b7a8c;border-radius:6px 6px 0 0"></div><div class="mute" style="font-size:11px">${x.l}</div></div>`).join("")}</div></div>`}
+function dashView(){const n=UAL.length,pa=UAL.filter(u=>u.penyedia==="disetujui").length,kt=UAL.filter(u=>u.ktp==="menunggu"||u.penyedia==="menunggu").length,
+ak=OA.filter(o=>["menunggu","diterima"].includes(o.st)).length,sl=OA.filter(o=>o.st==="selesai").length,lun=OA.filter(o=>pay(o)==="lunas"),
+pk=OA.filter(o=>pay(o)==="diperiksa").length,cm=OA.filter(o=>o.cair==="diminta").length,lb=LA.filter(l=>l.st==="baru").length;
+return `<h2>Dashboard</h2><br><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${tile("👥",n,"Pengguna","pengguna")}${tile("👷",pa,"Penyedia aktif","penyedia")}${tile("🪪",kt,"Menunggu verifikasi","penyedia")}${tile("🛠️",J.length,"Jasa tayang","ajasa")}${tile("📋",ak,"Pesanan aktif","apesanan")}${tile("✅",sl,"Pesanan selesai","apesanan")}${tile("💳",pk,"Pembayaran diperiksa","trx")}${tile("💸",cm,"Pencairan diminta","trx")}${tile("⚠️",lb,"Laporan baru","laporan")}${tile("💰",rp(sm(lun,o=>o.h)),"Transaksi lunas","trx")}</div><div class="card" style="margin-top:10px"><div class="in row"><span>Komisi SERBA JASA</span><b>${rp(sm(lun,o=>o.kom||0))}</b></div></div>${chart7()}`}
+function uList(){const q=QU.toLowerCase(),a=UAL.filter(u=>((u.nama||"")+(u.email||"")).toLowerCase().includes(q)).sort((x,y)=>(y.at||0)-(x.at||0));
+return a.map(u=>`<div class="card"><div class="in"><div class="row"><b>${esc(u.nama)}</b>${u.role==="admin"?`<span class="tag ok">Admin</span>`:""}</div><div class="mute">${esc(u.email)} · ${esc(u.hp)}</div><div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px"><span class="tag ${u.ktp==="disetujui"?"ok":""}">KTP ${esc(u.ktp)}</span><span class="tag ${u.penyedia==="disetujui"?"ok":""}">Penyedia: ${esc(u.penyedia)}</span>${u.blok?`<span class="tag" style="background:#c0392b;color:#fff">Diblokir</span>`:""}</div>${u.role!=="admin"?`<button class="btn s o" style="margin-top:10px" onclick="blokir('${esc(u.id)}',${u.blok?0:1})">${u.blok?"Buka blokir":"Blokir akun"}</button>`:""}</div></div>`).join("")||`<p class="mute">Tidak ada pengguna.</p>`}
+function penggunaView(){return `<h2>Pengguna (${UAL.length})</h2><input id="qu" placeholder="Cari nama atau email" value="${esc(QU)}" oninput="QU=this.value;$('#ul').innerHTML=uList()"><div id="ul">${uList()}</div>`}
+async function blokir(id,f){if(!confirm(f?"Blokir akun ini? Pengguna tidak bisa memesan, membuat jasa, atau chat.":"Buka blokir akun ini?"))return;try{await db.doc("users/"+id).update({blok:!!f});toast(f?"Akun diblokir":"Blokir dibuka")}catch(e){toast(err(e))}}
+const blokMsg=()=>`<h2>Akun dinonaktifkan</h2><p class="mute">Akun Anda dinonaktifkan oleh admin. Hubungi admin SERBA JASA untuk informasi lebih lanjut.</p><button class="btn o" onclick="auth.signOut()">Keluar</button>`;
+function jList(){const q=QJ.toLowerCase(),a=J.filter(j=>((j.n||"")+(j.p||"")+(j.k||"")).toLowerCase().includes(q));
+return a.map(j=>`<div class="card"><div class="in row"><div><b>${esc(j.n)}</b><div class="mute">${esc(j.p)} · ${esc(j.k)} · ${rp(j.h)}</div><div class="mute">${j.rn?"⭐ "+j.r+" ("+j.rn+")":"Belum ada ulasan"} · ${j.la?"📍 lokasi diatur":"tanpa lokasi"}</div></div><button class="btn s o" onclick="hapus(${j.id})">Hapus</button></div></div>`).join("")||`<p class="mute">Tidak ada jasa.</p>`}
+function ajasaView(){return `<h2>Jasa (${J.length})</h2><input id="qj" placeholder="Cari nama jasa atau penyedia" value="${esc(QJ)}" oninput="QJ=this.value;$('#jl').innerHTML=jList()"><div id="jl">${jList()}</div>`}
+function apesananView(){const a=OA.filter(o=>!FP||o.st===FP),c=["","menunggu","diterima","selesai","ditolak","dibatalkan"].map(s=>`<button class="btn s ${FP===s?"y":"o"}" onclick="FP='${s}';render()">${s||"Semua"}</button>`).join("");
+return `<h2>Pesanan (${OA.length})</h2><div class="row" style="justify-content:flex-start;flex-wrap:wrap;gap:6px;margin:10px 0">${c}</div>${a.map(o=>oCard(o,"a")).join("")||`<p class="mute">Tidak ada pesanan.</p>`}`}
+function unduhCsv(){const q=v=>{let s=String(v==null?"":v);if(/^[=+\-@]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'},
+h=["id","tanggal","jasa","pemesan","penyedia","harga","komisi","bersih","status","pembayaran","pencairan"],
+r=OA.map(o=>[o.id,new Date(o.at).toISOString().slice(0,10),o.jn,o.cn,o.pn,o.h,o.kom||0,o.net||0,o.st,pay(o),o.cair||"belum"]);
+const b=new Blob(["\ufeff"+[h,...r].map(x=>x.map(q).join(",")).join("\n")],{type:"text/csv"}),a=document.createElement("a");
+a.href=URL.createObjectURL(b);a.download="transaksi-serba-jasa.csv";document.body.appendChild(a);a.click();a.remove()}
+async function muatUlasan(){try{const s=await db.collection("ulasan").orderBy("at","desc").limit(20).get();ULA=s.docs.map(d=>d.data())}catch(e){ULA=[];toast(err(e))}render()}
+async function hapusUlasan(oid){if(!confirm("Hapus ulasan ini? Rata-rata bintang jasa akan dihitung ulang."))return;
+try{await db.runTransaction(async t=>{const ur=db.doc("ulasan/"+oid),us=await t.get(ur);if(!us.exists)return;const u=us.data(),jr=db.doc("jasa/"+u.jid),js=await t.get(jr);t.delete(ur);
+if(js.exists){const d=js.data();t.update(jr,{rs:Math.max(0,(d.rs||0)-u.r),rn:Math.max(0,(d.rn||0)-1)})}});ULA=null;RV={};toast("Ulasan dihapus")}catch(e){toast(err(e))}render()}
+const _nf9=notifs,_tx=trxView,_lv9=laporanView,_v9=view;
+notifs=function(){const n=_nf9();if(UD&&UD.role==="admin"){const pk=OA.filter(o=>pay(o)==="diperiksa").length,cm=OA.filter(o=>o.cair==="diminta").length,kt=UAL.filter(u=>u.ktp==="menunggu"||u.penyedia==="menunggu").length;
+if(pk)n.push(["💳",pk+" pembayaran perlu diperiksa","a","trx"]);if(cm)n.push(["💸",cm+" pencairan diminta","a","trx"]);if(kt)n.push(["🪪",kt+" verifikasi menunggu","a","penyedia"])}return n};
+trxView=function(){return _tx()+`<button class="btn o" style="margin-top:16px" onclick="unduhCsv()">⬇ Unduh CSV transaksi</button>`};
+laporanView=function(){if(ULA===null){ULA=[];muatUlasan()}return _lv9()+`<h3>Moderasi ulasan (terbaru)</h3>${ULA.map(x=>`<div class="card"><div class="in"><div class="row"><b>${esc(x.cn)}</b><span style="color:#d99a00">${bin(x.r)}</span></div>${x.t?`<div>${esc(x.t)}</div>`:""}<button class="btn s o" style="margin-top:8px" onclick="hapusUlasan('${esc(x.oid)}')">Hapus ulasan</button></div></div>`).join("")||`<p class="mute">Belum ada ulasan.</p>`}`};
+view=function(){if(U&&UD){
+if(UD.blok&&UD.role!=="admin")return blokMsg();
+if(S.role==="a"){const t=S.tab;if(t==="dash")return dashView();if(t==="pengguna")return penggunaView();if(t==="ajasa")return ajasaView();if(t==="apesanan")return apesananView()}}
+return _v9()};
+render();
 </script></body></html>
