@@ -207,4 +207,44 @@ if(S.role==="p"&&S.tab==="jasa")return jasaSaya();
 if(S.role==="p"&&S.tab==="tambah")return tambahView();
 if(S.role==="c"&&S.tab==="home"){const h=_v2();return J.length?h:h+`<p class="mute">Belum ada jasa. Penyedia bisa menambahkannya dari mode Penyedia.</p>`}}
 return _v2()};
+</script><script>
+/* ===== FASE 4: TRANSAKSI (pesanan tersimpan di Firestore) ===== */
+let OM=[],OI=[],OA=[],oUn=[],oRole=null,uUn=null;
+const ST={menunggu:["Menunggu konfirmasi",""],diterima:["Diterima",""],selesai:["Selesai","ok"],ditolak:["Ditolak",""],dibatalkan:["Dibatalkan",""]};
+const hariIni=()=>{const t=new Date();return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0")};
+const srt=s=>s.docs.map(d=>d.data()).sort((a,b)=>b.at-a.at);
+function stopO(){oUn.forEach(f=>f());oUn=[];OM=[];OI=[];OA=[];oRole=null}
+function startO(u,adm){stopO();oRole=adm?"a":"u";const q=db.collection("pesanan"),e=x=>toast(err(x));
+oUn.push(q.where("cus","==",u.uid).onSnapshot(s=>{OM=srt(s);render()},e));
+oUn.push(q.where("pen","==",u.uid).onSnapshot(s=>{OI=srt(s);render()},e));
+if(adm)oUn.push(q.onSnapshot(s=>{OA=srt(s);render()},e))}
+auth.onAuthStateChanged(u=>{if(uUn){uUn();uUn=null}stopO();
+if(u)uUn=db.doc("users/"+u.uid).onSnapshot(s=>{const a=!!(s.exists&&s.data().role==="admin");if((a?"a":"u")!==oRole)startO(u,a)})});
+pesan=function(id){if(!UD||UD.ktp!=="disetujui"){toast("KTP harus terverifikasi dulu");return}S.form=id;render()};
+function formView(j){return `<button class="back" onclick="S.form=null;render()">‹ Kembali</button><h2>Pesan jasa</h2><div class="card"><div class="in row"><b>${esc(j.n)}</b><span class="price">${rp(j.h)}</span></div></div><label class="mute">Alamat lengkap</label><input id="oa" maxlength="200" placeholder="Jalan, nomor, kecamatan"><label class="mute">Tanggal</label><input id="ot" type="date" min="${hariIni()}"><label class="mute">Jam</label><input id="oj" type="time"><label class="mute">Catatan (opsional)</label><input id="oc" maxlength="200" placeholder="Contoh: AC di kamar atas"><button class="btn y" onclick="kirimPesanan()">Kirim pesanan</button><p class="mute">Harga final dan pembayaran disepakati langsung dengan penyedia. Pembayaran lewat aplikasi hadir di Fase 6.</p>`}
+async function kirimPesanan(){const j=jb(S.form),a=$("#oa").value.trim(),t=$("#ot").value,w=$("#oj").value;
+if(a.length<5||!t||!w){toast("Isi alamat, tanggal, dan jam");return}
+if(t<hariIni()){toast("Tanggal sudah lewat");return}
+const id=Date.now();
+try{await db.doc("pesanan/"+id).set({id,jid:String(j.id),jn:j.n,h:j.h,pen:j.uid,pn:j.p,cus:U.uid,cn:UD.nama,hp:UD.hp,alamat:a,jadwal:t+" "+w,catatan:$("#oc").value.trim().slice(0,200),st:"menunggu",at:id});S.form=null;S.det=null;S.tab="pesanan";toast("Pesanan dikirim");render()}catch(e){toast(err(e))}}
+function aksi(o,m){const b=(st,t,c)=>`<button class="btn s ${c||""}" onclick="ubahO('${o.id}','${st}')">${t}</button>`;let x="";
+if(m==="p"){if(o.st==="menunggu")x=b("diterima","Terima")+b("ditolak","Tolak","o");else if(o.st==="diterima")x=b("selesai","Tandai selesai","y")}
+else if(m==="c"&&o.st==="menunggu")x=b("dibatalkan","Batalkan","o");
+return x?`<div class="row" style="margin-top:10px;justify-content:flex-start">${x}</div>`:""}
+function oCard(o,m){const s=ST[o.st]||[o.st,""],w=m==="p"?esc(o.cn)+" · "+esc(o.hp):m==="a"?esc(o.cn)+" → "+esc(o.pn):esc(o.pn);
+return `<div class="card"><div class="in"><div class="row"><b>${esc(o.jn)}</b><span class="tag ${s[1]}">${s[0]}</span></div><div class="mute" style="margin:4px 0">${w} · ${rp(o.h)}</div><div class="mute">📅 ${esc(o.jadwal)}</div><div class="mute">📍 ${esc(o.alamat)}</div>${o.catatan?`<div class="mute">📝 ${esc(o.catatan)}</div>`:""}${aksi(o,m)}</div></div>`}
+async function ubahO(id,st){try{await db.doc("pesanan/"+id).update({st});toast("Status diperbarui")}catch(e){toast(err(e))}}
+function daftarO(L,m,judul){const a=L.filter(o=>["menunggu","diterima"].includes(o.st)),r=L.filter(o=>!["menunggu","diterima"].includes(o.st));
+return `<h2>${judul}</h2><h3>Aktif (${a.length})</h3>${a.map(o=>oCard(o,m)).join("")||`<p class="mute">Tidak ada pesanan aktif.</p>`}<h3>Riwayat (${r.length})</h3>${r.map(o=>oCard(o,m)).join("")||`<p class="mute">Belum ada riwayat.</p>`}`}
+const _go=go,_sr=setRole;
+go=function(t){S.form=null;_go(t)};
+setRole=function(r){S.form=null;_sr(r)};
+const _v3=view;
+view=function(){if(U&&UD){
+if(S.form&&!jb(S.form))S.form=null;
+if(S.form)return formView(jb(S.form));
+if(S.role==="c"&&S.tab==="pesanan")return daftarO(OM,"c","Pesanan saya");
+if(S.role==="p"&&S.tab==="masuk")return daftarO(OI,"p","Pesanan masuk");
+if(S.role==="a"&&S.tab==="apesanan")return `<h2>Semua pesanan (${OA.length})</h2><br>${OA.map(o=>oCard(o,"a")).join("")||`<p class="mute">Belum ada pesanan.</p>`}`}
+return _v3()};
 </script></body></html>
