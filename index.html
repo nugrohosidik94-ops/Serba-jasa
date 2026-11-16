@@ -198,7 +198,7 @@ try{await db.doc("jasa/"+id).set({id,n,k:$("#fk").value,h,l,p:UD.nama,uid:U.uid,
 async function hapusJasa(id){if(!confirm("Hapus jasa ini?"))return;try{await db.doc("jasa/"+id).delete();toast("Jasa dihapus")}catch(e){toast(err(e))}}
 hapus=function(id){hapusJasa(id)};
 auth.onAuthStateChanged(u=>{if(jUnsub){jUnsub();jUnsub=null}J=[];
-if(u)jUnsub=db.collection("jasa").onSnapshot(s=>{J=s.docs.map(d=>{const x=d.data();x.own=x.uid===u.uid?1:0;return x}).sort((a,b)=>b.at-a.at);render()},e=>toast(err(e)));
+if(u)jUnsub=db.collection("jasa").onSnapshot(s=>{J=s.docs.map(d=>{const x=d.data();x.own=x.uid===u.uid?1:0;x.r=x.rn?Math.round(x.rs/x.rn*10)/10:0;return x}).sort((a,b)=>b.at-a.at);render()},e=>toast(err(e)));
 else render()});
 const _v2=view;
 view=function(){if(U&&UD){
@@ -448,5 +448,60 @@ view=function(){if(U&&UD){
 if(S.omap){const o=ordO(S.omap);if(o&&o.la)return omapView(o);closeOmap()}
 if(S.loc){const j=jb(S.loc);if(j)return locView(j);S.loc=null}}
 return _v7()};
+render();
+</script><script>
+/* ===== FASE 7: KEPERCAYAAN (rating, ulasan, verifikasi penyedia, laporan) ===== */
+{const st=document.createElement("style");st.textContent="nav{overflow-x:auto}nav button{flex:1 0 auto;min-width:60px;padding-left:4px;padding-right:4px}";document.head.appendChild(st)}
+NAV.a.splice(NAV.a.length-1,0,["laporan","⚠️","Laporan"]);
+const LK=["Pekerjaan tidak sesuai","Penyedia tidak datang","Pembayaran bermasalah","Perilaku tidak pantas","Lainnya"];
+let UL={},ulUn=null,RV={},RS=0,RT="",LM=[],LA=[],lUn8=[],lRole=null,uUn8=null,PA=[];
+const lapOf=id=>LM.find(l=>l.oid===String(id));
+const bin=n=>"★".repeat(n)+"☆".repeat(5-n);
+function stopL(){lUn8.forEach(f=>f());lUn8=[];LM=[];LA=[];lRole=null}
+function startL(u,adm){stopL();lRole=adm?"a":"u";const q=db.collection("laporan"),e=()=>{},mp=s=>s.docs.map(d=>d.data());
+lUn8.push(q.where("by","==",u.uid).onSnapshot(s=>{LM=mp(s).sort((a,b)=>b.at-a.at);soft()},e));
+if(adm)lUn8.push(q.onSnapshot(s=>{LA=mp(s);soft()},e))}
+auth.onAuthStateChanged(u=>{if(ulUn){ulUn();ulUn=null}if(uUn8){uUn8();uUn8=null}UL={};stopL();
+if(u){ulUn=db.collection("ulasan").where("cus","==",u.uid).onSnapshot(s=>{UL={};s.docs.forEach(d=>UL[d.id]=d.data());soft()},()=>{});
+uUn8=db.doc("users/"+u.uid).onSnapshot(s=>{const a=!!(s.exists&&s.data().role==="admin");if((a?"a":"u")!==lRole)startL(u,a)})}});
+function revView(o){return `<button class="back" onclick="S.rev=null;render()">‹ Kembali</button><h2>Beri ulasan</h2><p class="mute">${esc(o.jn)} · ${esc(o.pn)}</p><div class="row" style="justify-content:flex-start;gap:8px;font-size:34px;margin:8px 0">${[1,2,3,4,5].map(i=>`<span role="button" onclick="RS=${i};render()" style="cursor:pointer;color:#d99a00">${i<=RS?"★":"☆"}</span>`).join("")}</div><input id="rt" maxlength="300" placeholder="Ceritakan pengalaman Anda (opsional)" value="${esc(RT)}" oninput="RT=this.value"><button class="btn y" onclick="kirimUlasan()">Kirim ulasan</button>`}
+async function kirimUlasan(){const o=ordO(S.rev);if(!o||!RS){toast("Pilih bintang 1 sampai 5");return}
+const oid=String(o.id),jr=db.doc("jasa/"+o.jid),ur=db.doc("ulasan/"+oid);
+try{await db.runTransaction(async t=>{const s=await t.get(jr);t.set(ur,{oid,jid:String(o.jid),pen:o.pen,cus:U.uid,cn:UD.nama,r:RS,t:RT.trim().slice(0,300),at:Date.now()});
+if(s.exists){const d=s.data();t.update(jr,{rs:(d.rs||0)+RS,rn:(d.rn||0)+1,lr:oid})}});
+S.rev=null;RV={};toast("Terima kasih atas ulasan Anda");render()}catch(e){toast(err(e))}}
+function revList(j){const a=RV[j.id],h=`<h3>Ulasan${j.rn?` (${j.rn}) · ⭐ ${j.r}`:""}</h3>`;
+if(a==="loading"||a===undefined)return h+`<p class="mute">Memuat ulasan...</p>`;
+return h+(a.length?a.map(x=>`<div class="card"><div class="in"><div class="row"><b>${esc(x.cn)}</b><span style="color:#d99a00">${bin(x.r)}</span></div>${x.t?`<div>${esc(x.t)}</div>`:""}<div class="mute">${new Date(x.at).toLocaleDateString("id-ID")}</div></div></div>`).join(""):`<p class="mute">Belum ada ulasan.</p>`)}
+function lapView(o){return `<button class="back" onclick="S.lap=null;render()">‹ Kembali</button><h2>Laporkan masalah</h2><p class="mute">${esc(o.jn)} · ${o.cus===U.uid?"penyedia "+esc(o.pn):"pemesan "+esc(o.cn)}</p><label class="mute">Jenis masalah</label><select id="lk">${LK.map(k=>`<option>${k}</option>`).join("")}</select><label class="mute">Penjelasan</label><input id="lt" maxlength="500" placeholder="Jelaskan apa yang terjadi (min. 10 huruf)"><button class="btn y" onclick="kirimLaporan()">Kirim laporan</button><p class="mute">Admin akan meninjau laporan Anda. Sertakan detail selengkap mungkin.</p>`}
+async function kirimLaporan(){const o=ordO(S.lap),t=$("#lt").value.trim();if(!o||t.length<10){toast("Jelaskan masalahnya (min. 10 huruf)");return}
+const id=Date.now(),c=o.cus===U.uid;
+try{await db.doc("laporan/"+id).set({id,oid:String(o.id),by:U.uid,bn:UD.nama,vs:c?o.pen:o.cus,vn:c?o.pn:o.cn,jn:o.jn,k:$("#lk").value,t:t.slice(0,500),st:"baru",at:id});S.lap=null;toast("Laporan terkirim ke admin");render()}catch(e){toast(err(e))}}
+async function lapSt(id,st){let cat;if(st==="selesai"){cat=prompt("Catatan penyelesaian (terlihat oleh pelapor)");if(cat===null)return}
+try{await db.doc("laporan/"+id).update(cat!==undefined?{st,cat:cat.slice(0,300)}:{st});toast("Status laporan diperbarui")}catch(e){toast(err(e))}}
+function lapCard(l){const T={baru:["Baru",""],diproses:["Diproses",""],selesai:["Selesai","ok"]}[l.st]||[l.st,""];
+return `<div class="card"><div class="in"><div class="row"><b>${esc(l.k)}</b><span class="tag ${T[1]}">${T[0]}</span></div><div class="mute" style="margin:4px 0">${esc(l.jn)} · ${esc(l.bn)} melaporkan ${esc(l.vn)}</div><div>${esc(l.t)}</div>${l.cat?`<div class="mute" style="margin-top:6px">Catatan admin: ${esc(l.cat)}</div>`:""}${l.st!=="selesai"?`<div class="row" style="margin-top:10px;justify-content:flex-start">${l.st==="baru"?`<button class="btn s" onclick="lapSt('${l.id}','diproses')">Proses</button>`:""}<button class="btn s y" onclick="lapSt('${l.id}','selesai')">Tandai selesai</button></div>`:""}</div></div>`}
+function laporanView(){const a=LA.slice().sort((x,y)=>y.at-x.at);return `<h2>Laporan dan komplain (${a.length})</h2><br>${a.map(lapCard).join("")||`<p class="mute">Belum ada laporan.</p>`}`}
+const _mu=muat,_av8=adminView,_ak8=aksi,_dv8=detailView,_pv8=profilView,_nf=notifs,_g8=go,_s8=setRole,_v8=view;
+muat=async function(){await _mu();try{const s=await db.collection("users").where("penyedia","==","disetujui").get();PA=s.docs.map(d=>({id:d.id,...d.data()}))}catch(e){}render()};
+async function cabut(id){if(!confirm("Cabut status penyedia ini? Jasa miliknya perlu dihapus manual di tab Jasa."))return;try{await db.doc("users/"+id).update({penyedia:"ditolak"});LOADED=0;toast("Status penyedia dicabut");render()}catch(e){toast(err(e))}}
+adminView=function(){return _av8()+`<h3>Penyedia aktif (${PA.length})</h3>${PA.map(u=>`<div class="card"><div class="in row"><div><b>${esc(u.nama)}</b><div class="mute">${esc(u.email)}</div></div><button class="btn s o" onclick="cabut('${esc(u.id)}')">Cabut</button></div></div>`).join("")||`<p class="mute">Belum ada.</p>`}`};
+aksi=function(o,m){const h=_ak8(o,m);if(m==="a")return h;let x="";
+if(m==="c"&&o.st==="selesai"){const u=UL[String(o.id)];x+=u?`<div class="mute" style="margin-top:6px">⭐ Ulasan Anda: ${bin(u.r)}</div>`:`<button class="btn s y" style="margin-top:8px" onclick="RS=0;RT='';S.rev='${o.id}';render()">⭐ Beri ulasan</button>`}
+if(o.st==="diterima"||o.st==="selesai"){const l=lapOf(o.id);x+=l?`<div class="mute" style="margin-top:6px">⚠️ Laporan Anda: ${l.st}</div>`:`<button class="btn s o" style="margin-top:8px" onclick="S.lap='${o.id}';render()">⚠️ Laporkan masalah</button>`}
+return h+x};
+detailView=function(j){if(RV[j.id]===undefined){RV[j.id]="loading";db.collection("ulasan").where("jid","==",String(j.id)).get().then(s=>{RV[j.id]=s.docs.map(d=>d.data()).sort((a,b)=>b.at-a.at).slice(0,20);if(S.det===j.id)render()}).catch(()=>{RV[j.id]=[];if(S.det===j.id)render()})}return _dv8(j)+revList(j)};
+profilView=function(){const h=_pv8();if(!LM.length)return h;const s=`<h3>Laporan saya</h3>`+LM.map(l=>`<div class="card"><div class="in"><div class="row"><b>${esc(l.k)}</b><span class="tag ${l.st==="selesai"?"ok":""}">${l.st}</span></div><div class="mute">${esc(l.jn)}</div>${l.cat?`<div class="mute">Catatan admin: ${esc(l.cat)}</div>`:""}</div></div>`).join("");
+return h.replace('<button class="btn o" style="margin-top:16px" onclick="auth.signOut()">',s+'<button class="btn o" style="margin-top:16px" onclick="auth.signOut()">')};
+notifs=function(){const n=_nf(),w=OM.filter(o=>o.st==="selesai"&&!UL[String(o.id)]).length;
+if(w)n.push(["⭐",w+" pesanan selesai menunggu ulasan","c","pesanan"]);
+if(UD&&UD.role==="admin"){const b=LA.filter(l=>l.st==="baru").length;if(b)n.push(["⚠️",b+" laporan baru","a","laporan"])}return n};
+go=function(t){S.rev=null;S.lap=null;_g8(t)};
+setRole=function(r){S.rev=null;S.lap=null;_s8(r)};
+view=function(){if(U&&UD){
+if(S.rev){const o=ordO(S.rev);if(o&&o.st==="selesai")return revView(o);S.rev=null}
+if(S.lap){const o=ordO(S.lap);if(o)return lapView(o);S.lap=null}
+if(S.role==="a"&&S.tab==="laporan")return laporanView()}
+return _v8()};
 render();
 </script></body></html>
