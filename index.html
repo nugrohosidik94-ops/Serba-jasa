@@ -310,4 +310,59 @@ if(S.tab==="notif")return notifView();
 if((S.role==="c"||S.role==="p")&&S.tab==="chat")return chatList()}
 return _v5()};
 render();
+</script><script>
+/* ===== FASE 6: PEMBAYARAN (transfer ke SERBA JASA, komisi, pencairan) ===== */
+NAV.a.splice(4,0,["trx","💰","Transaksi"]);
+let CFG={bank:"",rek:"",an:"",persen:10},cUn=null,BPP=null,BK=null,RK=null;
+const pay=o=>o.pay||"belum";
+auth.onAuthStateChanged(u=>{if(cUn){cUn();cUn=null}BPP=null;BK=null;RK=null;
+if(u)cUn=db.doc("config/bayar").onSnapshot(s=>{if(s.exists)CFG={...CFG,...s.data()};soft()},()=>{})});
+async function buktiFoto(id,el){const f=el.files[0];if(!f)return;try{BPP={id,d:await kecilJ(f)};render()}catch(e){toast("Foto gagal dibaca")}}
+async function kirimBukti(){if(!BPP)return;const b=db.batch();
+b.set(db.doc("bukti/"+BPP.id),{cus:U.uid,bp:BPP.d,at:Date.now()});
+b.update(db.doc("pesanan/"+BPP.id),{pay:"diperiksa"});
+try{await b.commit();BPP=null;toast("Bukti terkirim, menunggu pemeriksaan admin")}catch(e){toast(err(e))}}
+function payUI(o){const L={belum:"Belum dibayar",diperiksa:"Pembayaran sedang diperiksa admin",lunas:"Lunas ✓",ditolak:"Bukti ditolak, unggah ulang"};return `<div class="mute" style="margin-top:6px">💳 ${L[pay(o)]}</div>`}
+function bayarUI(o){if(!CFG.rek)return `<div class="mute" style="margin-top:6px">Admin belum mengatur rekening pembayaran.</div>`;
+const on=BPP&&BPP.id==o.id,pre=on?`<img alt="Pratinjau bukti" src="${BPP.d}" style="width:100%;border-radius:10px;margin-top:8px">`:"",
+act=on?`<button class="btn s y" onclick="kirimBukti()">Kirim bukti</button><button class="btn s o" onclick="BPP=null;render()">Ganti foto</button>`:`<label class="btn s y" style="display:inline-block;cursor:pointer">📷 Unggah bukti transfer<input type="file" accept="image/*" style="display:none" onchange="buktiFoto('${o.id}',this)"></label>`;
+return `<div class="card" style="margin:10px 0 0"><div class="in"><b>Transfer ${rp(o.h)}</b><div class="mute">${esc(CFG.bank)} · ${esc(CFG.rek)}<br>a.n. ${esc(CFG.an)}</div>${pre}<div class="row" style="margin-top:8px;justify-content:flex-start;flex-wrap:wrap">${act}</div></div></div>`}
+function cairUI(o){if(o.st!=="selesai")return "";const c=o.cair||"belum";
+if(c==="dicairkan")return `<div class="mute">💸 Sudah dicairkan ✓</div>`;
+if(c==="diminta")return `<div class="mute">💸 Pencairan sedang diproses admin</div>`;
+if(!UD.rek)return `<div class="mute">Isi rekening pencairan di tab Profil untuk mencairkan.</div>`;
+return `<button class="btn s y" style="margin-top:6px" onclick="mintaCair('${o.id}')">Ajukan pencairan</button>`}
+async function mintaCair(id){try{await db.doc("pesanan/"+id).update({cair:"diminta"});toast("Pencairan diajukan")}catch(e){toast(err(e))}}
+const _ak6=aksi;
+aksi=function(o,m){const p=pay(o),wait=m==="p"&&o.st==="diterima"&&p!=="lunas",h=_ak6(wait?{...o,st:"tunggu"}:o,m);let x="";
+if(m!=="a"&&(o.st==="diterima"||o.st==="selesai")){x+=payUI(o);
+if(m==="c"&&o.st==="diterima"&&(p==="belum"||p==="ditolak"))x+=bayarUI(o);
+if(wait)x+=`<div class="mute">Menunggu pembayaran pelanggan dikonfirmasi admin sebelum pekerjaan dimulai.</div>`;
+if(m==="p"&&p==="lunas")x+=`<div class="mute">Komisi ${CFG.persen||10}%: ${rp(o.kom||0)} · Anda terima: ${rp(o.net||0)}</div>`+cairUI(o)}
+return x+h};
+const _fv=formView,_tv=tambahView,_pv=profilView,_v6=view;
+formView=function(j){return _fv(j).replace(/<p class="mute">Harga final[^<]*<\/p>/,'<p class="mute">Pembayaran ditransfer ke rekening SERBA JASA setelah penyedia menerima pesanan, lalu diteruskan ke penyedia setelah pekerjaan selesai.</p>')};
+tambahView=function(){return _tv().replace('Harga mulai (Rp)','Harga jasa (Rp)')};
+function rekForm(){const p=(UD.rek||"").split(" | ");return `<h3>Rekening pencairan</h3><p class="mute">Dipakai admin untuk mentransfer pendapatan Anda.</p><input id="rb" placeholder="Bank atau e-wallet" value="${esc(p[0]||"")}"><input id="rn" inputmode="numeric" placeholder="Nomor rekening" value="${esc(p[1]||"")}"><input id="ra" placeholder="Atas nama" value="${esc(p[2]||"")}"><button class="btn" onclick="simpanRek()">Simpan rekening</button>`}
+async function simpanRek(){const b=$("#rb").value.trim(),n=$("#rn").value.trim(),a=$("#ra").value.trim();if(!b||n.length<5||!a){toast("Lengkapi bank, nomor, dan atas nama");return}
+try{await db.doc("users/"+U.uid).update({rek:[b,n,a].join(" | ")});toast("Rekening tersimpan")}catch(e){toast(err(e))}}
+profilView=function(){let h=_pv();if(UD&&(UD.penyedia==="disetujui"||UD.role==="admin"))h=h.replace('<button class="btn o" style="margin-top:16px" onclick="auth.signOut()">',rekForm()+'<button class="btn o" style="margin-top:16px" onclick="auth.signOut()">');return h};
+async function lihatBukti(id){try{const s=await db.doc("bukti/"+id).get(),d=s.data();if(!d||!IMG.test(d.bp)){toast("Bukti tidak valid");return}BK={id,img:d.bp};render()}catch(e){toast(err(e))}}
+async function lihatRek(uid){try{const s=await db.doc("users/"+uid).get();RK={uid,rek:(s.data()||{}).rek||"Belum diisi"};render()}catch(e){toast(err(e))}}
+async function bayarOk(id,ok){const o=OA.find(x=>String(x.id)===String(id));if(!o)return;try{const k=Math.round(o.h*(CFG.persen||10)/100);await db.doc("pesanan/"+id).update(ok?{pay:"lunas",kom:k,net:o.h-k}:{pay:"ditolak"});BK=null;toast(ok?"Pembayaran disetujui":"Bukti ditolak")}catch(e){toast(err(e))}}
+async function cairOk(id){if(!confirm("Pastikan sudah mentransfer ke penyedia. Lanjutkan?"))return;try{await db.doc("pesanan/"+id).update({cair:"dicairkan"});RK=null;toast("Ditandai sudah dicairkan")}catch(e){toast(err(e))}}
+async function simpanCfg(){const bank=$("#cb").value.trim(),rek=$("#cr").value.trim(),an=$("#ca").value.trim(),persen=+$("#cp").value;
+if(!bank||rek.length<5||!an||!(persen>=0&&persen<=50)){toast("Lengkapi data, komisi 0 sampai 50");return}
+try{await db.doc("config/bayar").set({bank,rek,an,persen});toast("Pengaturan tersimpan")}catch(e){toast(err(e))}}
+function oMini(o,x){return `<div class="card"><div class="in"><div class="row"><b>${esc(o.jn)}</b><span class="price">${rp(o.h)}</span></div><div class="mute">${esc(o.cn)} → ${esc(o.pn)}</div>${x}</div></div>`}
+function trxView(){const k=OA.filter(o=>pay(o)==="diperiksa"),c=OA.filter(o=>o.cair==="diminta"),l=OA.filter(o=>pay(o)==="lunas"),sum=(a,f)=>a.reduce((x,o)=>x+f(o),0),
+tot=sum(l,o=>o.h),kom=sum(l,o=>o.kom||0),tunda=sum(l.filter(o=>o.st==="selesai"&&o.cair!=="dicairkan"),o=>o.net||0);
+const bt=o=>BK&&BK.id==o.id?`<img alt="Bukti" src="${BK.img}" style="width:100%;border-radius:10px;margin-top:8px">`:`<button class="btn s o" style="margin-top:8px" onclick="lihatBukti('${o.id}')">Lihat bukti transfer</button>`,
+rk=o=>RK&&RK.uid===o.pen?`<div class="mute" style="margin-top:6px">Rekening: ${esc(RK.rek)}</div>`:`<button class="btn s o" style="margin-top:8px" onclick="lihatRek('${esc(o.pen)}')">Lihat rekening penyedia</button>`;
+return `<h2>Transaksi</h2><div class="card" style="margin-top:10px"><div class="in"><div class="row"><span>Total transaksi lunas</span><b>${rp(tot)}</b></div><div class="row"><span>Komisi SERBA JASA</span><b>${rp(kom)}</b></div><div class="row"><span>Belum dicairkan ke penyedia</span><b>${rp(tunda)}</b></div></div></div>
+<h3>Pembayaran perlu diperiksa (${k.length})</h3>${k.map(o=>oMini(o,bt(o)+`<div class="row" style="margin-top:8px;justify-content:flex-start"><button class="btn s" onclick="bayarOk('${o.id}',1)">Setujui</button><button class="btn s o" onclick="bayarOk('${o.id}',0)">Tolak</button></div>`)).join("")||`<p class="mute">Tidak ada.</p>`}
+<h3>Pencairan diminta (${c.length})</h3>${c.map(o=>oMini(o,`<div class="mute">Dicairkan: ${rp(o.net||0)} (komisi ${rp(o.kom||0)})</div>`+rk(o)+`<button class="btn s y" style="margin-top:8px" onclick="cairOk('${o.id}')">Sudah ditransfer</button>`)).join("")||`<p class="mute">Tidak ada.</p>`}
+<h3>Pengaturan pembayaran</h3><p class="mute">Rekening ini ditampilkan ke pencari jasa saat membayar.</p><input id="cb" placeholder="Bank atau e-wallet" value="${esc(CFG.bank)}"><input id="cr" inputmode="numeric" placeholder="Nomor rekening" value="${esc(CFG.rek)}"><input id="ca" placeholder="Atas nama" value="${esc(CFG.an)}"><input id="cp" type="number" inputmode="numeric" placeholder="Komisi (%)" value="${CFG.persen}"><button class="btn y" onclick="simpanCfg()">Simpan pengaturan</button>`}
+view=function(){if(U&&UD&&S.role==="a"&&S.tab==="trx"&&!S.room)return trxView();return _v6()};
+render();
 </script></body></html>
