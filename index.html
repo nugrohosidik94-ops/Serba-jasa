@@ -259,4 +259,55 @@ else if(o.st==="diterima"){if(FSP&&FSP.id==o.id){pre=`<img alt="Pratinjau lapora
 else x=`<label class="btn s y" style="display:inline-block;cursor:pointer">📷 Foto laporan selesai<input type="file" accept="image/*" style="display:none" onchange="selesaiFoto('${o.id}',this)"></label>`}}
 else if(m==="c"&&o.st==="menunggu")x=b("dibatalkan","Batalkan","o");
 return pre+(x?`<div class="row" style="margin-top:10px;justify-content:flex-start;flex-wrap:wrap">${x}</div>`:"")};
+</script><script>
+/* ===== FASE 5: KOMUNIKASI (chat, foto, notifikasi dalam aplikasi) ===== */
+NAV.p.splice(3,0,["chat","💬","Chat"]);
+let CHc=[],CHp=[],rUn=[],MS=[],mUn=null,CT="",CHF="",NL=[];
+const rooms=()=>{const m={};[...CHc,...CHp].forEach(r=>m[r.id]=r);return Object.values(m).sort((a,b)=>b.at-a.at)};
+const roomOf=c=>rooms().find(r=>r.id===c);
+const unread=r=>!!U&&!!r.lu&&r.lu!==U.uid&&r.at>((r.cus===U.uid?r.rc:r.rp)||0);
+function closeRoom(){S.room=null;if(mUn){mUn();mUn=null}MS=[];CHF="";CT=""}
+function stopR(){rUn.forEach(f=>f());rUn=[];CHc=[];CHp=[];closeRoom()}
+function soft(){if(S.room&&$("#msgs")){bel();tandai(S.room)}else render()}
+auth.onAuthStateChanged(u=>{stopR();if(u){const q=db.collection("chats"),e=x=>toast(err(x)),mp=s=>s.docs.map(d=>({...d.data(),id:d.id}));
+rUn.push(q.where("cus","==",u.uid).onSnapshot(s=>{CHc=mp(s);soft()},e));
+rUn.push(q.where("pen","==",u.uid).onSnapshot(s=>{CHp=mp(s);soft()},e))}});
+async function tandai(c){const r=roomOf(c);if(!r||!unread(r))return;try{await db.doc("chats/"+c).update(r.cus===U.uid?{rc:Date.now()}:{rp:Date.now()})}catch(e){}}
+async function ensureRoom(jid,cus,pen,jn,cn,pn){const c=jid+"_"+cus;if(!roomOf(c))await db.doc("chats/"+c).set({cus,pen,jid,jn,cn,pn,last:"",at:Date.now(),lu:"",rc:Date.now(),rp:0});return c}
+async function bukaChat(id){try{const j=jb(id),c=await ensureRoom(String(j.id),U.uid,j.uid,j.n,UD.nama,j.p);S.det=null;S.form=null;S.tab="chat";openRoom(c)}catch(e){toast(err(e))}}
+async function bukaChatO(id){try{const o=[...OM,...OI].find(x=>String(x.id)===String(id)),c=await ensureRoom(o.jid,o.cus,o.pen,o.jn,o.cn,o.pn);S.tab="chat";openRoom(c)}catch(e){toast(err(e))}}
+function openRoom(c){closeRoom();S.room=c;
+mUn=db.collection("chats/"+c+"/pesan").orderBy("at").onSnapshot(s=>{MS=s.docs.map(d=>d.data());const m=$("#msgs");if(S.room!==c)return;if(m){m.innerHTML=msgsHtml();window.scrollTo(0,document.body.scrollHeight)}else render()},x=>toast(err(x)));
+render();tandai(c)}
+function msgsHtml(){return MS.map(m=>`<div class="bub ${m.u===U.uid?"me":""}">${m.f&&IMG.test(m.f)?`<img alt="Foto" src="${m.f}" style="max-width:100%;border-radius:8px;display:block;margin-bottom:4px">`:""}${esc(m.t)}</div>`).join("")||`<p class="mute">Belum ada pesan. Mulai percakapan.</p>`}
+function roomView(){const r=roomOf(S.room);if(!r)return `<button class="back" onclick="go('chat')">‹ Kembali</button><p class="mute">Memuat percakapan...</p>`;
+return `<button class="back" onclick="go('chat')">‹ Kembali</button><h2>${esc(r.cus===U.uid?r.pn:r.cn)}</h2><p class="mute">${esc(r.jn)}</p><div id="msgs" style="margin:10px 0 14px">${msgsHtml()}</div><div class="row" style="gap:6px"><label class="btn s o" style="cursor:pointer;flex:none">📎<input type="file" accept="image/*" style="display:none" onchange="fotoC(this)"></label><input id="cm" value="${esc(CT)}" oninput="CT=this.value" maxlength="500" placeholder="Tulis pesan..." style="margin:0" onkeydown="if(event.key==='Enter')kirimC()"><button class="btn s y" onclick="kirimC()">Kirim</button></div><p class="mute" id="cf">${CHF?"📎 Foto siap dikirim":""}</p>`}
+async function fotoC(el){const f=el.files[0];if(!f)return;try{CHF=await kecilJ(f);const c=$("#cf");if(c)c.textContent="📎 Foto siap dikirim"}catch(e){toast("Foto gagal dibaca")}}
+async function kirimC(){const r=roomOf(S.room),t=CT.trim();if(!r||(!t&&!CHF))return;
+const now=Date.now(),b=db.batch(),f=CHF;
+b.set(db.doc("chats/"+S.room+"/pesan/"+now),{u:U.uid,t,f,at:now});
+b.update(db.doc("chats/"+S.room),{last:(t||"📷 Foto").slice(0,80),at:now,lu:U.uid,[r.cus===U.uid?"rc":"rp"]:now});
+try{await b.commit();CT="";CHF="";const i=$("#cm");if(i)i.value="";const c=$("#cf");if(c)c.textContent=""}catch(e){toast(err(e))}}
+function chatList(){return `<h2>Chat</h2><br>${rooms().map(r=>`<div class="card tap" onclick="openRoom('${esc(r.id)}')"><div class="in row"><div><b>${esc(r.cus===U.uid?r.pn:r.cn)}</b><div class="mute">${esc(r.jn)} · ${esc(r.last||"Belum ada pesan")}</div></div>${unread(r)?`<span class="tag">Baru</span>`:""}</div></div>`).join("")||`<p class="mute">Belum ada percakapan. Buka sebuah jasa lalu tekan Chat penyedia.</p>`}`}
+const seenO=()=>{try{return JSON.parse(localStorage.getItem("sj_seen")||"{}")}catch(e){return {}}};
+function markSeen(){try{const s={};OM.forEach(o=>s[o.id]=o.st);localStorage.setItem("sj_seen",JSON.stringify(s))}catch(e){}}
+function notifs(){const n=[],sn=seenO(),w=OI.filter(o=>o.st==="menunggu").length,u=rooms().filter(unread).length;
+if(w)n.push(["📥",w+" pesanan baru menunggu konfirmasi","p","masuk"]);
+OM.filter(o=>o.st!=="menunggu"&&sn[o.id]!==o.st).forEach(o=>n.push(["📋","Pesanan "+o.jn+": "+(ST[o.st]||[o.st])[0],"c","pesanan"]));
+if(u)n.push(["💬",u+" percakapan belum dibaca","*","chat"]);return n}
+function notifView(){return `<h2>Notifikasi</h2><br>${NL.map(x=>`<div class="card tap" onclick="gotoN('${x[2]}','${x[3]}')"><div class="in">${x[0]} ${esc(x[1])}</div></div>`).join("")||`<p class="mute">Tidak ada notifikasi baru.</p>`}`}
+function gotoN(r,t){const x=r==="*"?(S.role==="a"?"c":S.role):r;if(S.role!==x)setRole(x);go(t)}
+function bel(){const b=document.querySelector("header span");if(!b)return;const n=(U&&UD)?notifs().length:0;b.style.cursor="pointer";b.setAttribute("role","button");b.textContent="🔔"+(n?" "+n:"");b.onclick=()=>{if(!U||!UD)return;NL=notifs();markSeen();go("notif")}}
+const _r5=render,_g5=go,_s5=setRole,_dv=detailView,_ak=aksi,_v5=view;
+render=function(){_r5();bel()};
+go=function(t){closeRoom();_g5(t)};
+setRole=function(r){closeRoom();_s5(r)};
+detailView=function(j){const h=_dv(j);return U&&j.uid!==U.uid?h.replace('<button class="btn y" onclick="pesan(','<button class="btn o" style="margin-bottom:8px" onclick="bukaChat('+j.id+')">💬 Chat penyedia</button><button class="btn y" onclick="pesan('):h};
+aksi=function(o,m){const h=_ak(o,m);return m==="a"?h:h+`<div class="row" style="margin-top:8px;justify-content:flex-start"><button class="btn s o" onclick="bukaChatO('${o.id}')">💬 Chat</button></div>`};
+view=function(){if(U&&UD){
+if(S.room)return roomView();
+if(S.tab==="notif")return notifView();
+if((S.role==="c"||S.role==="p")&&S.tab==="chat")return chatList()}
+return _v5()};
+render();
 </script></body></html>
