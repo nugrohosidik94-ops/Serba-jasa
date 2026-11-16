@@ -247,4 +247,16 @@ if(S.role==="c"&&S.tab==="pesanan")return daftarO(OM,"c","Pesanan saya");
 if(S.role==="p"&&S.tab==="masuk")return daftarO(OI,"p","Pesanan masuk");
 if(S.role==="a"&&S.tab==="apesanan")return `<h2>Semua pesanan (${OA.length})</h2><br>${OA.map(o=>oCard(o,"a")).join("")||`<p class="mute">Belum ada pesanan.</p>`}`}
 return _v3()};
+</script><script>
+/* ===== FASE 4b: FOTO LAPORAN SELESAI ===== */
+let FSP=null;
+async function selesaiFoto(id,el){const f=el.files[0];if(!f)return;try{FSP={id,d:await kecilJ(f)};render()}catch(e){toast("Foto gagal dibaca")}}
+async function kirimSelesai(){if(!FSP)return;try{await db.doc("pesanan/"+FSP.id).update({st:"selesai",fs:FSP.d});FSP=null;toast("Laporan selesai terkirim")}catch(e){toast(err(e))}}
+aksi=function(o,m){const b=(st,t,c)=>`<button class="btn s ${c||""}" onclick="ubahO('${o.id}','${st}')">${t}</button>`;let x="",pre="";
+if(o.fs&&IMG.test(o.fs))pre=`<img alt="Foto laporan selesai" src="${o.fs}" style="width:100%;border-radius:10px;margin-top:10px"><div class="mute">Foto laporan selesai dari penyedia</div>`;
+if(m==="p"){if(o.st==="menunggu")x=b("diterima","Terima")+b("ditolak","Tolak","o");
+else if(o.st==="diterima"){if(FSP&&FSP.id==o.id){pre=`<img alt="Pratinjau laporan" src="${FSP.d}" style="width:100%;border-radius:10px;margin-top:10px">`;x=`<button class="btn s y" onclick="kirimSelesai()">Kirim laporan selesai</button><button class="btn s o" onclick="FSP=null;render()">Ganti foto</button>`}
+else x=`<label class="btn s y" style="display:inline-block;cursor:pointer">📷 Foto laporan selesai<input type="file" accept="image/*" style="display:none" onchange="selesaiFoto('${o.id}',this)"></label>`}}
+else if(m==="c"&&o.st==="menunggu")x=b("dibatalkan","Batalkan","o");
+return pre+(x?`<div class="row" style="margin-top:10px;justify-content:flex-start;flex-wrap:wrap">${x}</div>`:"")};
 </script></body></html>
