@@ -59,6 +59,10 @@ nav button.on{color:var(--teal);font-weight:800}
 #splash p{margin:0;opacity:.85}
 </style><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f4c5c">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body><div id="splash"><div class="logo">SJ</div><h1>SERBA JASA</h1><p>Cari Jasa. Pesan Mudah. Selesai.</p></div><div id="app"><header><div class="logo">SJ</div><b>SERBA JASA<small>Cari Jasa. Pesan Mudah. Selesai.</small></b><span aria-label="Notifikasi">🔔</span></header><main id="m"></main><nav id="n"></nav></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -558,5 +562,27 @@ view=function(){if(U&&UD){
 if(UD.blok&&UD.role!=="admin")return blokMsg();
 if(S.role==="a"){const t=S.tab;if(t==="dash")return dashView();if(t==="pengguna")return penggunaView();if(t==="ajasa")return ajasaView();if(t==="apesanan")return apesananView()}}
 return _v9()};
+render();
+</script><script>
+/* ===== FASE 9: RILIS (persetujuan, tautan hukum, hapus akun, PWA) ===== */
+const TAUT=`<p class="mute" style="text-align:center;margin-top:18px"><a href="privacy.html" target="_blank" rel="noopener">Kebijakan Privasi</a> · <a href="terms.html" target="_blank" rel="noopener">Syarat Layanan</a> · <a href="hapus-akun.html" target="_blank" rel="noopener">Hapus Akun</a></p>`;
+const _av10=authView,_pv10=profilView,_dft=daftar;
+authView=function(){let h=_av10();if(AM==="daftar")h=h.replace('<button class="btn y" onclick="daftar()">','<label style="display:flex;gap:8px;align-items:flex-start;margin:6px 0 12px;font-size:14px"><input type="checkbox" id="ag" style="width:auto;margin:3px 0 0"><span>Saya menyetujui <a href="privacy.html" target="_blank" rel="noopener">Kebijakan Privasi</a> dan <a href="terms.html" target="_blank" rel="noopener">Syarat Layanan</a>, serta berusia 18 tahun ke atas.</span></label><button class="btn y" onclick="daftar()">');return h+TAUT};
+daftar=function(){const c=$("#ag");if(!c||!c.checked){toast("Setujui kebijakan privasi dan syarat layanan dulu");return}return _dft()};
+profilView=function(){let h=_pv10();const b=UD&&UD.role!=="admin"?`<button class="btn o" style="margin-top:10px;color:#c0392b" onclick="hapusAkun()">Hapus akun saya</button>`:"";
+return h.replace('<button class="btn o" style="margin-top:16px" onclick="auth.signOut()">Keluar</button>','<button class="btn o" style="margin-top:16px" onclick="auth.signOut()">Keluar</button>'+b)+TAUT};
+async function hapusAkun(){
+if(!U||!UD)return;
+const aktif=[...OM,...OI].some(o=>o.st==="menunggu"||o.st==="diterima"),dana=OI.some(o=>o.st==="selesai"&&pay(o)==="lunas"&&o.cair!=="dicairkan");
+if(aktif){toast("Selesaikan atau batalkan pesanan aktif dulu");return}
+if(dana){toast("Ada pendapatan yang belum dicairkan. Ajukan dan selesaikan pencairan dulu");return}
+if(!confirm("Hapus akun secara permanen? Profil, foto KTP, dan jasa Anda akan dihapus. Catatan transaksi dipertahankan untuk pembukuan."))return;
+const pw=prompt("Masukkan sandi Anda untuk konfirmasi");if(!pw)return;
+try{const u=auth.currentUser,cr=firebase.auth.EmailAuthProvider.credential(u.email,pw);await u.reauthenticateWithCredential(cr);
+const b=db.batch();J.filter(j=>j.uid===u.uid).forEach(j=>b.delete(db.doc("jasa/"+j.id)));
+OM.filter(o=>pay(o)!=="belum").forEach(o=>b.delete(db.doc("bukti/"+o.id)));
+b.delete(db.doc("kyc/"+u.uid));b.delete(db.doc("users/"+u.uid));await b.commit();await u.delete();toast("Akun dihapus")}
+catch(e){toast(e.code==="auth/wrong-password"||e.code==="auth/invalid-credential"?"Sandi salah":err(e))}}
+if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 render();
 </script></body></html>
