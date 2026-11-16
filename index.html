@@ -57,7 +57,9 @@ nav button.on{color:var(--teal);font-weight:800}
 #splash .logo{width:72px;height:72px;font-size:28px;border-radius:20px}
 #splash h1{margin:10px 0 0;font-size:26px;letter-spacing:1px}
 #splash p{margin:0;opacity:.85}
-</style></head>
+</style><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+</head>
 <body><div id="splash"><div class="logo">SJ</div><h1>SERBA JASA</h1><p>Cari Jasa. Pesan Mudah. Selesai.</p></div><div id="app"><header><div class="logo">SJ</div><b>SERBA JASA<small>Cari Jasa. Pesan Mudah. Selesai.</small></b><span aria-label="Notifikasi">🔔</span></header><main id="m"></main><nav id="n"></nav></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -366,5 +368,85 @@ return `<h2>Transaksi</h2><div class="card" style="margin-top:10px"><div class="
 <h3>Pencairan diminta (${c.length})</h3>${c.map(o=>oMini(o,`<div class="mute">Dicairkan: ${rp(o.net||0)} (komisi ${rp(o.kom||0)})</div>`+rk(o)+`<button class="btn s y" style="margin-top:8px" onclick="cairOk('${o.id}')">Sudah ditransfer</button>`)).join("")||`<p class="mute">Tidak ada.</p>`}
 ${cfgBox()}`}
 view=function(){if(U&&UD&&S.role==="a"&&S.tab==="trx"&&!S.room)return trxView();return _v6()};
+render();
+</script><script>
+/* ===== FASE 6b: LOKASI, PETA, JARAK, DAN LOKASI LIVE ===== */
+let MP=null,MK={},NM=null,PIN=null,LV=null,lUn=null,WID=null,WK=null,WL=null,WLO=0,LP=null;
+const km=(a,b,c,d)=>{const r=x=>x*Math.PI/180,h=Math.sin(r(c-a)/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(r(d-b)/2)**2;return 12742*Math.asin(Math.sqrt(h))};
+const fk=d=>d<1?Math.round(d*1000)+" m":d.toFixed(1).replace(".",",")+" km";
+const eta=d=>Math.max(1,Math.round(d/30*60));
+const ic=e=>L.divIcon({html:`<div style="font-size:28px;line-height:28px">${e}</div>`,className:"",iconSize:[28,28],iconAnchor:[14,26]});
+const ordO=id=>[...OM,...OI].find(x=>String(x.id)===String(id));
+function mapInit(){const box=$("#mp");if(MP){MP.remove();MP=null}MK={};
+if(typeof L==="undefined"){box.innerHTML='<p class="mute" style="padding:12px">Peta gagal dimuat. Periksa koneksi internet.</p>';return}
+const k=NM.kind,c=NM.c||[-7.48,110.22];MP=L.map(box).setView(c,NM.z||12);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(MP);
+if(k==="pick"){const set=(la,lo,fly)=>{PIN={la,lo};if(!MK.p){MK.p=L.marker([la,lo],{draggable:true,icon:ic("📍")}).addTo(MP);MK.p.on("dragend",e=>{const q=e.target.getLatLng();PIN={la:q.lat,lo:q.lng};pinTxt()})}else MK.p.setLatLng([la,lo]);if(fly)MP.setView([la,lo],16);pinTxt()};
+MK.set=set;MP.on("click",e=>set(e.latlng.lat,e.latlng.lng,false));if(PIN)set(PIN.la,PIN.lo,false)}
+else if(k==="view")MK.j=L.marker(c,{icon:ic("🏠")}).addTo(MP);
+else if(k==="order"){const o=NM.o,j=NM.j;MK.s=L.marker([o.la,o.lo],{icon:ic("📍")}).addTo(MP);if(j&&j.la)MK.b=L.marker([j.la,j.lo],{icon:ic("🏠")}).addTo(MP);liveUpd();MP.fitBounds(L.featureGroup(Object.values(MK)).getBounds().pad(.3),{maxZoom:16})}
+setTimeout(()=>MP&&MP.invalidateSize(),150)}
+function pinTxt(){const e=$("#pt");if(e)e.textContent="Lokasi dipilih ✓"}
+function gps(){if(!navigator.geolocation){toast("Perangkat tidak mendukung lokasi");return}toast("Mencari lokasi...");
+navigator.geolocation.getCurrentPosition(p=>{if(MK.set)MK.set(p.coords.latitude,p.coords.longitude,true)},e=>toast(e.code===1?"Izin lokasi ditolak. Aktifkan izin lokasi untuk situs ini.":"Lokasi tidak tersedia"),{enableHighAccuracy:true,timeout:15000})}
+function pickUI(l,c){NM={kind:"pick",c:PIN?[PIN.la,PIN.lo]:c||null,z:PIN?16:13};
+return `<label class="mute">${l} (ketuk peta atau geser penanda)</label><div id="mp" style="height:240px;border-radius:12px;margin:6px 0 8px"></div><div class="row" style="margin-bottom:10px"><span class="mute" id="pt">${PIN?"Lokasi dipilih ✓":"Belum ada lokasi dipilih"}</span><button class="btn s o" onclick="gps()">📍 Lokasi saya</button></div>`}
+simpanJasa=async function(){const n=$("#fn").value.trim(),h=+$("#fh").value,l=$("#fl").value.trim();
+if(n.length<3||!(h>0)||!l){toast("Isi nama, harga, dan lokasi");return}
+if(!PIN){toast("Tandai lokasi layanan di peta");return}
+const id=Date.now();
+try{await db.doc("jasa/"+id).set({id,n,k:$("#fk").value,h,l,p:UD.nama,uid:U.uid,deskripsi:$("#fd").value.trim().slice(0,300),foto:FOTJ,r:0,at:id,la:PIN.la,lo:PIN.lo});FOTJ="";PIN=null;toast("Jasa disimpan");go("jasa")}catch(e){toast(err(e))}};
+kirimPesanan=async function(){const j=jb(S.form),a=$("#oa").value.trim(),t=$("#ot").value,w=$("#oj").value;
+if(a.length<5||!t||!w){toast("Isi alamat, tanggal, dan jam");return}
+if(t<hariIni()){toast("Tanggal sudah lewat");return}
+if(!PIN){toast("Tandai lokasi pengerjaan di peta");return}
+const id=Date.now();
+try{await db.doc("pesanan/"+id).set({id,jid:String(j.id),jn:j.n,h:j.h,pen:j.uid,pn:j.p,cus:U.uid,cn:UD.nama,hp:UD.hp,alamat:a,jadwal:t+" "+w,catatan:$("#oc").value.trim().slice(0,200),st:"menunggu",at:id,la:PIN.la,lo:PIN.lo});S.form=null;S.det=null;S.tab="pesanan";PIN=null;toast("Pesanan dikirim");render()}catch(e){toast(err(e))}};
+function bukaLoc(id){const j=jb(id);PIN=j&&j.la?{la:j.la,lo:j.lo}:null;S.loc=id;render()}
+function locView(j){return `<button class="back" onclick="S.loc=null;PIN=null;render()">‹ Kembali</button><h2>Lokasi layanan</h2><p class="mute">${esc(j.n)}</p>${pickUI("Lokasi layanan")}<button class="btn y" onclick="simpanLoc(${j.id})">Simpan lokasi</button>`}
+async function simpanLoc(id){if(!PIN){toast("Tandai lokasi di peta");return}try{await db.doc("jasa/"+id).update({la:PIN.la,lo:PIN.lo});S.loc=null;PIN=null;toast("Lokasi tersimpan");render()}catch(e){toast(err(e))}}
+jasaSaya=function(){const m=J.filter(j=>U&&j.uid===U.uid);return `<h2>Jasa saya</h2><br>${m.length?m.map(j=>card(j)+`<div class="row" style="margin:-4px 0 14px;justify-content:flex-start;gap:8px"><button class="btn s o" onclick="bukaLoc(${j.id})">${j.la?"📍 Ubah lokasi":"📍 Atur lokasi"}</button><button class="btn s o" onclick="hapusJasa(${j.id})">Hapus jasa</button></div>`).join(""):`<p class="mute">Belum ada jasa. Tekan Tambah untuk membuat jasa pertama.</p>`}`};
+function hitungJarak(id){const j=jb(id);if(!j||!navigator.geolocation){toast("Perangkat tidak mendukung lokasi");return}toast("Mencari lokasi Anda...");
+navigator.geolocation.getCurrentPosition(p=>{const a=p.coords.latitude,b=p.coords.longitude,d=km(a,b,j.la,j.lo),e=$("#jr");if(e)e.textContent="Jarak dari lokasi Anda: ± "+fk(d)+" (garis lurus)";
+if(MP&&!MK.u&&typeof L!=="undefined"){MK.u=L.marker([a,b],{icon:ic("🧍")}).addTo(MP);MP.fitBounds(L.featureGroup([MK.u,MK.j]).getBounds().pad(.4),{maxZoom:16})}},
+e=>toast(e.code===1?"Izin lokasi ditolak. Aktifkan izin lokasi untuk situs ini.":"Lokasi tidak tersedia"),{enableHighAccuracy:true,timeout:15000})}
+function liveTxt(o){const v=LV&&LV.la?LV:null,isP=U&&o.pen===U.uid;
+if(isP&&WK===String(o.id)&&LP){const d=km(LP.la,LP.lo,o.la,o.lo);return `🛵 Lokasi Anda sedang dibagikan · ${fk(d)} ke tujuan · ±${eta(d)} menit`}
+if(!v)return isP?"Lokasi live belum dibagikan.":"Penyedia belum membagikan lokasi live.";
+const d=km(v.la,v.lo,o.la,o.lo),s=Math.round((Date.now()-v.at)/1000);
+return `🛵 Penyedia ${fk(d)} dari lokasi pengerjaan · ±${eta(d)} menit (perkiraan garis lurus) · diperbarui ${s<60?s+" dtk":Math.round(s/60)+" mnt"} lalu${s>300?" (sinyal lama)":""}`}
+function liveUpd(){const o=ordO(S.omap);if(!o||!MP||typeof L==="undefined")return;const el=$("#lv");if(el)el.textContent=liveTxt(o);
+const p=(U&&o.pen===U.uid&&WK===String(o.id)&&LP)?LP:(LV&&LV.la?LV:null);
+if(p){if(!MK.l)MK.l=L.marker([p.la,p.lo],{icon:ic("🛵")}).addTo(MP);else MK.l.setLatLng([p.la,p.lo])}}
+function openOmap(id){closeOmap();S.omap=id;
+lUn=db.doc("live/"+id).onSnapshot(s=>{LV=s.exists?s.data():null;if(S.omap!==id)return;if(MP&&$("#mp"))liveUpd();else render()},()=>{});render()}
+function closeOmap(){S.omap=null;if(lUn){lUn();lUn=null}LV=null}
+function omapView(o){const isP=U&&o.pen===U.uid,j=jb(Number(o.jid))||jb(o.jid)||{};NM={kind:"order",o,j,c:[o.la,o.lo],z:14};
+const aktif=isP&&o.st==="diterima"&&pay(o)==="lunas";
+return `<button class="back" onclick="closeOmap();render()">‹ Kembali</button><h2>${esc(o.jn)}</h2><p class="mute">📍 ${esc(o.alamat)}<br>📅 ${esc(o.jadwal)}</p><div id="mp" style="height:320px;border-radius:12px;margin:8px 0"></div><div class="card"><div class="in"><div id="lv" class="mute">${liveTxt(o)}</div></div></div><div class="row" style="justify-content:flex-start;flex-wrap:wrap;gap:8px"><a class="btn s o" style="display:inline-block" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${o.la},${o.lo}">🧭 Rute di Google Maps</a>${aktif?(WK===String(o.id)?`<button class="btn s" onclick="stopLive(true);render()">⏹ Berhenti bagikan lokasi</button>`:`<button class="btn s y" onclick="mulaiLive('${o.id}')">▶ Mulai bagikan lokasi live</button>`):""}</div><p class="mute" style="margin-top:10px">Lokasi live hanya dibagikan saat tombol aktif dan aplikasi tetap terbuka.</p>`}
+function mulaiLive(id){if(!navigator.geolocation){toast("Perangkat tidak mendukung lokasi");return}
+const o=OI.find(x=>String(x.id)===String(id));if(!o)return;stopLive(false);WK=String(o.id);WLO=0;
+WID=navigator.geolocation.watchPosition(p=>{LP={la:p.coords.latitude,lo:p.coords.longitude};if(S.omap&&MP)liveUpd();const t=Date.now();if(t-WLO<8000)return;WLO=t;
+db.doc("live/"+o.id).set({pen:U.uid,cus:o.cus,la:LP.la,lo:LP.lo,at:t}).catch(e=>toast(err(e)))},
+e=>{if(e.code===1){toast("Izin lokasi ditolak. Aktifkan izin lokasi untuk situs ini.");stopLive(true);render()}else toast("Sinyal GPS lemah")},{enableHighAccuracy:true,maximumAge:5000,timeout:30000});
+if(navigator.wakeLock)navigator.wakeLock.request("screen").then(l=>{WL=l}).catch(()=>{});
+toast("Berbagi lokasi aktif. Biarkan aplikasi tetap terbuka.");render()}
+function stopLive(del){if(WID!==null){navigator.geolocation.clearWatch(WID);WID=null}if(WL){WL.release().catch(()=>{});WL=null}if(del&&WK)db.doc("live/"+WK).delete().catch(()=>{});WK=null;LP=null}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&WK&&navigator.wakeLock)navigator.wakeLock.request("screen").then(l=>{WL=l}).catch(()=>{})});
+const _fv7=formView,_tv7=tambahView,_dv7=detailView,_ak7=aksi,_pe7=pesan,_g7=go,_s7=setRole,_r7=render,_v7=view;
+pesan=function(id){PIN=null;_pe7(id)};
+formView=function(j){const c=j.la?[j.la,j.lo]:null,b='<button class="btn y" onclick="kirimPesanan()">';return _fv7(j).replace(b,pickUI("Lokasi pengerjaan",c)+b)};
+tambahView=function(){const b='<button class="btn y" onclick="simpanJasa()">';return _tv7().replace(b,pickUI("Lokasi layanan")+b)};
+detailView=function(j){const h=_dv7(j),b='<div class="card" style="margin:12px 0">';let x;
+if(j.la){NM={kind:"view",c:[j.la,j.lo],z:15};x=`<div id="mp" style="height:200px;border-radius:12px;margin:8px 0"></div><div class="row" style="margin-bottom:6px"><span class="mute" id="jr">Jarak dari Anda: belum dihitung</span><button class="btn s o" onclick="hitungJarak(${j.id})">📍 Hitung jarak</button></div>`}
+else x=`<p class="mute">Lokasi layanan belum diatur oleh penyedia.</p>`;return h.replace(b,x+b)};
+aksi=function(o,m){const h=_ak7(o,m);return m!=="a"&&o.la&&!["ditolak","dibatalkan"].includes(o.st)?h+`<div class="row" style="margin-top:8px;justify-content:flex-start"><button class="btn s o" onclick="openOmap('${o.id}')">🗺️ Peta${WK===String(o.id)?" · live aktif":""}</button></div>`:h};
+go=function(t){closeOmap();S.loc=null;PIN=null;_g7(t)};
+setRole=function(r){closeOmap();S.loc=null;PIN=null;_s7(r)};
+render=function(){if(WK){const o=OI.find(x=>String(x.id)===WK);if(!o||o.st!=="diterima")stopLive(true)}NM=null;_r7();if(NM&&$("#mp"))mapInit()};
+view=function(){if(U&&UD){
+if(S.omap){const o=ordO(S.omap);if(o&&o.la)return omapView(o);closeOmap()}
+if(S.loc){const j=jb(S.loc);if(j)return locView(j);S.loc=null}}
+return _v7()};
 render();
 </script></body></html>
