@@ -504,4 +504,13 @@ if(S.lap){const o=ordO(S.lap);if(o)return lapView(o);S.lap=null}
 if(S.role==="a"&&S.tab==="laporan")return laporanView()}
 return _v8()};
 render();
+</script><script>
+/* ===== ULASAN DITERIMA PENYEDIA (tampil di kartu pesanan penyedia) ===== */
+let ULP={},ulpUn=null;
+auth.onAuthStateChanged(u=>{if(ulpUn){ulpUn();ulpUn=null}ULP={};
+if(u)ulpUn=db.collection("ulasan").where("pen","==",u.uid).onSnapshot(s=>{ULP={};s.docs.forEach(d=>ULP[d.id]=d.data());soft()},()=>{})});
+const _ak9=aksi;
+aksi=function(o,m){const h=_ak9(o,m);if(m!=="p"||o.st!=="selesai")return h;const u=ULP[String(o.id)];
+return h+(u?`<div class="card" style="margin:10px 0 0"><div class="in"><div class="row"><b>Ulasan pelanggan</b><span style="color:#d99a00">${bin(u.r)}</span></div>${u.t?`<div>${esc(u.t)}</div>`:""}</div></div>`:`<div class="mute" style="margin-top:6px">⭐ Pelanggan belum memberi ulasan</div>`)};
+render();
 </script></body></html>
