@@ -257,7 +257,7 @@ return _v3()};
 /* ===== FASE 4b: FOTO LAPORAN SELESAI ===== */
 let FSP=null;
 async function selesaiFoto(id,el){const f=el.files[0];if(!f)return;try{FSP={id,d:await kecilJ(f)};render()}catch(e){toast("Foto gagal dibaca")}}
-async function kirimSelesai(){if(!FSP)return;try{await db.doc("pesanan/"+FSP.id).update({st:"selesai",fs:FSP.d});FSP=null;toast("Laporan selesai terkirim")}catch(e){toast(err(e))}}
+async function kirimSelesai(){if(!FSP)return;try{await db.doc("pesanan/"+FSP.id).update({st:"selesai",fs:FSP.d});FSP=null;toastL("✅ Laporan terkirim. Segera klik “Ajukan pencairan” agar admin segera memproses dana Anda.")}catch(e){toast(err(e))}}
 aksi=function(o,m){const b=(st,t,c)=>`<button class="btn s ${c||""}" onclick="ubahO('${o.id}','${st}')">${t}</button>`;let x="",pre="";
 if(o.fs&&IMG.test(o.fs))pre=`<img alt="Foto laporan selesai" src="${o.fs}" style="width:100%;border-radius:10px;margin-top:10px"><div class="mute">Foto laporan selesai dari penyedia</div>`;
 if(m==="p"){if(o.st==="menunggu")x=b("diterima","Terima")+b("ditolak","Tolak","o");
@@ -598,14 +598,16 @@ if(p==="belum")msg="Menunggu pencari mentransfer pembayaran ke admin.";
 else if(p==="diperiksa")msg="Pencari sudah mentransfer. Admin sedang memeriksa pembayaran.";
 else if(p==="ditolak")msg="Bukti transfer ditolak admin. Menunggu pencari mengunggah ulang.";
 else if(!sel)msg=`💰 Pembayaran ${rp(o.h)} sudah diterima admin dan masih tertahan. Selesaikan pekerjaan lalu kirim bukti laporan foto agar pembayaran diteruskan ke saldo Anda (${rp(o.net||0)} setelah komisi).`;
-else msg=`✅ Laporan diterima. ${rp(o.net||0)} sudah masuk ke saldo Anda.`}
+else if(o.cair==="dicairkan")msg=`💸 Dana ${rp(o.net||0)} sudah ditransfer admin ke rekening Anda.`;
+else if(o.cair==="diminta")msg=`⏳ Pengajuan pencairan ${rp(o.net||0)} sudah dikirim. Admin sedang memprosesnya.`;
+else msg=`✅ Laporan diterima. Segera klik “Ajukan pencairan” di bawah agar admin segera memproses dana ${rp(o.net||0)} ke rekening Anda.${UD&&UD.rek?"":" Isi rekening pencairan di tab Profil terlebih dahulu."}`}
 else if(m==="c"){
 if(p==="diperiksa")msg="Bukti transfer Anda sedang diperiksa admin.";
 else if(lun&&!sel)msg="🔒 Pembayaran Anda tertahan aman di admin. Dana baru diteruskan ke penyedia setelah pekerjaan selesai dan bukti foto dikirim.";
 else if(fin)msg="✅ Pekerjaan selesai dan pembayaran sudah diteruskan ke penyedia."}
 return `<div style="display:flex;align-items:center;margin:12px 0 4px">${nd("👱","Pencari<br>"+(a?"Sudah transfer":"Belum transfer"),a)}${ln(a)}${nd("🏦","Admin<br>"+l2,lun||p==="diperiksa")}${ln(lun)}${nd("👷","Penyedia<br>"+(fin?"Masuk saldo":"Kerjakan tugas"),fin)}</div>${msg?`<div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:8px 0;font-size:13px">${msg}</div>`:""}`}
 function saldoUI(){const l=OI.filter(o=>pay(o)==="lunas"),tahan=sm(l.filter(o=>o.st==="diterima"),o=>o.net||0),sedia=sm(l.filter(o=>o.st==="selesai"&&!o.cair),o=>o.net||0),proses=sm(l.filter(o=>o.cair==="diminta"),o=>o.net||0),cair=sm(l.filter(o=>o.cair==="dicairkan"),o=>o.net||0);
-return `<div class="card"><div class="in"><b>Saldo Anda</b><div class="row" style="margin-top:6px"><span>🔒 Tertahan di admin</span><b>${rp(tahan)}</b></div><div class="row"><span>💰 Saldo tersedia</span><b>${rp(sedia)}</b></div><div class="row"><span>⏳ Pencairan diproses</span><b>${rp(proses)}</b></div><div class="row"><span>✅ Sudah dicairkan</span><b>${rp(cair)}</b></div><div class="mute" style="margin-top:6px">Dana tertahan masuk ke saldo setelah Anda mengirim bukti foto pekerjaan selesai.</div></div></div>`}
+return `<div class="card"><div class="in"><b>Saldo Anda</b><div class="row" style="margin-top:6px"><span>🔒 Tertahan di admin</span><b>${rp(tahan)}</b></div><div class="row"><span>💰 Saldo tersedia</span><b>${rp(sedia)}</b></div><div class="row"><span>⏳ Pencairan diproses</span><b>${rp(proses)}</b></div><div class="row"><span>✅ Sudah dicairkan</span><b>${rp(cair)}</b></div>${sedia>0?`<div style="margin-top:8px;font-weight:700">Saldo tersedia. Buka pesanan yang selesai lalu klik “Ajukan pencairan”.</div>`:""}<div class="mute" style="margin-top:6px">Dana tertahan masuk ke saldo setelah Anda mengirim bukti foto pekerjaan selesai.</div></div></div>`}
 function ntfTxt(o,prov){const p=pay(o);
 if(prov){if(p==="diperiksa")return ["💳",`${o.cn} sudah mentransfer untuk "${o.jn}". Admin sedang memeriksa pembayaran.`];
 if(p==="lunas"&&o.st==="diterima"&&!o.cair)return ["💰",`Pembayaran ${rp(o.h)} untuk "${o.jn}" sudah diterima admin dan ditahan. Kerjakan tugas dan kirim bukti foto agar dana masuk ke saldo Anda.`];
@@ -628,5 +630,11 @@ markSeen=function(){_ms10();try{const s=seen2()||{};[...OM,...OI].forEach(o=>s[o
 aksi=function(o,m){const h=_ak10(o,m);if(m==="a"||!["diterima","selesai"].includes(o.st))return h;return alur(o,m)+h};
 render=function(){cekNotif();_r10()};
 view=function(){const h=_v10();return(U&&UD&&S.role==="p"&&S.tab==="masuk"&&typeof h==="string"&&h.startsWith("<h2>Pesanan masuk</h2>"))?saldoUI()+h:h};
+render();
+</script><script>
+/* ===== PENGINGAT AJUKAN PENCAIRAN ===== */
+const _nf12=notifs;
+notifs=function(){const n=_nf12(),w=OI.filter(o=>o.st==="selesai"&&pay(o)==="lunas"&&!o.cair).length;
+if(w)n.push(["💰",w+" pesanan selesai. Segera klik “Ajukan pencairan” agar dana diproses admin","p","masuk"]);return n};
 render();
 </script></body></html>
