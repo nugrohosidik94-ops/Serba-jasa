@@ -1,5 +1,5 @@
-const C = "serba-jasa-v1";
-const A = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
+const C = "serba-jasa-v2";
+const A = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "logo.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(C).then(c => c.addAll(A)).then(() => self.skipWaiting()));
 });
