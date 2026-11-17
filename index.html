@@ -145,7 +145,7 @@ const IMG=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 function kecil(file){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const s=Math.min(1,800/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=i.width*s;c.height=i.height*s;c.getContext("2d").drawImage(i,0,0,c.width,c.height);ok(c.toDataURL("image/jpeg",.6))};i.onerror=no;i.src=r.result};r.onerror=no;r.readAsDataURL(file)})}
 async function foto(k,el){const f=el.files[0];if(!f)return;try{FOT[k]=await kecil(f);toast("Foto "+k+" siap")}catch(e){toast("Foto gagal dibaca")}}
 function ganti(m){AM=m;render()}
-function fotoIn(){return `<label class="mute">Foto KTP</label><input type="file" accept="image/*" onchange="foto('ktp',this)"><label class="mute">Foto selfie memegang KTP</label><input type="file" accept="image/*" onchange="foto('selfie',this)">`}
+function fotoIn(){return `<label class="mute">Foto KTP</label><input type="file" accept="image/*" onchange="foto('ktp',this)"><label class="mute">Foto selfie (foto wajah Anda)</label><input type="file" accept="image/*" onchange="foto('selfie',this)">`}
 function authView(){const d=AM==="daftar";return `<div class="hero"><h2>${d?"Daftar akun":"Masuk"}</h2><p>${CONFIG.slogan}</p></div>${d?`<input id="an" placeholder="Nama lengkap"><input id="ah" type="tel" placeholder="Nomor HP">`:""}<input id="ae" type="email" placeholder="Email"><input id="ap" type="password" placeholder="Sandi (min. 6 karakter)">${d?fotoIn()+`<p class="mute">Foto KTP dipakai hanya untuk verifikasi dan hanya bisa dilihat admin.</p>`:""}<button class="btn y" onclick="${d?"daftar()":"masuk()"}">${d?"Daftar":"Masuk"}</button><button class="btn o" style="margin-top:8px" onclick="ganti('${d?"masuk":"daftar"}')">${d?"Sudah punya akun? Masuk":"Belum punya akun? Daftar"}</button>`}
 async function masuk(){try{await auth.signInWithEmailAndPassword($("#ae").value.trim(),$("#ap").value)}catch(e){toast(err(e))}}
 async function daftar(){const n=$("#an").value.trim(),h=$("#ah").value.trim(),e=$("#ae").value.trim(),p=$("#ap").value;
@@ -343,7 +343,7 @@ const _ak6=aksi;
 aksi=function(o,m){const p=pay(o),wait=m==="p"&&o.st==="diterima"&&p!=="lunas",h=_ak6(wait?{...o,st:"tunggu"}:o,m);let x="";
 if(m!=="a"&&(o.st==="diterima"||o.st==="selesai")){x+=payUI(o);
 if(m==="c"&&o.st==="diterima"&&(p==="belum"||p==="ditolak"))x+=bayarUI(o);
-if(wait)x+=`<div class="mute">Menunggu pembayaran pelanggan dikonfirmasi admin sebelum pekerjaan dimulai.</div>`;
+
 if(m==="p"&&p==="lunas")x+=`<div class="mute">Komisi ${CFG.persen||10}%: ${rp(o.kom||0)} · Anda terima: ${rp(o.net||0)}</div>`+cairUI(o)}
 return x+h};
 const _fv=formView,_tv=tambahView,_pv=profilView,_v6=view;
@@ -584,5 +584,49 @@ OM.filter(o=>pay(o)!=="belum").forEach(o=>b.delete(db.doc("bukti/"+o.id)));
 b.delete(db.doc("kyc/"+u.uid));b.delete(db.doc("users/"+u.uid));await b.commit();await u.delete();toast("Akun dihapus")}
 catch(e){toast(e.code==="auth/wrong-password"||e.code==="auth/invalid-credential"?"Sandi salah":err(e))}}
 if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+render();
+</script><script>
+/* ===== ALUR PEMBAYARAN TRANSPARAN, SALDO PENYEDIA, DAN NOTIFIKASI ===== */
+let PGM=null;
+const pg=o=>pay(o)+"|"+(o.cair||"");
+function alur(o,m){const p=pay(o),sel=o.st==="selesai",a=p!=="belum"&&p!=="ditolak",lun=p==="lunas",fin=sel&&lun;
+const nd=(ic,l,on)=>`<div style="width:80px;text-align:center"><div style="font-size:28px;line-height:34px;${on?"":"opacity:.35"}">${ic}</div><div class="mute" style="font-size:11px;line-height:1.25">${l}</div></div>`,
+ln=on=>`<div style="flex:1;height:3px;border-radius:2px;margin:0 2px 24px;background:${on?"var(--ok)":"var(--line)"}"></div>`;
+const l2=fin?"Diteruskan":lun?"Dana tertahan":p==="diperiksa"?"Memeriksa":"Menunggu";let msg="";
+if(m==="p"){
+if(p==="belum")msg="Menunggu pencari mentransfer pembayaran ke admin.";
+else if(p==="diperiksa")msg="Pencari sudah mentransfer. Admin sedang memeriksa pembayaran.";
+else if(p==="ditolak")msg="Bukti transfer ditolak admin. Menunggu pencari mengunggah ulang.";
+else if(!sel)msg=`💰 Pembayaran ${rp(o.h)} sudah diterima admin dan masih tertahan. Selesaikan pekerjaan lalu kirim bukti laporan foto agar pembayaran diteruskan ke saldo Anda (${rp(o.net||0)} setelah komisi).`;
+else msg=`✅ Laporan diterima. ${rp(o.net||0)} sudah masuk ke saldo Anda.`}
+else if(m==="c"){
+if(p==="diperiksa")msg="Bukti transfer Anda sedang diperiksa admin.";
+else if(lun&&!sel)msg="🔒 Pembayaran Anda tertahan aman di admin. Dana baru diteruskan ke penyedia setelah pekerjaan selesai dan bukti foto dikirim.";
+else if(fin)msg="✅ Pekerjaan selesai dan pembayaran sudah diteruskan ke penyedia."}
+return `<div style="display:flex;align-items:center;margin:12px 0 4px">${nd("👱","Pencari<br>"+(a?"Sudah transfer":"Belum transfer"),a)}${ln(a)}${nd("🏦","Admin<br>"+l2,lun||p==="diperiksa")}${ln(lun)}${nd("👷","Penyedia<br>"+(fin?"Masuk saldo":"Kerjakan tugas"),fin)}</div>${msg?`<div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:8px 0;font-size:13px">${msg}</div>`:""}`}
+function saldoUI(){const l=OI.filter(o=>pay(o)==="lunas"),tahan=sm(l.filter(o=>o.st==="diterima"),o=>o.net||0),sedia=sm(l.filter(o=>o.st==="selesai"&&!o.cair),o=>o.net||0),proses=sm(l.filter(o=>o.cair==="diminta"),o=>o.net||0),cair=sm(l.filter(o=>o.cair==="dicairkan"),o=>o.net||0);
+return `<div class="card"><div class="in"><b>Saldo Anda</b><div class="row" style="margin-top:6px"><span>🔒 Tertahan di admin</span><b>${rp(tahan)}</b></div><div class="row"><span>💰 Saldo tersedia</span><b>${rp(sedia)}</b></div><div class="row"><span>⏳ Pencairan diproses</span><b>${rp(proses)}</b></div><div class="row"><span>✅ Sudah dicairkan</span><b>${rp(cair)}</b></div><div class="mute" style="margin-top:6px">Dana tertahan masuk ke saldo setelah Anda mengirim bukti foto pekerjaan selesai.</div></div></div>`}
+function ntfTxt(o,prov){const p=pay(o);
+if(prov){if(p==="diperiksa")return ["💳",`${o.cn} sudah mentransfer untuk "${o.jn}". Admin sedang memeriksa pembayaran.`];
+if(p==="lunas"&&o.st==="diterima"&&!o.cair)return ["💰",`Pembayaran ${rp(o.h)} untuk "${o.jn}" sudah diterima admin dan ditahan. Kerjakan tugas dan kirim bukti foto agar dana masuk ke saldo Anda.`];
+if(o.cair==="dicairkan")return ["💸",`Pencairan ${rp(o.net||0)} untuk "${o.jn}" sudah ditransfer admin.`]}
+else{if(p==="lunas"&&o.st==="diterima")return ["🔒",`Pembayaran Anda untuk "${o.jn}" dikonfirmasi admin dan ditahan dengan aman sampai pekerjaan selesai.`];
+if(p==="ditolak")return ["⚠️",`Bukti transfer untuk "${o.jn}" ditolak admin. Unggah ulang bukti yang jelas.`]}
+return null}
+function toastL(t){const e=document.createElement("div");e.className="toast";e.style.maxWidth="88%";e.style.textAlign="center";e.style.borderRadius="16px";e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),6000)}
+function cekNotif(){if(!U||!UD)return;const all=[...OM.map(o=>[o,0]),...OI.map(o=>[o,1])];
+if(PGM===null){if(!all.length)return;PGM={};all.forEach(([o])=>PGM[o.id]=pg(o));return}
+all.forEach(([o,pr])=>{const g=pg(o);if(PGM[o.id]===undefined){PGM[o.id]=g;return}
+if(PGM[o.id]!==g){PGM[o.id]=g;const t=ntfTxt(o,pr);if(t){toastL(t[0]+" "+t[1]);try{navigator.vibrate&&navigator.vibrate(120)}catch(e){}}}})}
+const seen2=()=>{try{const r=localStorage.getItem("sj_seen2");return r===null?null:JSON.parse(r)}catch(e){return {}}};
+auth.onAuthStateChanged(()=>{PGM=null});
+const _nf10=notifs,_ms10=markSeen,_ak10=aksi,_r10=render,_v10=view;
+notifs=function(){const n=_nf10(),all=[...OM.map(o=>[o,0]),...OI.map(o=>[o,1])];let s=seen2();
+if(s===null){if(!all.length)return n;s={};all.forEach(([o])=>s[o.id]=pg(o));try{localStorage.setItem("sj_seen2",JSON.stringify(s))}catch(e){}return n}
+all.forEach(([o,pr])=>{if(s[o.id]!==pg(o)){const t=ntfTxt(o,pr);if(t)n.push([t[0],t[1],pr?"p":"c",pr?"masuk":"pesanan"])}});return n};
+markSeen=function(){_ms10();try{const s=seen2()||{};[...OM,...OI].forEach(o=>s[o.id]=pg(o));localStorage.setItem("sj_seen2",JSON.stringify(s))}catch(e){}};
+aksi=function(o,m){const h=_ak10(o,m);if(m==="a"||!["diterima","selesai"].includes(o.st))return h;return alur(o,m)+h};
+render=function(){cekNotif();_r10()};
+view=function(){const h=_v10();return(U&&UD&&S.role==="p"&&S.tab==="masuk"&&typeof h==="string"&&h.startsWith("<h2>Pesanan masuk</h2>"))?saldoUI()+h:h};
 render();
 </script></body></html>
