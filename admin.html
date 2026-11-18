@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="id"><head><script>window.SJ_ADMIN=1</script><meta name="robots" content="noindex,nofollow"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SERBA JASA Admin</title>
+<style>
+:root{--bg:#f4f7f8;--card:#fff;--ink:#14272e;--mute:#5d737b;--teal:#0f4c5c;--yel:#ffc229;--line:#dde6e9;--ok:#1f8a5b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1a1f;--card:#14272e;--ink:#eaf2f4;--mute:#9bb2ba;--line:#244049;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1a1f;--card:#14272e;--ink:#eaf2f4;--mute:#9bb2ba;--line:#244049;color-scheme:dark}
+html,body{height:100%}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px}
+#app{max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;background:var(--bg)}
+header{background:var(--teal);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--yel);color:var(--teal);font-weight:800;display:grid;place-items:center}
+header b{font-size:18px;letter-spacing:.3px;flex:1}
+header small{display:block;font-weight:400;font-size:11px;opacity:.85}
+main{flex:1;padding:16px;overflow-y:auto}
+h2{font-size:20px;margin:0 0 4px}h3{font-size:16px;margin:20px 0 10px}
+.mute{color:var(--mute);font-size:13px}
+input,select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;margin:6px 0 10px}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--yel);outline-offset:1px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 4px;text-align:center;font:inherit;color:var(--ink);cursor:pointer}
+.kat span{display:block;font-size:26px;margin-bottom:4px}
+.kat.on{border-color:var(--teal);background:var(--yel);color:#14272e}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.card.tap{cursor:pointer}
+.foto{height:84px;background:linear-gradient(135deg,var(--teal),#8a4fd1);display:grid;place-items:center;font-size:34px}
+.card .in{padding:12px 14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.price{font-weight:800;color:var(--teal)}
+:root[data-theme="dark"] .price{color:var(--yel)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .price{color:var(--yel)}}
+.btn{background:var(--teal);color:#fff;border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:700;cursor:pointer;width:100%}
+.btn.y{background:var(--yel);color:#14272e}
+.btn.s{width:auto;padding:8px 12px;font-size:13px}
+.btn.o{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--yel);color:#14272e}
+.tag.ok{background:var(--ok);color:#fff}
+.hero{background:var(--teal);color:#fff;border-radius:16px;padding:18px;margin-bottom:14px}
+.hero p{margin:4px 0 0;opacity:.9}
+nav{position:sticky;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;background:none;border:0;color:var(--mute);font:inherit;font-size:11px;padding:6px 0;cursor:pointer}
+nav button span{display:block;font-size:20px}
+nav button.on{color:var(--teal);font-weight:800}
+:root[data-theme="dark"] nav button.on{color:var(--yel)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav button.on{color:var(--yel)}}
+.bub{max-width:80%;padding:10px 12px;border-radius:14px;margin:6px 0;background:var(--card);border:1px solid var(--line)}
+.bub.me{margin-left:auto;background:var(--teal);color:#fff;border-color:var(--teal)}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:13px;z-index:9}
+.back{background:none;border:0;color:var(--teal);font:inherit;font-weight:700;padding:0 0 10px;cursor:pointer}
+:root[data-theme="dark"] .back{color:var(--yel)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .back{color:var(--yel)}}
+.seg{display:flex;gap:8px;margin:10px 0}
+.seg .btn{padding:10px 6px;font-size:13px}
+#splash{position:fixed;inset:0;z-index:99;background:var(--teal);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:opacity .4s}
+#splash .logo{width:72px;height:72px;font-size:28px;border-radius:20px}
+#splash h1{margin:10px 0 0;font-size:26px;letter-spacing:1px}
+#splash p{margin:0;opacity:.85}
+</style><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<meta name="theme-color" content="#3730a3">
+<link rel="icon" type="image/png" href="ikon-ungu-192.png">
+<link rel="apple-touch-icon" href="ikon-ungu-apple-180.png">
+</head>
+<body><div id="splash"><img class="logo" src="logo.png" alt="" style="background:#fff;border-radius:28px;width:120px;height:120px;padding:6px;object-fit:contain"><h1>SERBA JASA</h1><p>Cari Jasa. Pesan Mudah. Selesai.</p></div><div id="app"><header><img class="logo" src="logo.png" alt="SERBA JASA" style="background:#fff;padding:2px;object-fit:contain"><b>SERBA JASA<small>Cari Jasa. Pesan Mudah. Selesai.</small></b><span aria-label="Notifikasi">🔔</span></header><main id="m"></main><nav id="n"></nav></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>if(typeof firebase==="undefined"){["app","auth","firestore"].forEach(function(n){document.write('<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-'+n+'-compat.js"><\/script>')})}</script>
+<script>
+/* ===== FASE 1: FONDASI ===== */
+const CONFIG={nama:"SERBA JASA",slogan:"Cari Jasa. Pesan Mudah. Selesai.",komisi:0.1};
+/* --- Data kategori dan contoh jasa (Fase 3: diganti Firebase) --- */
+const KAT=[["Bangunan","🔨"],["Otomotif","🚗"],["Digital","💻"],["Bersih","🧹"],["Foto","📸"],["Servis","🔧"]];
+const IK=Object.fromEntries(KAT);
+let J=[
+{id:1,n:"Servis AC Rumah",k:"Servis",h:75000,r:4.9,l:"Mertoyudan",p:"Budi Teknik",own:1},
+{id:2,n:"Cat dan Renovasi Ruangan",k:"Bangunan",h:150000,r:4.8,l:"Magelang",p:"Karya Mandiri"},
+{id:3,n:"Cuci dan Poles Motor",k:"Otomotif",h:35000,r:4.7,l:"Mertoyudan",p:"Joss Auto"},
+{id:4,n:"Desain Logo UMKM",k:"Digital",h:120000,r:4.9,l:"Online",p:"Dina Kreatif"},
+{id:5,n:"Bersih Rumah Harian",k:"Bersih",h:90000,r:4.6,l:"Magelang",p:"Bersih Kilat"},
+{id:6,n:"Foto Produk dan Acara",k:"Foto",h:200000,r:4.8,l:"Mertoyudan",p:"Lensa Kita"}];
+let S={role:"c",tab:"home",q:"",kat:"",det:null,oid:1,orders:[],msg:[["them","Halo, kapan bisa datang?"]]};
+/* --- Navigasi per peran: c=Pencari, p=Penyedia, a=Admin --- */
+const NAV={
+c:[["home","🏠","Beranda"],["cari","🔎","Cari"],["pesanan","📋","Pesanan"],["chat","💬","Chat"],["profil","👤","Saya"]],
+p:[["jasa","🧰","Jasa Saya"],["tambah","➕","Tambah"],["masuk","📥","Masuk"],["profil","👤","Profil"]],
+a:[["pengguna","👥","Pengguna"],["penyedia","👷","Penyedia"],["ajasa","🛠️","Jasa"],["apesanan","📋","Pesanan"]]};
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const rp=h=>"Rp"+Number(h).toLocaleString("id-ID");
+const jb=id=>J.find(x=>x.id===id);
+function toast(t){const e=document.createElement("div");e.className="toast";e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),1800)}
+function go(t){S.tab=t;S.det=null;render()}
+function setRole(r){S.role=r;S.tab=NAV[r][0][0];S.det=null;render()}
+/* --- Komponen tampilan --- */
+function card(j){return `<div class="card tap" onclick="S.det=${j.id};render()"><div class="foto">${IK[j.k]||"🛠️"}</div><div class="in"><b>${esc(j.n)}</b><div class="row" style="margin-top:4px"><span class="mute">⭐ ${j.r} · 📍 ${esc(j.l)}</span><span class="price">${rp(j.h)}</span></div></div></div>`}
+function list(q,k){const r=J.filter(j=>(!k||j.k===k)&&(j.n+j.k+j.l).toLowerCase().includes(q.toLowerCase()));return r.length?r.map(card).join(""):`<p class="mute">Jasa tidak ditemukan. Coba kata kunci atau kategori lain.</p>`}
+function stBtn(o){return o.st==="Menunggu"?`<button class="btn s" onclick="ord(${o.id},'Diproses')">Terima</button>`:o.st==="Diproses"?`<button class="btn s y" onclick="ord(${o.id},'Selesai')">Tandai selesai</button>`:`<span class="tag ok">Selesai</span>`}
+function ord(id,st){S.orders.find(o=>o.id===id).st=st;toast("Pesanan "+st.toLowerCase());render()}
+function oRow(o,act){const j=jb(o.j);return `<div class="card"><div class="in row"><div><b>${esc(j?j.n:"Jasa dihapus")}</b><div class="mute">${esc(j?j.p:"")} · ${j?rp(j.h):""}</div></div>${act?stBtn(o):`<span class="tag">${o.st}</span>`}</div></div>`}
+function view(){
+const t=S.tab,r=S.role;
+if(S.det){const j=jb(S.det);return `<button class="back" onclick="S.det=null;render()">‹ Kembali</button><div class="card"><div class="foto" style="height:130px;font-size:52px">${IK[j.k]||"🛠️"}</div><div class="in"><h2>${esc(j.n)}</h2><p class="mute">${esc(j.k)} · ⭐ ${j.r} · 📍 ${esc(j.l)}<br>Penyedia: ${esc(j.p)}</p><p class="price" style="font-size:20px;margin:8px 0 14px">${rp(j.h)}</p><button class="btn y" onclick="pesan(${j.id})">Pesan sekarang</button><button class="btn o" style="margin-top:8px" onclick="S.tab='chat';S.det=null;render()">Chat penyedia</button></div></div>`}
+if(r==="c"){
+if(t==="home")return `<div class="hero"><h2>Halo 👋</h2><p>Butuh jasa apa hari ini?</p></div><input id="hq" placeholder="🔍 Cari jasa..." oninput="S.q=this.value;go('cari')"><h3>Kategori</h3><div class="grid">${KAT.map(k=>`<button class="kat" onclick="S.kat='${k[0]}';go('cari')"><span>${k[1]}</span>${k[0]}</button>`).join("")}</div><h3>Jasa populer</h3>${J.slice().sort((a,b)=>b.r-a.r).slice(0,3).map(card).join("")}`;
+if(t==="cari")return `<h2>Cari jasa</h2><input id="q" value="${esc(S.q)}" placeholder="Ketik nama jasa atau lokasi" oninput="S.q=this.value;$('#res').innerHTML=list(S.q,S.kat)"><div class="grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">${KAT.map(k=>`<button class="kat ${S.kat===k[0]?"on":""}" style="padding:8px 2px" onclick="S.kat=S.kat==='${k[0]}'?'':'${k[0]}';render()">${k[1]} ${k[0]}</button>`).join("")}</div><div id="res">${list(S.q,S.kat)}</div>`;
+if(t==="pesanan")return `<h2>Pesanan saya</h2><br>${S.orders.length?S.orders.map(o=>oRow(o,0)).join(""):`<p class="mute">Belum ada pesanan. Cari jasa lalu pilih Pesan sekarang.</p><button class="btn" onclick="go('cari')">Cari jasa</button>`}`;
+if(t==="chat")return `<h2>Chat</h2><div style="margin:10px 0">${S.msg.map(m=>`<div class="bub ${m[0]==="me"?"me":""}">${esc(m[1])}</div>`).join("")}</div><input id="cm" placeholder="Tulis pesan..." onkeydown="if(event.key==='Enter')kirim()"><button class="btn" onclick="kirim()">Kirim</button>`}
+if(t==="profil")return `<h2>Profil</h2><p class="mute">Ganti mode untuk mencoba tampilan lain.</p><div class="seg"><button class="btn ${r==="c"?"y":"o"}" onclick="setRole('c')">Pencari</button><button class="btn ${r==="p"?"y":"o"}" onclick="setRole('p')">Penyedia</button><button class="btn ${r==="a"?"y":"o"}" onclick="setRole('a')">Admin</button></div>`;
+if(r==="p"){
+const mine=J.filter(j=>j.own);
+if(t==="jasa")return `<h2>Jasa saya</h2><br>${mine.length?mine.map(card).join(""):`<p class="mute">Belum ada jasa. Tambah jasa pertama Anda.</p>`}`;
+if(t==="tambah")return `<h2>Tambah jasa</h2><input id="fn" placeholder="Nama jasa"><select id="fk">${KAT.map(k=>`<option>${k[0]}</option>`).join("")}</select><input id="fh" type="number" placeholder="Harga (Rp)"><input id="fl" placeholder="Lokasi"><button class="btn y" onclick="tambah()">Simpan jasa</button>`;
+if(t==="masuk"){const o=S.orders.filter(o=>jb(o.j)&&jb(o.j).own);return `<h2>Pesanan masuk</h2><br>${o.length?o.map(x=>oRow(x,1)).join(""):`<p class="mute">Belum ada pesanan masuk. Pesanan untuk jasa Anda muncul di sini.</p>`}`}}
+if(r==="a"){
+if(t==="pengguna")return `<h2>Pengguna</h2><br>${["Rina","Agus","Siti"].map(n=>`<div class="card"><div class="in row"><b>${n}</b><span class="tag">Aktif</span></div></div>`).join("")}`;
+if(t==="penyedia")return `<h2>Penyedia</h2><br>${[...new Set(J.map(j=>j.p))].map(n=>`<div class="card"><div class="in row"><b>${esc(n)}</b><span class="mute">${J.filter(j=>j.p===n).length} jasa</span></div></div>`).join("")}`;
+if(t==="ajasa")return `<h2>Jasa</h2><br>${J.map(j=>`<div class="card"><div class="in row"><div><b>${esc(j.n)}</b><div class="mute">${esc(j.p)}</div></div><button class="btn s o" onclick="hapus(${j.id})">Hapus</button></div></div>`).join("")}`;
+if(t==="apesanan")return `<h2>Pesanan</h2><br>${S.orders.length?S.orders.map(o=>oRow(o,0)).join(""):`<p class="mute">Belum ada pesanan.</p>`}`}
+}
+/* --- Aksi pengguna (Fase 4: dihubungkan ke database) --- */
+function pesan(id){S.orders.unshift({id:S.oid++,j:id,st:"Menunggu"});S.tab="pesanan";S.det=null;toast("Pesanan dikirim");render()}
+function kirim(){const v=$("#cm").value.trim();if(!v)return;S.msg.push(["me",v]);render();setTimeout(()=>{S.msg.push(["them","Baik, saya konfirmasi sebentar lagi."]);if(S.tab==="chat"&&S.role==="c")render()},900)}
+function tambah(){const n=$("#fn").value.trim(),h=+$("#fh").value,l=$("#fl").value.trim();if(!n||!h||!l){toast("Isi semua kolom dulu");return}
+J.push({id:Date.now(),n,k:$("#fk").value,h,r:5.0,l,p:"Budi Teknik",own:1});toast("Jasa disimpan");go("jasa")}
+function hapus(id){J=J.filter(j=>j.id!==id);toast("Jasa dihapus");render()}
+function render(){$("#m").innerHTML=view();$("#n").innerHTML=NAV[S.role].map(x=>`<button class="${S.tab===x[0]&&!S.det?"on":""}" onclick="go('${x[0]}')"><span>${x[1]}</span>${x[2]}</button>`).join("");window.scrollTo(0,0)}
+/* --- Mulai aplikasi --- */
+setTimeout(()=>{const s=$("#splash");if(!s)return;s.style.opacity=0;setTimeout(()=>s.remove(),400)},1300);
+render();
+</script><script>if(typeof firebase==="undefined"){document.getElementById("m").innerHTML='<h2>Firebase gagal dimuat</h2><p class="mute">Koneksi ke layanan login terblokir. Matikan Data Saver Chrome, pemblokir iklan, atau DNS pribadi, lalu muat ulang.</p><button class="btn" onclick="location.reload()">Muat ulang</button>';document.getElementById("n").style.display="none"}</script>
+<script>
+/* ===== FASE 2: AKUN (Firebase Auth + Firestore) ===== */
+firebase.initializeApp({apiKey:"AIzaSyAcp03rTmdn-lcvqtd6OG0lD2mI1C6BlHA",authDomain:"serba-jasa.firebaseapp.com",projectId:"serba-jasa",appId:"1:949487663228:web:7f33f574afca4a576b71f9"});
+const auth=firebase.auth(),db=firebase.firestore();
+let U=null,UD=null,READY=false,AM="masuk",FOT={ktp:"",selfie:""},unsub=null,LOADED=0,PK=[],PP=[],SEL=null;
+NAV.a.push(["profil","👤","Profil"]);
+const _view=view,_render=render;
+const ERR={"auth/email-already-in-use":"Email sudah terdaftar","auth/invalid-credential":"Email atau sandi salah","auth/wrong-password":"Email atau sandi salah","auth/user-not-found":"Email atau sandi salah","auth/weak-password":"Sandi minimal 6 karakter","auth/invalid-email":"Format email salah","auth/network-request-failed":"Tidak ada koneksi internet","permission-denied":"Akses ditolak (periksa aturan Firestore)"};
+const err=e=>ERR[e.code]||e.code||e.message;
+const IMG=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
+function kecil(file){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const s=Math.min(1,800/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=i.width*s;c.height=i.height*s;c.getContext("2d").drawImage(i,0,0,c.width,c.height);ok(c.toDataURL("image/jpeg",.6))};i.onerror=no;i.src=r.result};r.onerror=no;r.readAsDataURL(file)})}
+async function foto(k,el){const f=el.files[0];if(!f)return;try{FOT[k]=await kecil(f);toast("Foto "+k+" siap")}catch(e){toast("Foto gagal dibaca")}}
+function ganti(m){AM=m;render()}
+function fotoIn(){return `<label class="mute">Foto KTP</label><input type="file" accept="image/*" onchange="foto('ktp',this)"><label class="mute">Foto selfie (foto wajah Anda)</label><input type="file" accept="image/*" onchange="foto('selfie',this)">`}
+function authView(){const d=AM==="daftar";return `<div class="hero"><h2>${d?"Daftar akun":"Masuk"}</h2><p>${CONFIG.slogan}</p></div>${d?`<input id="an" placeholder="Nama lengkap"><input id="ah" type="tel" placeholder="Nomor HP">`:""}<input id="ae" type="email" placeholder="Email"><input id="ap" type="password" placeholder="Sandi (min. 6 karakter)">${d?fotoIn()+`<p class="mute">Foto KTP dipakai hanya untuk verifikasi dan hanya bisa dilihat admin.</p>`:""}<button class="btn y" onclick="${d?"daftar()":"masuk()"}">${d?"Daftar":"Masuk"}</button><button class="btn o" style="margin-top:8px" onclick="ganti('${d?"masuk":"daftar"}')">${d?"Sudah punya akun? Masuk":"Belum punya akun? Daftar"}</button>`}
+async function masuk(){try{await auth.signInWithEmailAndPassword($("#ae").value.trim(),$("#ap").value)}catch(e){toast(err(e))}}
+async function daftar(){const n=$("#an").value.trim(),h=$("#ah").value.trim(),e=$("#ae").value.trim(),p=$("#ap").value;
+if(!n||!h||!e||p.length<6){toast("Lengkapi data, sandi min. 6 karakter");return}
+if(!FOT.ktp||!FOT.selfie){toast("Foto KTP dan selfie wajib");return}
+toast("Mendaftarkan...");
+try{const c=await auth.createUserWithEmailAndPassword(e,p),id=c.user.uid;
+await db.doc("kyc/"+id).set({ktp:FOT.ktp,selfie:FOT.selfie,at:Date.now()});
+await db.doc("users/"+id).set({nama:n,hp:h,email:e,role:"user",penyedia:"tidak",ktp:"menunggu",at:Date.now()});FOT={ktp:"",selfie:""}}catch(x){toast(err(x))}}
+async function kirimUlang(){if(!FOT.ktp||!FOT.selfie){toast("Foto KTP dan selfie wajib");return}
+try{await db.doc("kyc/"+U.uid).set({ktp:FOT.ktp,selfie:FOT.selfie,at:Date.now()});await db.doc("users/"+U.uid).update({ktp:"menunggu"});toast("Dikirim ulang")}catch(x){toast(err(x))}}
+async function ajukan(){try{await db.doc("users/"+U.uid).update({penyedia:"menunggu"});toast("Pengajuan dikirim")}catch(x){toast(err(x))}}
+function profilView(){const d=UD,ok=d.ktp==="disetujui",adm=d.role==="admin";
+const st={menunggu:"Menunggu verifikasi",disetujui:"Terverifikasi",ditolak:"Ditolak"}[d.ktp];
+let h=`<h2>${esc(d.nama)}</h2><p class="mute">${esc(d.email)}</p><div class="card"><div class="in row"><span>Verifikasi KTP</span><span class="tag ${ok?"ok":""}">${st}</span></div></div>`;
+if(d.ktp==="ditolak")h+=`<p class="mute">KTP ditolak. Unggah ulang foto yang lebih jelas.</p>${fotoIn()}<button class="btn y" onclick="kirimUlang()">Kirim ulang</button>`;
+if(adm||d.penyedia==="disetujui")h+=`<h3>Mode</h3><div class="seg"><button class="btn ${S.role==="c"?"y":"o"}" onclick="setRole('c')">Pencari</button><button class="btn ${S.role==="p"?"y":"o"}" onclick="setRole('p')">Penyedia</button>${adm?`<button class="btn ${S.role==="a"?"y":"o"}" onclick="setRole('a')">Admin</button>`:""}</div>`;
+else if(d.penyedia==="menunggu")h+=`<div class="card"><div class="in">Pengajuan penyedia jasa sedang ditinjau admin.</div></div>`;
+else if(ok)h+=`<h3>Jadi penyedia jasa</h3><button class="btn y" onclick="ajukan()">${d.penyedia==="ditolak"?"Ajukan lagi":"Ajukan jadi penyedia"}</button>`;
+else if(d.ktp!=="ditolak")h+=`<p class="mute">Anda bisa menjadi penyedia jasa setelah KTP terverifikasi.</p>`;
+return h+`<button class="btn o" style="margin-top:16px" onclick="auth.signOut()">Keluar</button>`}
+async function muat(){try{const a=await db.collection("users").where("ktp","==","menunggu").get(),b=await db.collection("users").where("penyedia","==","menunggu").get();PK=a.docs.map(d=>({id:d.id,...d.data()}));PP=b.docs.map(d=>({id:d.id,...d.data()}))}catch(e){toast(err(e))}render()}
+async function lihat(id){try{const s=await db.doc("kyc/"+id).get(),d=s.data();if(!d||!IMG.test(d.ktp)||!IMG.test(d.selfie)){toast("Foto tidak valid");return}SEL={id,ktp:d.ktp,selfie:d.selfie};render()}catch(e){toast(err(e))}}
+async function setuju(id,t,ok){try{await db.doc("users/"+id).update(t==="k"?{ktp:ok?"disetujui":"ditolak"}:{penyedia:ok?"disetujui":"ditolak"});SEL=null;LOADED=0;toast(ok?"Disetujui":"Ditolak");render()}catch(e){toast(err(e))}}
+function uRow(u,t){return `<div class="card"><div class="in"><b>${esc(u.nama)}</b><div class="mute">${esc(u.email)} · ${esc(u.hp)}</div>${t==="k"?`<button class="btn s o" style="margin-top:8px" onclick="lihat('${esc(u.id)}')">Lihat KTP dan selfie</button>`:""}${SEL&&SEL.id===u.id?`<img alt="KTP" src="${SEL.ktp}" style="width:100%;border-radius:10px;margin-top:8px"><img alt="Selfie" src="${SEL.selfie}" style="width:100%;border-radius:10px;margin-top:8px">`:""}<div class="row" style="margin-top:10px;justify-content:flex-start"><button class="btn s" onclick="setuju('${esc(u.id)}','${t}',1)">Setujui</button><button class="btn s o" onclick="setuju('${esc(u.id)}','${t}',0)">Tolak</button></div></div></div>`}
+function adminView(){if(!LOADED){LOADED=1;muat()}return `<h2>Verifikasi</h2><h3>KTP menunggu (${PK.length})</h3>${PK.map(u=>uRow(u,"k")).join("")||`<p class="mute">Tidak ada.</p>`}<h3>Pengajuan penyedia (${PP.length})</h3>${PP.map(u=>uRow(u,"p")).join("")||`<p class="mute">Tidak ada.</p>`}`}
+view=function(){if(!READY)return `<p class="mute">Memuat...</p>`;if(!U)return authView();
+if(!UD)return `<p class="mute">Memuat akun...</p><button class="btn o" onclick="auth.signOut()">Keluar</button>`;
+if(S.tab==="profil"&&!S.det)return profilView();
+if(S.role==="a"&&S.tab==="penyedia"&&!S.det)return adminView();return _view()};
+render=function(){_render();$("#n").style.display=(U&&UD)?"":"none"};
+auth.onAuthStateChanged(u=>{U=u;READY=true;if(unsub){unsub();unsub=null}UD=null;
+if(u){unsub=db.doc("users/"+u.uid).onSnapshot(s=>{UD=s.exists?s.data():null;if(UD&&S.role==="p"&&UD.penyedia!=="disetujui"&&UD.role!=="admin")S.role="c";render()},e=>toast(err(e)))}
+else{S.role="c";S.tab="home";LOADED=0}render()});
+</script><script>
+/* ===== FASE 3: MARKETPLACE (jasa tersimpan di Firestore) ===== */
+let FOTJ="",jUnsub=null;
+function kecilJ(file){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const s=Math.min(1,640/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=i.width*s;c.height=i.height*s;c.getContext("2d").drawImage(i,0,0,c.width,c.height);let q=.55,d=c.toDataURL("image/jpeg",q);while(d.length>140000&&q>.2){q-=.1;d=c.toDataURL("image/jpeg",q)}ok(d)};i.onerror=no;i.src=r.result};r.onerror=no;r.readAsDataURL(file)})}
+async function fotoJ(el){const f=el.files[0];if(!f)return;try{FOTJ=await kecilJ(f);toast("Foto siap")}catch(e){toast("Foto gagal dibaca")}}
+const imgJ=(j,h,x)=>j.foto&&IMG.test(j.foto)?`<img alt="" src="${j.foto}" style="width:100%;height:${h}px;object-fit:cover;display:block">`:`<div class="foto" style="height:${h}px;${x||""}">${IK[j.k]||"🛠️"}</div>`;
+card=function(j){return `<div class="card tap" onclick="S.det=${j.id};render()">${imgJ(j,110)}<div class="in"><b>${esc(j.n)}</b><div class="row" style="margin-top:4px"><span class="mute">${j.r?"⭐ "+j.r:"Baru"} · 📍 ${esc(j.l)}</span><span class="price">${rp(j.h)}</span></div></div></div>`};
+function kembali(){go(NAV[S.role][0][0])}
+function detailView(j){const n=J.filter(x=>x.uid===j.uid).length;
+return `<button class="back" onclick="S.det=null;render()">‹ Kembali</button><div class="card">${imgJ(j,200,"font-size:52px")}<div class="in"><h2>${esc(j.n)}</h2><p class="mute">${esc(j.k)} · ${j.r?"⭐ "+j.r:"Belum ada ulasan"} · 📍 ${esc(j.l)}</p><p class="price" style="font-size:20px;margin:8px 0">${rp(j.h)}</p><p>${esc(j.deskripsi||"Belum ada deskripsi.")}</p><div class="card" style="margin:12px 0"><div class="in row"><div><b>${esc(j.p)}</b><div class="mute">${n} jasa</div></div><span class="tag ok">Terverifikasi</span><button class="btn s o" onclick="S.prov='${esc(j.uid)}';S.det=null;S.tab='pp';render()">Profil</button></div></div>${U&&j.uid===U.uid?`<p class="mute">Ini jasa Anda.</p>`:`<button class="btn y" onclick="pesan(${j.id})">Pesan sekarang</button>`}</div></div>`}
+function provView(){const l=J.filter(x=>x.uid===S.prov),b=`<button class="back" onclick="kembali()">‹ Kembali</button>`;
+if(!l.length)return b+`<p class="mute">Penyedia ini belum punya jasa.</p>`;
+return b+`<h2>${esc(l[0].p)}</h2><p class="mute">${l.length} jasa · <span class="tag ok">Terverifikasi</span></p><br>${l.map(card).join("")}`}
+function jasaSaya(){const m=J.filter(j=>U&&j.uid===U.uid);return `<h2>Jasa saya</h2><br>${m.length?m.map(j=>card(j)+`<button class="btn s o" style="margin:-4px 0 14px" onclick="hapusJasa(${j.id})">Hapus jasa</button>`).join(""):`<p class="mute">Belum ada jasa. Tekan Tambah untuk membuat jasa pertama.</p>`}`}
+function tambahView(){return `<h2>Tambah jasa</h2><input id="fn" placeholder="Nama jasa"><select id="fk">${KAT.map(k=>`<option>${k[0]}</option>`).join("")}</select><input id="fh" type="number" inputmode="numeric" placeholder="Harga mulai (Rp)"><input id="fl" placeholder="Lokasi atau area layanan"><input id="fd" maxlength="300" placeholder="Deskripsi singkat"><label class="mute">Foto jasa (opsional)</label><input type="file" accept="image/*" onchange="fotoJ(this)"><button class="btn y" onclick="simpanJasa()">Simpan jasa</button>`}
+async function simpanJasa(){const n=$("#fn").value.trim(),h=+$("#fh").value,l=$("#fl").value.trim();
+if(n.length<3||!(h>0)||!l){toast("Isi nama, harga, dan lokasi");return}
+const id=Date.now();
+try{await db.doc("jasa/"+id).set({id,n,k:$("#fk").value,h,l,p:UD.nama,uid:U.uid,deskripsi:$("#fd").value.trim().slice(0,300),foto:FOTJ,r:0,at:id});FOTJ="";toast("Jasa disimpan");go("jasa")}catch(e){toast(err(e))}}
+async function hapusJasa(id){if(!confirm("Hapus jasa ini?"))return;try{await db.doc("jasa/"+id).delete();toast("Jasa dihapus")}catch(e){toast(err(e))}}
+hapus=function(id){hapusJasa(id)};
+auth.onAuthStateChanged(u=>{if(jUnsub){jUnsub();jUnsub=null}J=[];
+if(u)jUnsub=db.collection("jasa").onSnapshot(s=>{J=s.docs.map(d=>{const x=d.data();x.own=x.uid===u.uid?1:0;x.r=x.rn?Math.round(x.rs/x.rn*10)/10:0;x.k=(window.OLDK||{})[x.k]||x.k;return x}).sort((a,b)=>b.at-a.at);render()},e=>toast(err(e)));
+else render()});
+const _v2=view;
+view=function(){if(U&&UD){
+if(S.det&&!jb(S.det))S.det=null;
+if(S.det)return detailView(jb(S.det));
+if(S.tab==="pp")return provView();
+if(S.role==="p"&&S.tab==="jasa")return jasaSaya();
+if(S.role==="p"&&S.tab==="tambah")return tambahView();
+if(S.role==="c"&&S.tab==="home"){const h=_v2();return J.length?h:h+`<p class="mute">Belum ada jasa. Penyedia bisa menambahkannya dari mode Penyedia.</p>`}}
+return _v2()};
+</script><script>
+/* ===== FASE 4: TRANSAKSI (pesanan tersimpan di Firestore) ===== */
+let OM=[],OI=[],OA=[],oUn=[],oRole=null,uUn=null;
+const ST={menunggu:["Menunggu konfirmasi",""],diterima:["Diterima",""],selesai:["Selesai","ok"],ditolak:["Ditolak",""],dibatalkan:["Dibatalkan",""]};
+const hariIni=()=>{const t=new Date();return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0")};
+const srt=s=>s.docs.map(d=>d.data()).sort((a,b)=>b.at-a.at);
+function stopO(){oUn.forEach(f=>f());oUn=[];OM=[];OI=[];OA=[];oRole=null}
+function startO(u,adm){stopO();oRole=adm?"a":"u";const q=db.collection("pesanan"),e=x=>toast(err(x));
+oUn.push(q.where("cus","==",u.uid).onSnapshot(s=>{OM=srt(s);render()},e));
+oUn.push(q.where("pen","==",u.uid).onSnapshot(s=>{OI=srt(s);render()},e));
+if(adm)oUn.push(q.onSnapshot(s=>{OA=srt(s);render()},e))}
+auth.onAuthStateChanged(u=>{if(uUn){uUn();uUn=null}stopO();
+if(u)uUn=db.doc("users/"+u.uid).onSnapshot(s=>{const a=!!(s.exists&&s.data().role==="admin");if((a?"a":"u")!==oRole)startO(u,a)})});
+pesan=function(id){if(!UD||UD.ktp!=="disetujui"){toast("KTP harus terverifikasi dulu");return}S.form=id;render()};
+function formView(j){return `<button class="back" onclick="S.form=null;render()">‹ Kembali</button><h2>Pesan jasa</h2><div class="card"><div class="in row"><b>${esc(j.n)}</b><span class="price">${rp(j.h)}</span></div></div><label class="mute">Alamat lengkap</label><input id="oa" maxlength="200" placeholder="Jalan, nomor, kecamatan"><label class="mute">Tanggal</label><input id="ot" type="date" min="${hariIni()}"><label class="mute">Jam</label><input id="oj" type="time"><label class="mute">Catatan (opsional)</label><input id="oc" maxlength="200" placeholder="Contoh: AC di kamar atas"><button class="btn y" onclick="kirimPesanan()">Kirim pesanan</button><p class="mute">Harga final dan pembayaran disepakati langsung dengan penyedia. Pembayaran lewat aplikasi hadir di Fase 6.</p>`}
+async function kirimPesanan(){const j=jb(S.form),a=$("#oa").value.trim(),t=$("#ot").value,w=$("#oj").value;
+if(a.length<5||!t||!w){toast("Isi alamat, tanggal, dan jam");return}
+if(t<hariIni()){toast("Tanggal sudah lewat");return}
+const id=Date.now();
+try{await db.doc("pesanan/"+id).set({id,jid:String(j.id),jn:j.n,h:j.h,pen:j.uid,pn:j.p,cus:U.uid,cn:UD.nama,hp:UD.hp,alamat:a,jadwal:t+" "+w,catatan:$("#oc").value.trim().slice(0,200),st:"menunggu",at:id});S.form=null;S.det=null;S.tab="pesanan";toast("Pesanan dikirim");render()}catch(e){toast(err(e))}}
+function aksi(o,m){const b=(st,t,c)=>`<button class="btn s ${c||""}" onclick="ubahO('${o.id}','${st}')">${t}</button>`;let x="";
+if(m==="p"){if(o.st==="menunggu")x=b("diterima","Terima")+b("ditolak","Tolak","o");else if(o.st==="diterima")x=b("selesai","Tandai selesai","y")}
+else if(m==="c"&&o.st==="menunggu")x=b("dibatalkan","Batalkan","o");
+return x?`<div class="row" style="margin-top:10px;justify-content:flex-start">${x}</div>`:""}
+function oCard(o,m){const s=ST[o.st]||[o.st,""],w=m==="p"?esc(o.cn)+(o.st==="diterima"?" · "+esc(o.hp):""):m==="a"?esc(o.cn)+" → "+esc(o.pn):esc(o.pn);
+return `<div class="card"><div class="in"><div class="row"><b>${esc(o.jn)}</b><span class="tag ${s[1]}">${s[0]}</span></div><div class="mute" style="margin:4px 0">${w} · ${rp(o.h)}</div><div class="mute">📅 ${esc(o.jadwal)}</div><div class="mute">📍 ${esc(o.alamat)}</div>${o.catatan?`<div class="mute">📝 ${esc(o.catatan)}</div>`:""}${aksi(o,m)}</div></div>`}
+async function ubahO(id,st){try{await db.doc("pesanan/"+id).update(st==="diterima"?{st,ta:Date.now()}:{st});toast("Status diperbarui")}catch(e){toast(err(e))}}
+function daftarO(L,m,judul){const a=L.filter(o=>["menunggu","diterima"].includes(o.st)),r=L.filter(o=>!["menunggu","diterima"].includes(o.st));
+return `<h2>${judul}</h2><h3>Aktif (${a.length})</h3>${a.map(o=>oCard(o,m)).join("")||`<p class="mute">Tidak ada pesanan aktif.</p>`}<h3>Riwayat (${r.length})</h3>${r.map(o=>oCard(o,m)).join("")||`<p class="mute">Belum ada riwayat.</p>`}`}
+const _go=go,_sr=setRole;
+go=function(t){S.form=null;_go(t)};
+setRole=function(r){S.form=null;_sr(r)};
+const _v3=view;
+view=function(){if(U&&UD){
+if(S.form&&!jb(S.form))S.form=null;
+if(S.form)return formView(jb(S.form));
+if(S.role==="c"&&S.tab==="pesanan")return daftarO(OM,"c","Pesanan saya");
+if(S.role==="p"&&S.tab==="masuk")return daftarO(OI,"p","Pesanan masuk");
+if(S.role==="a"&&S.tab==="apesanan")return `<h2>Semua pesanan (${OA.length})</h2><br>${OA.map(o=>oCard(o,"a")).join("")||`<p class="mute">Belum ada pesanan.</p>`}`}
+return _v3()};
+</script><script>
+/* ===== FASE 4b: FOTO LAPORAN SELESAI ===== */
+let FSP=null;
+async function selesaiFoto(id,el){const f=el.files[0];if(!f)return;try{FSP={id,d:await kecilJ(f)};render()}catch(e){toast("Foto gagal dibaca")}}
+async function kirimSelesai(){if(!FSP)return;try{await db.doc("pesanan/"+FSP.id).update({st:"selesai",fs:FSP.d,ts:Date.now()});await tambahGaleri(FSP);FSP=null;toastL("✅ Laporan terkirim. Segera klik “Ajukan pencairan” agar admin segera memproses dana Anda.")}catch(e){toast(err(e))}}
+aksi=function(o,m){const b=(st,t,c)=>`<button class="btn s ${c||""}" onclick="ubahO('${o.id}','${st}')">${t}</button>`;let x="",pre="";
+if(o.fs&&IMG.test(o.fs))pre=`<img alt="Foto laporan selesai" src="${o.fs}" style="width:100%;border-radius:10px;margin-top:10px"><div class="mute">Foto laporan selesai dari penyedia</div>`;
+if(m==="p"){if(o.st==="menunggu")x=b("diterima","Terima")+b("ditolak","Tolak","o");
+else if(o.st==="diterima"){if(FSP&&FSP.id==o.id){pre=`<img alt="Pratinjau laporan" src="${FSP.d}" style="width:100%;border-radius:10px;margin-top:10px">`;x=`<button class="btn s y" onclick="kirimSelesai()">Kirim laporan selesai</button><button class="btn s o" onclick="FSP=null;render()">Ganti foto</button>`}
+else x=`<label class="btn s y" style="display:inline-block;cursor:pointer">📷 Foto laporan selesai<input type="file" accept="image/*" style="display:none" onchange="selesaiFoto('${o.id}',this)"></label>`}}
+else if(m==="c"&&o.st==="menunggu")x=b("dibatalkan","Batalkan","o");
+return pre+(x?`<div class="row" style="margin-top:10px;justify-content:flex-start;flex-wrap:wrap">${x}</div>`:"")};
+</script><script>
+/* ===== FASE 5: KOMUNIKASI (chat, foto, notifikasi dalam aplikasi) ===== */
+NAV.p.splice(3,0,["chat","💬","Chat"]);
+let CHc=[],CHp=[],rUn=[],MS=[],mUn=null,CT="",CHF="",NL=[];
+const rooms=()=>{const m={};[...CHc,...CHp].forEach(r=>m[r.id]=r);return Object.values(m).sort((a,b)=>b.at-a.at)};
+const roomOf=c=>rooms().find(r=>r.id===c);
+const unread=r=>!!U&&!!r.lu&&r.lu!==U.uid&&r.at>((r.cus===U.uid?r.rc:r.rp)||0);
+function closeRoom(){S.room=null;if(mUn){mUn();mUn=null}MS=[];CHF="";CT=""}
+function stopR(){rUn.forEach(f=>f());rUn=[];CHc=[];CHp=[];closeRoom()}
+function soft(){if(S.room&&$("#msgs")){bel();tandai(S.room)}else render()}
+auth.onAuthStateChanged(u=>{stopR();if(u){const q=db.collection("chats"),e=x=>toast(err(x)),mp=s=>s.docs.map(d=>({...d.data(),id:d.id}));
+rUn.push(q.where("cus","==",u.uid).onSnapshot(s=>{CHc=mp(s);soft()},e));
+rUn.push(q.where("pen","==",u.uid).onSnapshot(s=>{CHp=mp(s);soft()},e))}});
+async function tandai(c){const r=roomOf(c);if(!r||!unread(r))return;try{await db.doc("chats/"+c).update(r.cus===U.uid?{rc:Date.now()}:{rp:Date.now()})}catch(e){}}
+async function ensureRoom(jid,cus,pen,jn,cn,pn){const c=jid+"_"+cus;if(!roomOf(c))await db.doc("chats/"+c).set({cus,pen,jid,jn,cn,pn,last:"",at:Date.now(),lu:"",rc:Date.now(),rp:0});return c}
+async function bukaChat(id){try{const j=jb(id),c=await ensureRoom(String(j.id),U.uid,j.uid,j.n,UD.nama,j.p);S.det=null;S.form=null;S.tab="chat";openRoom(c)}catch(e){toast(err(e))}}
+async function bukaChatO(id){try{const o=[...OM,...OI].find(x=>String(x.id)===String(id)),c=await ensureRoom(o.jid,o.cus,o.pen,o.jn,o.cn,o.pn);S.tab="chat";openRoom(c)}catch(e){toast(err(e))}}
+function openRoom(c){closeRoom();S.room=c;
+mUn=db.collection("chats/"+c+"/pesan").orderBy("at").onSnapshot(s=>{MS=s.docs.map(d=>d.data());const m=$("#msgs");if(S.room!==c)return;if(m){m.innerHTML=msgsHtml();window.scrollTo(0,document.body.scrollHeight)}else render()},x=>toast(err(x)));
+render();tandai(c)}
+function msgsHtml(){return MS.map(m=>`<div class="bub ${m.u===U.uid?"me":""}">${m.f&&IMG.test(m.f)?`<img alt="Foto" src="${m.f}" style="max-width:100%;border-radius:8px;display:block;margin-bottom:4px">`:""}${esc(m.t)}</div>`).join("")||`<p class="mute">Belum ada pesan. Mulai percakapan.</p>`}
+function roomView(){const r=roomOf(S.room);if(!r)return `<button class="back" onclick="go('chat')">‹ Kembali</button><p class="mute">Memuat percakapan...</p>`;
+return `<button class="back" onclick="go('chat')">‹ Kembali</button><h2>${esc(r.cus===U.uid?r.pn:r.cn)}</h2><p class="mute">${esc(r.jn)}</p><div id="msgs" style="margin:10px 0 14px">${msgsHtml()}</div><div class="row" style="gap:6px"><label class="btn s o" style="cursor:pointer;flex:none">📎<input type="file" accept="image/*" style="display:none" onchange="fotoC(this)"></label><input id="cm" value="${esc(CT)}" oninput="CT=this.value" maxlength="500" placeholder="Tulis pesan..." style="margin:0" onkeydown="if(event.key==='Enter')kirimC()"><button class="btn s y" onclick="kirimC()">Kirim</button></div><p class="mute" id="cf">${CHF?"📎 Foto siap dikirim":""}</p>`}
+async function fotoC(el){const f=el.files[0];if(!f)return;try{CHF=await kecilJ(f);const c=$("#cf");if(c)c.textContent="📎 Foto siap dikirim"}catch(e){toast("Foto gagal dibaca")}}
+async function kirimC(){const r=roomOf(S.room),t=CT.trim();if(!r||(!t&&!CHF))return;
+const now=Date.now(),b=db.batch(),f=CHF;
+b.set(db.doc("chats/"+S.room+"/pesan/"+now),{u:U.uid,t,f,at:now});
+b.update(db.doc("chats/"+S.room),{last:(t||"📷 Foto").slice(0,80),at:now,lu:U.uid,[r.cus===U.uid?"rc":"rp"]:now});
+try{await b.commit();CT="";CHF="";const i=$("#cm");if(i)i.value="";const c=$("#cf");if(c)c.textContent=""}catch(e){toast(err(e))}}
+function chatList(){return `<h2>Chat</h2><br>${rooms().map(r=>`<div class="card tap" onclick="openRoom('${esc(r.id)}')"><div class="in row"><div><b>${esc(r.cus===U.uid?r.pn:r.cn)}</b><div class="mute">${esc(r.jn)} · ${esc(r.last||"Belum ada pesan")}</div></div>${unread(r)?`<span class="tag">Baru</span>`:""}</div></div>`).join("")||`<p class="mute">Belum ada percakapan. Buka sebuah jasa lalu tekan Chat penyedia.</p>`}`}
+const seenO=()=>{try{return JSON.parse(localStorage.getItem("sj_seen")||"{}")}catch(e){return {}}};
+function markSeen(){try{const s={};OM.forEach(o=>s[o.id]=o.st);localStorage.setItem("sj_seen",JSON.stringify(s))}catch(e){}}
+function notifs(){const n=[],sn=seenO(),w=OI.filter(o=>o.st==="menunggu").length,u=rooms().filter(unread).length;
+if(w)n.push(["📥",w+" pesanan baru menunggu konfirmasi","p","masuk"]);
+OM.filter(o=>o.st!=="menunggu"&&sn[o.id]!==o.st).forEach(o=>n.push(["📋","Pesanan "+o.jn+": "+(ST[o.st]||[o.st])[0],"c","pesanan"]));
+if(u)n.push(["💬",u+" percakapan belum dibaca","*","chat"]);return n}
+function notifView(){return `<h2>Notifikasi</h2><br>${NL.map(x=>`<div class="card tap" onclick="gotoN('${x[2]}','${x[3]}')"><div class="in">${x[0]} ${esc(x[1])}</div></div>`).join("")||`<p class="mute">Tidak ada notifikasi baru.</p>`}`}
+function gotoN(r,t){const x=r==="*"?(S.role==="a"?"c":S.role):r;if(S.role!==x)setRole(x);go(t)}
+function bel(){const b=document.querySelector("header span");if(!b)return;const n=(U&&UD)?notifs().length:0;b.style.cursor="pointer";b.setAttribute("role","button");b.textContent="🔔"+(n?" "+n:"");b.onclick=()=>{if(!U||!UD)return;NL=notifs();markSeen();go("notif")}}
+const _r5=render,_g5=go,_s5=setRole,_dv=detailView,_ak=aksi,_v5=view;
+render=function(){_r5();bel()};
+go=function(t){closeRoom();_g5(t)};
+setRole=function(r){closeRoom();_s5(r)};
+detailView=function(j){const h=_dv(j);return U&&j.uid!==U.uid?h.replace('<button class="btn y" onclick="pesan(','<button class="btn o" style="margin-bottom:8px" onclick="bukaChat('+j.id+')">💬 Chat penyedia</button><button class="btn y" onclick="pesan('):h};
+aksi=function(o,m){const h=_ak(o,m);return m==="a"?h:h+`<div class="row" style="margin-top:8px;justify-content:flex-start"><button class="btn s o" onclick="bukaChatO('${o.id}')">💬 Chat</button></div>`};
+view=function(){if(U&&UD){
+if(S.room)return roomView();
+if(S.tab==="notif")return notifView();
+if((S.role==="c"||S.role==="p")&&S.tab==="chat")return chatList()}
+return _v5()};
+render();
+</script><script>
+/* ===== FASE 6: PEMBAYARAN (transfer ke SERBA JASA, komisi, pencairan) ===== */
+NAV.a.splice(4,0,["trx","💰","Transaksi"]);
+let CFG={bank:"",rek:"",an:"",persen:10},cUn=null,BPP=null,BK=null,RK=null,EDR=false,EDC=false;
+const pay=o=>o.pay||"belum";
+auth.onAuthStateChanged(u=>{if(cUn){cUn();cUn=null}BPP=null;BK=null;RK=null;
+if(u)cUn=db.doc("config/bayar").onSnapshot(s=>{if(s.exists)CFG={...CFG,...s.data()};soft()},()=>{})});
+async function buktiFoto(id,el){const f=el.files[0];if(!f)return;try{BPP={id,d:await kecilJ(f)};render()}catch(e){toast("Foto gagal dibaca")}}
+async function kirimBukti(){if(!BPP)return;const b=db.batch();
+b.set(db.doc("bukti/"+BPP.id),{cus:U.uid,bp:BPP.d,at:Date.now()});
+b.update(db.doc("pesanan/"+BPP.id),{pay:"diperiksa",tb:Date.now()});
+try{await b.commit();BPP=null;toast("Bukti terkirim, menunggu pemeriksaan admin")}catch(e){toast(err(e))}}
+function payUI(o){const L={belum:"Belum dibayar",diperiksa:"Pembayaran sedang diperiksa admin",lunas:"Lunas ✓",ditolak:"Bukti ditolak, unggah ulang"};return `<div class="mute" style="margin-top:6px">💳 ${L[pay(o)]}</div>`}
+function bayarUI(o){if(!CFG.rek)return `<div class="mute" style="margin-top:6px">Admin belum mengatur rekening pembayaran.</div>`;
+const on=BPP&&BPP.id==o.id,pre=on?`<img alt="Pratinjau bukti" src="${BPP.d}" style="width:100%;border-radius:10px;margin-top:8px">`:"",
+act=on?`<button class="btn s y" onclick="kirimBukti()">Kirim bukti</button><button class="btn s o" onclick="BPP=null;render()">Ganti foto</button>`:`<label class="btn s y" style="display:inline-block;cursor:pointer">📷 Unggah bukti transfer<input type="file" accept="image/*" style="display:none" onchange="buktiFoto('${o.id}',this)"></label>`;
+return `<div class="card" style="margin:10px 0 0"><div class="in"><b>Transfer ${rp(o.h)}</b><div class="mute">${esc(CFG.bank)} · ${esc(CFG.rek)}<br>a.n. ${esc(CFG.an)}</div>${pre}<div class="row" style="margin-top:8px;justify-content:flex-start;flex-wrap:wrap">${act}</div></div></div>`}
+function cairUI(o){if(o.st!=="selesai")return "";const c=o.cair||"belum";
+if(c==="dicairkan")return `<div class="mute">💸 Sudah dicairkan ✓</div>`;
+if(c==="diminta")return `<div class="mute">💸 Pencairan sedang diproses admin</div>`;
+if(!UD.rek)return `<div class="mute">Isi rekening pencairan di tab Profil untuk mencairkan.</div>`;
+return `<button class="btn s y" style="margin-top:6px" onclick="mintaCair('${o.id}')">Ajukan pencairan</button>`}
+async function mintaCair(id){try{await db.doc("pesanan/"+id).update({cair:"diminta"});toast("Pencairan diajukan")}catch(e){toast(err(e))}}
+const _ak6=aksi;
+aksi=function(o,m){const p=pay(o),wait=m==="p"&&o.st==="diterima"&&p!=="lunas",h=_ak6(wait?{...o,st:"tunggu"}:o,m);let x="";
+if(m!=="a"&&(o.st==="diterima"||o.st==="selesai")){x+=payUI(o);
+if(m==="c"&&o.st==="diterima"&&(p==="belum"||p==="ditolak"))x+=bayarUI(o);
+
+if(m==="p"&&p==="lunas")x+=`<div class="mute">Komisi ${CFG.persen||10}%: ${rp(o.kom||0)} · Anda terima: ${rp(o.net||0)}</div>`+cairUI(o)}
+return x+h};
+const _fv=formView,_tv=tambahView,_pv=profilView,_v6=view;
+formView=function(j){return _fv(j).replace(/<p class="mute">Harga final[^<]*<\/p>/,'<p class="mute">Pembayaran ditransfer ke rekening SERBA JASA setelah penyedia menerima pesanan, lalu diteruskan ke penyedia setelah pekerjaan selesai. Foto hasil pekerjaan dapat ditampilkan di galeri penyedia.</p>')};
+tambahView=function(){return _tv().replace('Harga mulai (Rp)','Harga jasa (Rp)')};
+function rekForm(){const p=(UD.rek||"").split(" | ");if(UD.rek&&!EDR)return `<h3>Rekening pencairan</h3><div class="card"><div class="in"><div class="row"><b>${esc(p[0]||"")}</b><span class="tag ok">Tersimpan ✓</span></div><div class="mute">${esc(p[1]||"")} · a.n. ${esc(p[2]||"")}</div><button class="btn s o" style="margin-top:10px" onclick="EDR=true;render()">Ubah rekening</button></div></div>`;return `<h3>Rekening pencairan</h3><p class="mute">Dipakai admin untuk mentransfer pendapatan Anda. Dana dicairkan penuh, tanpa potongan biaya transfer bank. Disarankan memakai e-wallet atau rekening yang transfernya gratis.</p><input id="rb" list="lbank" placeholder="Bank atau e-wallet (pilih atau ketik)" value="${esc(p[0]||"")}"><datalist id="lbank"><option>DANA</option><option>GoPay</option><option>OVO</option><option>ShopeePay</option><option>LinkAja</option><option>BCA</option><option>BRI</option><option>BNI</option><option>Mandiri</option><option>BSI</option><option>CIMB Niaga</option><option>Permata</option></datalist><input id="rn" inputmode="numeric" placeholder="Nomor rekening" value="${esc(p[1]||"")}"><input id="ra" placeholder="Atas nama" value="${esc(p[2]||"")}"><button class="btn" onclick="simpanRek()">Simpan rekening</button>${UD.rek?`<button class="btn o" style="margin-top:8px" onclick="EDR=false;render()">Batal</button>`:""}`}
+async function simpanRek(){const b=$("#rb").value.trim(),n=$("#rn").value.trim(),a=$("#ra").value.trim();if(!b||n.length<5||!a){toast("Lengkapi bank, nomor, dan atas nama");return}
+try{await db.doc("users/"+U.uid).update({rek:[b,n,a].join(" | ")});EDR=false;render();window.scrollTo(0,0);toast("Rekening tersimpan")}catch(e){toast(err(e))}}
+profilView=function(){let h=_pv();if(UD&&(UD.penyedia==="disetujui"||UD.role==="admin"))h=h.replace('<button class="btn o" style="margin-top:16px" onclick="auth.signOut()">',rekForm()+'<button class="btn o" style="margin-top:16px" onclick="auth.signOut()">');return h};
+async function lihatBukti(id){try{const s=await db.doc("bukti/"+id).get(),d=s.data();if(!d||!IMG.test(d.bp)){toast("Bukti tidak valid");return}BK={id,img:d.bp};render()}catch(e){toast(err(e))}}
+async function lihatRek(uid){try{const s=await db.doc("users/"+uid).get();RK={uid,rek:(s.data()||{}).rek||"Belum diisi"};render()}catch(e){toast(err(e))}}
+async function bayarOk(id,ok){const o=OA.find(x=>String(x.id)===String(id));if(!o)return;try{const k=Math.round(o.h*(CFG.persen||10)/100);await db.doc("pesanan/"+id).update(ok?{pay:"lunas",kom:k,net:o.h-k,tp:Date.now()}:{pay:"ditolak"});BK=null;toast(ok?"Pembayaran disetujui":"Bukti ditolak")}catch(e){toast(err(e))}}
+async function cairOk(id){if(!confirm("Pastikan sudah mentransfer ke penyedia. Lanjutkan?"))return;try{await db.doc("pesanan/"+id).update({cair:"dicairkan"});RK=null;toast("Ditandai sudah dicairkan")}catch(e){toast(err(e))}}
+async function simpanCfg(){const bank=$("#cb").value.trim(),rek=$("#cr").value.trim(),an=$("#ca").value.trim(),persen=+$("#cp").value;
+if(!bank||rek.length<5||!an||!(persen>=0&&persen<=50)){toast("Lengkapi data, komisi 0 sampai 50");return}
+try{await db.doc("config/bayar").set({bank,rek,an,persen});EDC=false;render();toast("Pengaturan tersimpan")}catch(e){toast(err(e))}}
+function oMini(o,x){return `<div class="card"><div class="in"><div class="row"><b>${esc(o.jn)}</b><span class="price">${rp(o.h)}</span></div><div class="mute">${esc(o.cn)} → ${esc(o.pn)}</div>${x}</div></div>`}
+function cfgBox(){if(CFG.rek&&!EDC)return `<h3>Pengaturan pembayaran</h3><div class="card"><div class="in"><div class="row"><b>${esc(CFG.bank)}</b><span class="tag ok">Tersimpan ✓</span></div><div class="mute">${esc(CFG.rek)} · a.n. ${esc(CFG.an)}</div><div class="mute">Komisi ${CFG.persen}%</div><button class="btn s o" style="margin-top:10px" onclick="EDC=true;render()">Ubah pengaturan</button></div></div>`;
+return `<h3>Pengaturan pembayaran</h3><p class="mute">Rekening ini ditampilkan ke pencari jasa saat membayar.</p><input id="cb" placeholder="Bank atau e-wallet" value="${esc(CFG.bank)}"><input id="cr" inputmode="numeric" placeholder="Nomor rekening" value="${esc(CFG.rek)}"><input id="ca" placeholder="Atas nama" value="${esc(CFG.an)}"><input id="cp" type="number" inputmode="numeric" placeholder="Komisi (%)" value="${CFG.persen}"><button class="btn y" onclick="simpanCfg()">Simpan pengaturan</button>${CFG.rek?`<button class="btn o" style="margin-top:8px" onclick="EDC=false;render()">Batal</button>`:""}`}
+function trxView(){const k=OA.filter(o=>pay(o)==="diperiksa"),c=OA.filter(o=>o.cair==="diminta"),l=OA.filter(o=>pay(o)==="lunas"),sum=(a,f)=>a.reduce((x,o)=>x+f(o),0),
+tot=sum(l,o=>o.h),kom=sum(l,o=>o.kom||0),tunda=sum(l.filter(o=>o.st==="selesai"&&o.cair!=="dicairkan"),o=>o.net||0);
+const bt=o=>BK&&BK.id==o.id?`<img alt="Bukti" src="${BK.img}" style="width:100%;border-radius:10px;margin-top:8px">`:`<button class="btn s o" style="margin-top:8px" onclick="lihatBukti('${o.id}')">Lihat bukti transfer</button>`,
+rk=o=>RK&&RK.uid===o.pen?`<div class="mute" style="margin-top:6px">Rekening: ${esc(RK.rek)}</div>`:`<button class="btn s o" style="margin-top:8px" onclick="lihatRek('${esc(o.pen)}')">Lihat rekening penyedia</button>`;
+return `<h2>Transaksi</h2><div class="card" style="margin-top:10px"><div class="in"><div class="row"><span>Total transaksi lunas</span><b>${rp(tot)}</b></div><div class="row"><span>Komisi SERBA JASA</span><b>${rp(kom)}</b></div><div class="row"><span>Belum dicairkan ke penyedia</span><b>${rp(tunda)}</b></div></div></div>
+<h3>Pembayaran perlu diperiksa (${k.length})</h3>${k.map(o=>oMini(o,bt(o)+`<div class="row" style="margin-top:8px;justify-content:flex-start"><button class="btn s" onclick="bayarOk('${o.id}',1)">Setujui</button><button class="btn s o" onclick="bayarOk('${o.id}',0)">Tolak</button></div>`)).join("")||`<p class="mute">Tidak ada.</p>`}
+<h3>Pencairan diminta (${c.length})</h3>${c.map(o=>oMini(o,`<div class="mute">Dicairkan: ${rp(o.net||0)} (komisi ${rp(o.kom||0)})</div>`+rk(o)+`<button class="btn s y" style="margin-top:8px" onclick="cairOk('${o.id}')">Sudah ditransfer</button>`)).join("")||`<p class="mute">Tidak ada.</p>`}
+${cfgBox()}`}
+view=function(){if(U&&UD&&S.role==="a"&&S.tab==="trx"&&!S.room)return trxView();return _v6()};
+render();
+</script><script>
+/* ===== FASE 6b: LOKASI, PETA, JARAK, DAN LOKASI LIVE ===== */
+let MP=null,MK={},NM=null,PIN=null,LV=null,lUn=null,WID=null,WK=null,WL=null,WLO=0,LP=null;
+const km=(a,b,c,d)=>{const r=x=>x*Math.PI/180,h=Math.sin(r(c-a)/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(r(d-b)/2)**2;return 12742*Math.asin(Math.sqrt(h))};
+const fk=d=>d<1?Math.round(d*1000)+" m":d.toFixed(1).replace(".",",")+" km";
+const eta=d=>Math.max(1,Math.round(d/30*60));
+const ic=e=>L.divIcon({html:`<div style="font-size:28px;line-height:28px">${e}</div>`,className:"",iconSize:[28,28],iconAnchor:[14,26]});
+const ordO=id=>[...OM,...OI].find(x=>String(x.id)===String(id));
+function mapInit(){const box=$("#mp");if(MP){MP.remove();MP=null}MK={};
+if(typeof L==="undefined"){box.innerHTML='<p class="mute" style="padding:12px">Peta gagal dimuat. Periksa koneksi internet.</p>';return}
+const k=NM.kind,c=NM.c||[-7.48,110.22];MP=L.map(box).setView(c,NM.z||12);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(MP);
+if(k==="pick"){const set=(la,lo,fly)=>{PIN={la,lo};if(!MK.p){MK.p=L.marker([la,lo],{draggable:true,icon:ic("📍")}).addTo(MP);MK.p.on("dragend",e=>{const q=e.target.getLatLng();PIN={la:q.lat,lo:q.lng};pinTxt()})}else MK.p.setLatLng([la,lo]);if(fly)MP.setView([la,lo],16);pinTxt()};
+MK.set=set;MP.on("click",e=>set(e.latlng.lat,e.latlng.lng,false));if(PIN)set(PIN.la,PIN.lo,false)}
+else if(k==="view")MK.j=L.marker(c,{icon:ic("🏠")}).addTo(MP);
+else if(k==="order"){const o=NM.o,j=NM.j;MK.s=L.marker([o.la,o.lo],{icon:ic("📍")}).addTo(MP);if(j&&j.la)MK.b=L.marker([j.la,j.lo],{icon:ic("🏠")}).addTo(MP);liveUpd();MP.fitBounds(L.featureGroup(Object.values(MK)).getBounds().pad(.3),{maxZoom:16})}
+setTimeout(()=>MP&&MP.invalidateSize(),150)}
+function pinTxt(){const e=$("#pt");if(e)e.textContent="Lokasi dipilih ✓"}
+function gps(){if(!navigator.geolocation){toast("Perangkat tidak mendukung lokasi");return}toast("Mencari lokasi...");
+navigator.geolocation.getCurrentPosition(p=>{if(MK.set)MK.set(p.coords.latitude,p.coords.longitude,true)},e=>toast(e.code===1?"Izin lokasi ditolak. Aktifkan izin lokasi untuk situs ini.":"Lokasi tidak tersedia"),{enableHighAccuracy:true,timeout:15000})}
+function pickUI(l,c){NM={kind:"pick",c:PIN?[PIN.la,PIN.lo]:c||null,z:PIN?16:13};
+return `<label class="mute">${l} (ketuk peta atau geser penanda)</label><div id="mp" style="height:240px;border-radius:12px;margin:6px 0 8px"></div><div class="row" style="margin-bottom:10px"><span class="mute" id="pt">${PIN?"Lokasi dipilih ✓":"Belum ada lokasi dipilih"}</span><button class="btn s o" onclick="gps()">📍 Lokasi saya</button></div>`}
+simpanJasa=async function(){const n=$("#fn").value.trim(),h=+$("#fh").value,l=$("#fl").value.trim();
+if(n.length<3||!(h>0)||!l){toast("Isi nama, harga, dan lokasi");return}
+if(!PIN){toast("Tandai lokasi layanan di peta");return}
+const id=Date.now();
+try{await db.doc("jasa/"+id).set({id,n,k:$("#fk").value,h,l,p:UD.nama,uid:U.uid,deskripsi:$("#fd").value.trim().slice(0,300),foto:FOTJ,r:0,at:id,la:PIN.la,lo:PIN.lo,sk:$("#fs")?$("#fs").value:""});FOTJ="";PIN=null;toast("Jasa disimpan");go("jasa")}catch(e){toast(err(e))}};
+kirimPesanan=async function(){const j=jb(S.form),a=$("#oa").value.trim(),t=$("#ot").value,w=$("#oj").value;
+if(a.length<5||!t||!w){toast("Isi alamat, tanggal, dan jam");return}
+if(t<hariIni()){toast("Tanggal sudah lewat");return}
+if(!PIN){toast("Tandai lokasi pengerjaan di peta");return}
+const id=Date.now();
+try{await db.doc("pesanan/"+id).set({id,jid:String(j.id),jn:j.n,h:j.h,pen:j.uid,pn:j.p,cus:U.uid,cn:UD.nama,hp:UD.hp,alamat:a,jadwal:t+" "+w,catatan:$("#oc").value.trim().slice(0,200),st:"menunggu",at:id,la:PIN.la,lo:PIN.lo});S.form=null;S.det=null;S.tab="pesanan";PIN=null;toast("Pesanan dikirim");render()}catch(e){toast(err(e))}};
+function bukaLoc(id){const j=jb(id);PIN=j&&j.la?{la:j.la,lo:j.lo}:null;S.loc=id;render()}
+function locView(j){return `<button class="back" onclick="S.loc=null;PIN=null;render()">‹ Kembali</button><h2>Lokasi layanan</h2><p class="mute">${esc(j.n)}</p>${pickUI("Lokasi layanan")}<button class="btn y" onclick="simpanLoc(${j.id})">Simpan lokasi</button>`}
+async function simpanLoc(id){if(!PIN){toast("Tandai lokasi di peta");return}try{await db.doc("jasa/"+id).update({la:PIN.la,lo:PIN.lo});S.loc=null;PIN=null;toast("Lokasi tersimpan");render()}catch(e){toast(err(e))}}
+jasaSaya=function(){const m=J.filter(j=>U&&j.uid===U.uid);return `<h2>Jasa saya</h2><br>${m.length?m.map(j=>card(j)+`<div class="row" style="margin:-4px 0 14px;justify-content:flex-start;gap:8px"><button class="btn s o" onclick="bukaLoc(${j.id})">${j.la?"📍 Ubah lokasi":"📍 Atur lokasi"}</button><button class="btn s o" onclick="hapusJasa(${j.id})">Hapus jasa</button></div>`).join(""):`<p class="mute">Belum ada jasa. Tekan Tambah untuk membuat jasa pertama.</p>`}`};
+function hitungJarak(id){const j=jb(id);if(!j||!navigator.geolocation){toast("Perangkat tidak mendukung lokasi");return}toast("Mencari lokasi Anda...");
+navigator.geolocation.getCurrentPosition(p=>{const a=p.coords.latitude,b=p.coords.longitude,d=km(a,b,j.la,j.lo),e=$("#jr");if(e)e.textContent="Jarak dari lokasi Anda: ± "+fk(d)+" (garis lurus)";
+if(MP&&!MK.u&&typeof L!=="undefined"){MK.u=L.marker([a,b],{icon:ic("🧍")}).addTo(MP);MP.fitBounds(L.featureGroup([MK.u,MK.j]).getBounds().pad(.4),{maxZoom:16})}},
+e=>toast(e.code===1?"Izin lokasi ditolak. Aktifkan izin lokasi untuk situs ini.":"Lokasi tidak tersedia"),{enableHighAccuracy:true,timeout:15000})}
+function liveTxt(o){const v=LV&&LV.la?LV:null,isP=U&&o.pen===U.uid;
+if(isP&&WK===String(o.id)&&LP){const d=km(LP.la,LP.lo,o.la,o.lo);return `🛵 Lokasi Anda sedang dibagikan · ${fk(d)} ke tujuan · ±${eta(d)} menit`}
+if(!v)return isP?"Lokasi live belum dibagikan.":"Penyedia belum membagikan lokasi live.";
+const d=km(v.la,v.lo,o.la,o.lo),s=Math.round((Date.now()-v.at)/1000);
+return `🛵 Penyedia ${fk(d)} dari lokasi pengerjaan · ±${eta(d)} menit (perkiraan garis lurus) · diperbarui ${s<60?s+" dtk":Math.round(s/60)+" mnt"} lalu${s>300?" (sinyal lama)":""}`}
+function liveUpd(){const o=ordO(S.omap);if(!o||!MP||typeof L==="undefined")return;const el=$("#lv");if(el)el.textContent=liveTxt(o);
+const p=(U&&o.pen===U.uid&&WK===String(o.id)&&LP)?LP:(LV&&LV.la?LV:null);
+if(p){if(!MK.l)MK.l=L.marker([p.la,p.lo],{icon:ic("🛵")}).addTo(MP);else MK.l.setLatLng([p.la,p.lo])}}
+function openOmap(id){closeOmap();S.omap=id;
+lUn=db.doc("live/"+id).onSnapshot(s=>{LV=s.exists?s.data():null;if(S.omap!==id)return;if(MP&&$("#mp"))liveUpd();else render()},()=>{});render()}
+function closeOmap(){S.omap=null;if(lUn){lUn();lUn=null}LV=null}
+function omapView(o){const isP=U&&o.pen===U.uid,j=jb(Number(o.jid))||jb(o.jid)||{};NM={kind:"order",o,j,c:[o.la,o.lo],z:14};
+const aktif=isP&&o.st==="diterima"&&pay(o)==="lunas";
+return `<button class="back" onclick="closeOmap();render()">‹ Kembali</button><h2>${esc(o.jn)}</h2><p class="mute">📍 ${esc(o.alamat)}<br>📅 ${esc(o.jadwal)}</p><div id="mp" style="height:320px;border-radius:12px;margin:8px 0"></div><div class="card"><div class="in"><div id="lv" class="mute">${liveTxt(o)}</div></div></div><div class="row" style="justify-content:flex-start;flex-wrap:wrap;gap:8px"><a class="btn s o" style="display:inline-block" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${o.la},${o.lo}">🧭 Rute di Google Maps</a>${aktif?(WK===String(o.id)?`<button class="btn s" onclick="stopLive(true);render()">⏹ Berhenti bagikan lokasi</button>`:`<button class="btn s y" onclick="mulaiLive('${o.id}')">▶ Mulai bagikan lokasi live</button>`):""}</div><p class="mute" style="margin-top:10px">Lokasi live hanya dibagikan saat tombol aktif dan aplikasi tetap terbuka.</p>`}
+function mulaiLive(id){if(!navigator.geolocation){toast("Perangkat tidak mendukung lokasi");return}
+const o=OI.find(x=>String(x.id)===String(id));if(!o)return;stopLive(false);WK=String(o.id);WLO=0;WJ=0;
+WID=navigator.geolocation.watchPosition(p=>{LP={la:p.coords.latitude,lo:p.coords.longitude};if(S.omap&&MP)liveUpd();const t=Date.now();if(t-WLO<8000)return;WLO=t;
+db.doc("live/"+o.id).set({pen:U.uid,cus:o.cus,la:LP.la,lo:LP.lo,at:t}).catch(e=>toast(err(e)));if(t-WJ>14000){WJ=t;db.doc("live/"+o.id+"/jejak/"+t).set({pen:U.uid,la:LP.la,lo:LP.lo,at:t}).catch(()=>{})}},
+e=>{if(e.code===1){toast("Izin lokasi ditolak. Aktifkan izin lokasi untuk situs ini.");stopLive(true);render()}else toast("Sinyal GPS lemah")},{enableHighAccuracy:true,maximumAge:5000,timeout:30000});
+if(navigator.wakeLock)navigator.wakeLock.request("screen").then(l=>{WL=l}).catch(()=>{});
+toast("Berbagi lokasi aktif. Biarkan aplikasi tetap terbuka.");render()}
+function stopLive(del){if(WID!==null){navigator.geolocation.clearWatch(WID);WID=null}if(WL){WL.release().catch(()=>{});WL=null}if(del&&WK)db.doc("live/"+WK).delete().catch(()=>{});WK=null;LP=null}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&WK&&navigator.wakeLock)navigator.wakeLock.request("screen").then(l=>{WL=l}).catch(()=>{})});
+const _fv7=formView,_tv7=tambahView,_dv7=detailView,_ak7=aksi,_pe7=pesan,_g7=go,_s7=setRole,_r7=render,_v7=view;
+pesan=function(id){PIN=null;_pe7(id)};
+formView=function(j){const c=j.la?[j.la,j.lo]:null,b='<button class="btn y" onclick="kirimPesanan()">';return _fv7(j).replace(b,pickUI("Lokasi pengerjaan",c)+b)};
+tambahView=function(){const b='<button class="btn y" onclick="simpanJasa()">';return _tv7().replace(b,pickUI("Lokasi layanan")+b)};
+detailView=function(j){const h=_dv7(j),b='<div class="card" style="margin:12px 0">';let x;
+if(j.la){NM={kind:"view",c:[j.la,j.lo],z:15};x=`<div id="mp" style="height:200px;border-radius:12px;margin:8px 0"></div><div class="row" style="margin-bottom:6px"><span class="mute" id="jr">Jarak dari Anda: belum dihitung</span><button class="btn s o" onclick="hitungJarak(${j.id})">📍 Hitung jarak</button></div>`}
+else x=`<p class="mute">Lokasi layanan belum diatur oleh penyedia.</p>`;return h.replace(b,x+b)};
+aksi=function(o,m){const h=_ak7(o,m);return m!=="a"&&o.la&&!["ditolak","dibatalkan"].includes(o.st)?h+`<div class="row" style="margin-top:8px;justify-content:flex-start"><button class="btn s o" onclick="openOmap('${o.id}')">🗺️ Peta${WK===String(o.id)?" · live aktif":""}</button></div>`:h};
+go=function(t){closeOmap();S.loc=null;PIN=null;_g7(t)};
+setRole=function(r){closeOmap();S.loc=null;PIN=null;_s7(r)};
+render=function(){if(WK){const o=OI.find(x=>String(x.id)===WK);if(!o||o.st!=="diterima")stopLive(true)}NM=null;_r7();if(NM&&$("#mp"))mapInit()};
+view=function(){if(U&&UD){
+if(S.omap){const o=ordO(S.omap);if(o&&o.la)return omapView(o);closeOmap()}
+if(S.loc){const j=jb(S.loc);if(j)return locView(j);S.loc=null}}
+return _v7()};
+render();
+</script><script>
+/* ===== FASE 7: KEPERCAYAAN (rating, ulasan, verifikasi penyedia, laporan) ===== */
+{const st=document.createElement("style");st.textContent="nav{overflow-x:auto}nav button{flex:1 0 auto;min-width:60px;padding-left:4px;padding-right:4px}";document.head.appendChild(st)}
+NAV.a.splice(NAV.a.length-1,0,["laporan","⚠️","Laporan"]);
+const LK=["Pekerjaan tidak sesuai","Penyedia tidak datang","Pembayaran bermasalah","Perilaku tidak pantas","Lainnya"];
+let UL={},ulUn=null,RV={},RS=0,RT="",LM=[],LA=[],lUn8=[],lRole=null,uUn8=null,PA=[];
+const lapOf=id=>LM.find(l=>l.oid===String(id));
+const bin=n=>"★".repeat(n)+"☆".repeat(5-n);
+function stopL(){lUn8.forEach(f=>f());lUn8=[];LM=[];LA=[];lRole=null}
+function startL(u,adm){stopL();lRole=adm?"a":"u";const q=db.collection("laporan"),e=()=>{},mp=s=>s.docs.map(d=>d.data());
+lUn8.push(q.where("by","==",u.uid).onSnapshot(s=>{LM=mp(s).sort((a,b)=>b.at-a.at);soft()},e));
+if(adm)lUn8.push(q.onSnapshot(s=>{LA=mp(s);soft()},e))}
+auth.onAuthStateChanged(u=>{if(ulUn){ulUn();ulUn=null}if(uUn8){uUn8();uUn8=null}UL={};stopL();
+if(u){ulUn=db.collection("ulasan").where("cus","==",u.uid).onSnapshot(s=>{UL={};s.docs.forEach(d=>UL[d.id]=d.data());soft()},()=>{});
+uUn8=db.doc("users/"+u.uid).onSnapshot(s=>{const a=!!(s.exists&&s.data().role==="admin");if((a?"a":"u")!==lRole)startL(u,a)})}});
+function revView(o){return `<button class="back" onclick="S.rev=null;render()">‹ Kembali</button><h2>Beri ulasan</h2><p class="mute">${esc(o.jn)} · ${esc(o.pn)}</p><div class="row" style="justify-content:flex-start;gap:8px;font-size:34px;margin:8px 0">${[1,2,3,4,5].map(i=>`<span role="button" onclick="RS=${i};render()" style="cursor:pointer;color:#d99a00">${i<=RS?"★":"☆"}</span>`).join("")}</div><input id="rt" maxlength="300" placeholder="Ceritakan pengalaman Anda (opsional)" value="${esc(RT)}" oninput="RT=this.value"><button class="btn y" onclick="kirimUlasan()">Kirim ulasan</button>`}
+async function kirimUlasan(){const o=ordO(S.rev);if(!o||!RS){toast("Pilih bintang 1 sampai 5");return}
+const oid=String(o.id),jr=db.doc("jasa/"+o.jid),ur=db.doc("ulasan/"+oid);
+try{await db.runTransaction(async t=>{const s=await t.get(jr);t.set(ur,{oid,jid:String(o.jid),pen:o.pen,cus:U.uid,cn:UD.nama,r:RS,t:RT.trim().slice(0,300),at:Date.now()});
+if(s.exists){const d=s.data();t.update(jr,{rs:(d.rs||0)+RS,rn:(d.rn||0)+1,lr:oid})}});
+S.rev=null;RV={};toast("Terima kasih atas ulasan Anda");render()}catch(e){toast(err(e))}}
+function revList(j){const a=RV[j.id],h=`<h3>Ulasan${j.rn?` (${j.rn}) · ⭐ ${j.r}`:""}</h3>`;
+if(a==="loading"||a===undefined)return h+`<p class="mute">Memuat ulasan...</p>`;
+return h+(a.length?a.map(x=>`<div class="card"><div class="in"><div class="row"><b>${esc(x.cn)}</b><span style="color:#d99a00">${bin(x.r)}</span></div>${x.t?`<div>${esc(x.t)}</div>`:""}<div class="mute">${new Date(x.at).toLocaleDateString("id-ID")}</div></div></div>`).join(""):`<p class="mute">Belum ada ulasan.</p>`)}
+function lapView(o){return `<button class="back" onclick="S.lap=null;render()">‹ Kembali</button><h2>Laporkan masalah</h2><p class="mute">${esc(o.jn)} · ${o.cus===U.uid?"penyedia "+esc(o.pn):"pemesan "+esc(o.cn)}</p><label class="mute">Jenis masalah</label><select id="lk">${LK.map(k=>`<option>${k}</option>`).join("")}</select><label class="mute">Penjelasan</label><input id="lt" maxlength="500" placeholder="Jelaskan apa yang terjadi (min. 10 huruf)"><button class="btn y" onclick="kirimLaporan()">Kirim laporan</button><p class="mute">Admin akan meninjau laporan Anda. Sertakan detail selengkap mungkin.</p>`}
+async function kirimLaporan(){const o=ordO(S.lap),t=$("#lt").value.trim();if(!o||t.length<10){toast("Jelaskan masalahnya (min. 10 huruf)");return}
+const id=Date.now(),c=o.cus===U.uid;
+try{await db.doc("laporan/"+id).set({id,oid:String(o.id),by:U.uid,bn:UD.nama,vs:c?o.pen:o.cus,vn:c?o.pn:o.cn,jn:o.jn,k:$("#lk").value,t:t.slice(0,500),st:"baru",at:id});S.lap=null;toast("Laporan terkirim ke admin");render()}catch(e){toast(err(e))}}
+async function lapSt(id,st){let cat;if(st==="selesai"){cat=prompt("Catatan penyelesaian (terlihat oleh pelapor)");if(cat===null)return}
+try{await db.doc("laporan/"+id).update(cat!==undefined?{st,cat:cat.slice(0,300)}:{st});toast("Status laporan diperbarui")}catch(e){toast(err(e))}}
+function lapCard(l){const T={baru:["Baru",""],diproses:["Diproses",""],selesai:["Selesai","ok"]}[l.st]||[l.st,""];
+return `<div class="card"><div class="in"><div class="row"><b>${esc(l.k)}</b><span class="tag ${T[1]}">${T[0]}</span></div><div class="mute" style="margin:4px 0">${esc(l.jn)} · ${esc(l.bn)} melaporkan ${esc(l.vn)}</div><div>${esc(l.t)}</div>${l.cat?`<div class="mute" style="margin-top:6px">Catatan admin: ${esc(l.cat)}</div>`:""}${l.st!=="selesai"?`<div class="row" style="margin-top:10px;justify-content:flex-start">${l.st==="baru"?`<button class="btn s" onclick="lapSt('${l.id}','diproses')">Proses</button>`:""}<button class="btn s y" onclick="lapSt('${l.id}','selesai')">Tandai selesai</button></div>`:""}</div></div>`}
+function laporanView(){const a=LA.slice().sort((x,y)=>y.at-x.at);return `<h2>Laporan dan komplain (${a.length})</h2><br>${a.map(lapCard).join("")||`<p class="mute">Belum ada laporan.</p>`}`}
+const _mu=muat,_av8=adminView,_ak8=aksi,_dv8=detailView,_pv8=profilView,_nf=notifs,_g8=go,_s8=setRole,_v8=view;
+muat=async function(){await _mu();try{const s=await db.collection("users").where("penyedia","==","disetujui").get();PA=s.docs.map(d=>({id:d.id,...d.data()}))}catch(e){}render()};
+async function cabut(id){if(!confirm("Cabut status penyedia ini? Jasa miliknya perlu dihapus manual di tab Jasa."))return;try{await db.doc("users/"+id).update({penyedia:"ditolak"});LOADED=0;toast("Status penyedia dicabut");render()}catch(e){toast(err(e))}}
+adminView=function(){return _av8()+`<h3>Penyedia aktif (${PA.length})</h3>${PA.map(u=>`<div class="card"><div class="in row"><div><b>${esc(u.nama)}</b><div class="mute">${esc(u.email)}</div></div><button class="btn s o" onclick="cabut('${esc(u.id)}')">Cabut</button></div></div>`).join("")||`<p class="mute">Belum ada.</p>`}`};
+aksi=function(o,m){const h=_ak8(o,m);if(m==="a")return h;let x="";
+if(m==="c"&&o.st==="selesai"){const u=UL[String(o.id)];x+=u?`<div class="mute" style="margin-top:6px">⭐ Ulasan Anda: ${bin(u.r)}</div>`:`<button class="btn s y" style="margin-top:8px" onclick="RS=0;RT='';S.rev='${o.id}';render()">⭐ Beri ulasan</button>`}
+if(o.st==="diterima"||o.st==="selesai"){const l=lapOf(o.id);x+=l?`<div class="mute" style="margin-top:6px">⚠️ Laporan Anda: ${l.st}</div>`:`<button class="btn s o" style="margin-top:8px" onclick="S.lap='${o.id}';render()">⚠️ Laporkan masalah</button>`}
+return h+x};
+detailView=function(j){if(RV[j.id]===undefined){RV[j.id]="loading";db.collection("ulasan").where("jid","==",String(j.id)).get().then(s=>{RV[j.id]=s.docs.map(d=>d.data()).sort((a,b)=>b.at-a.at).slice(0,20);if(S.det===j.id)render()}).catch(()=>{RV[j.id]=[];if(S.det===j.id)render()})}return _dv8(j)+revList(j)};
+profilView=function(){const h=_pv8();if(!LM.length)return h;const s=`<h3>Laporan saya</h3>`+LM.map(l=>`<div class="card"><div class="in"><div class="row"><b>${esc(l.k)}</b><span class="tag ${l.st==="selesai"?"ok":""}">${l.st}</span></div><div class="mute">${esc(l.jn)}</div>${l.cat?`<div class="mute">Catatan admin: ${esc(l.cat)}</div>`:""}</div></div>`).join("");
+return h.replace('<button class="btn o" style="margin-top:16px" onclick="auth.signOut()">',s+'<button class="btn o" style="margin-top:16px" onclick="auth.signOut()">')};
+notifs=function(){const n=_nf(),w=OM.filter(o=>o.st==="selesai"&&!UL[String(o.id)]).length;
+if(w)n.push(["⭐",w+" pesanan selesai menunggu ulasan","c","pesanan"]);
+if(UD&&UD.role==="admin"){const b=LA.filter(l=>l.st==="baru").length;if(b)n.push(["⚠️",b+" laporan baru","a","laporan"])}return n};
+go=function(t){S.rev=null;S.lap=null;_g8(t)};
+setRole=function(r){S.rev=null;S.lap=null;_s8(r)};
+view=function(){if(U&&UD){
+if(S.rev){const o=ordO(S.rev);if(o&&o.st==="selesai")return revView(o);S.rev=null}
+if(S.lap){const o=ordO(S.lap);if(o)return lapView(o);S.lap=null}
+if(S.role==="a"&&S.tab==="laporan")return laporanView()}
+return _v8()};
+render();
+</script><script>
+/* ===== ULASAN DITERIMA PENYEDIA (tampil di kartu pesanan penyedia) ===== */
+let ULP={},ulpUn=null;
+auth.onAuthStateChanged(u=>{if(ulpUn){ulpUn();ulpUn=null}ULP={};
+if(u)ulpUn=db.collection("ulasan").where("pen","==",u.uid).onSnapshot(s=>{ULP={};s.docs.forEach(d=>ULP[d.id]=d.data());soft()},()=>{})});
+const _ak9=aksi;
+aksi=function(o,m){const h=_ak9(o,m);if(m!=="p"||o.st!=="selesai")return h;const u=ULP[String(o.id)];
+return h+(u?`<div class="card" style="margin:10px 0 0"><div class="in"><div class="row"><b>Ulasan pelanggan</b><span style="color:#d99a00">${bin(u.r)}</span></div>${u.t?`<div>${esc(u.t)}</div>`:""}</div></div>`:`<div class="mute" style="margin-top:6px">⭐ Pelanggan belum memberi ulasan</div>`)};
+render();
+</script><script>
+/* ===== FASE 8: PANEL ADMIN (dashboard, pengguna, jasa, pesanan, CSV, moderasi, blokir) ===== */
+NAV.a.unshift(["dash","📊","Dashboard"]);
+let UAL=[],uaUn=null,uUn9=null,QU="",QJ="",FP="",ULA=null;
+const sm=(a,f)=>a.reduce((x,o)=>x+f(o),0);
+auth.onAuthStateChanged(u=>{if(uUn9){uUn9();uUn9=null}if(uaUn){uaUn();uaUn=null}UAL=[];
+if(u)uUn9=db.doc("users/"+u.uid).onSnapshot(s=>{const a=!!(s.exists&&s.data().role==="admin");
+if(a&&!uaUn)uaUn=db.collection("users").onSnapshot(q=>{UAL=q.docs.map(d=>({id:d.id,...d.data()}));soft()},()=>{});
+if(!a&&uaUn){uaUn();uaUn=null;UAL=[]}})});
+function tile(ic,v,l,t){return `<div class="card tap" style="margin:0" onclick="go('${t}')"><div class="in"><div style="font-size:22px">${ic}</div><div style="font-size:21px;font-weight:800">${v}</div><div class="mute">${l}</div></div></div>`}
+function chart7(){const d=[],now=new Date();for(let i=6;i>=0;i--){const x=new Date(now);x.setDate(now.getDate()-i);x.setHours(0,0,0,0);d.push({t:x.getTime(),l:x.toLocaleDateString("id-ID",{weekday:"short"}),n:0})}
+OA.forEach(o=>{for(let i=d.length-1;i>=0;i--)if(o.at>=d[i].t){d[i].n++;break}});const m=Math.max(1,...d.map(x=>x.n));
+return `<h3>Pesanan 7 hari terakhir</h3><div class="card"><div class="in row" style="align-items:flex-end;height:130px;gap:6px">${d.map(x=>`<div style="flex:1;text-align:center"><div style="font-size:11px">${x.n}</div><div style="height:${Math.round(x.n/m*70)+2}px;background:#8a4fd1;border-radius:6px 6px 0 0"></div><div class="mute" style="font-size:11px">${x.l}</div></div>`).join("")}</div></div>`}
+function dashView(){const n=UAL.length,pa=UAL.filter(u=>u.penyedia==="disetujui").length,kt=UAL.filter(u=>u.ktp==="menunggu"||u.penyedia==="menunggu").length,
+ak=OA.filter(o=>["menunggu","diterima"].includes(o.st)).length,sl=OA.filter(o=>o.st==="selesai").length,lun=OA.filter(o=>pay(o)==="lunas"),
+pk=OA.filter(o=>pay(o)==="diperiksa").length,cm=OA.filter(o=>o.cair==="diminta").length,lb=LA.filter(l=>l.st==="baru").length;
+return `<h2>Dashboard</h2><br><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${tile("👥",n,"Pengguna","pengguna")}${tile("👷",pa,"Penyedia aktif","penyedia")}${tile("🪪",kt,"Menunggu verifikasi","penyedia")}${tile("🛠️",J.length,"Jasa tayang","ajasa")}${tile("📋",ak,"Pesanan aktif","apesanan")}${tile("✅",sl,"Pesanan selesai","apesanan")}${tile("💳",pk,"Pembayaran diperiksa","trx")}${tile("💸",cm,"Pencairan diminta","trx")}${tile("⚠️",lb,"Laporan baru","laporan")}${tile("💰",rp(sm(lun,o=>o.h)),"Transaksi lunas","trx")}</div><div class="card" style="margin-top:10px"><div class="in row"><span>Komisi SERBA JASA</span><b>${rp(sm(lun,o=>o.kom||0))}</b></div></div>${chart7()}`}
+function uList(){const q=QU.toLowerCase(),a=UAL.filter(u=>((u.nama||"")+(u.email||"")).toLowerCase().includes(q)).sort((x,y)=>(y.at||0)-(x.at||0));
+return a.map(u=>`<div class="card"><div class="in"><div class="row"><b>${esc(u.nama)}</b>${u.role==="admin"?`<span class="tag ok">Admin</span>`:""}</div><div class="mute">${esc(u.email)} · ${esc(u.hp)}</div><div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px"><span class="tag ${u.ktp==="disetujui"?"ok":""}">KTP ${esc(u.ktp)}</span><span class="tag ${u.penyedia==="disetujui"?"ok":""}">Penyedia: ${esc(u.penyedia)}</span>${u.blok?`<span class="tag" style="background:#c0392b;color:#fff">Diblokir</span>`:""}</div>${u.role!=="admin"?`<button class="btn s o" style="margin-top:10px" onclick="blokir('${esc(u.id)}',${u.blok?0:1})">${u.blok?"Buka blokir":"Blokir akun"}</button>`:""}</div></div>`).join("")||`<p class="mute">Tidak ada pengguna.</p>`}
+function penggunaView(){return `<h2>Pengguna (${UAL.length})</h2><input id="qu" placeholder="Cari nama atau email" value="${esc(QU)}" oninput="QU=this.value;$('#ul').innerHTML=uList()"><div id="ul">${uList()}</div>`}
+async function blokir(id,f){if(!confirm(f?"Blokir akun ini? Pengguna tidak bisa memesan, membuat jasa, atau chat.":"Buka blokir akun ini?"))return;try{await db.doc("users/"+id).update({blok:!!f});toast(f?"Akun diblokir":"Blokir dibuka")}catch(e){toast(err(e))}}
+const blokMsg=()=>`<h2>Akun dinonaktifkan</h2><p class="mute">Akun Anda dinonaktifkan oleh admin. Hubungi admin SERBA JASA di <a href="mailto:serbajasaa@gmail.com">serbajasaa@gmail.com</a> untuk pemulihan akun.</p><button class="btn o" onclick="auth.signOut()">Keluar</button>`;
+function jList(){const q=QJ.toLowerCase(),a=J.filter(j=>((j.n||"")+(j.p||"")+(j.k||"")).toLowerCase().includes(q));
+return a.map(j=>`<div class="card"><div class="in row"><div><b>${esc(j.n)}</b><div class="mute">${esc(j.p)} · ${esc(j.k)} · ${rp(j.h)}</div><div class="mute">${j.rn?"⭐ "+j.r+" ("+j.rn+")":"Belum ada ulasan"} · ${j.la?"📍 lokasi diatur":"tanpa lokasi"}</div></div><button class="btn s o" onclick="hapus(${j.id})">Hapus</button></div></div>`).join("")||`<p class="mute">Tidak ada jasa.</p>`}
+function ajasaView(){return `<h2>Jasa (${J.length})</h2><input id="qj" placeholder="Cari nama jasa atau penyedia" value="${esc(QJ)}" oninput="QJ=this.value;$('#jl').innerHTML=jList()"><div id="jl">${jList()}</div>`}
+function apesananView(){const a=OA.filter(o=>!FP||o.st===FP),c=["","menunggu","diterima","selesai","ditolak","dibatalkan"].map(s=>`<button class="btn s ${FP===s?"y":"o"}" onclick="FP='${s}';render()">${s||"Semua"}</button>`).join("");
+return `<h2>Pesanan (${OA.length})</h2><div class="row" style="justify-content:flex-start;flex-wrap:wrap;gap:6px;margin:10px 0">${c}</div>${a.map(o=>oCard(o,"a")).join("")||`<p class="mute">Tidak ada pesanan.</p>`}`}
+function unduhCsv(){const q=v=>{let s=String(v==null?"":v);if(/^[=+\-@]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'},
+h=["id","tanggal","jasa","pemesan","penyedia","harga","komisi","bersih","status","pembayaran","pencairan"],
+r=OA.map(o=>[o.id,new Date(o.at).toISOString().slice(0,10),o.jn,o.cn,o.pn,o.h,o.kom||0,o.net||0,o.st,pay(o),o.cair||"belum"]);
+const b=new Blob(["\ufeff"+[h,...r].map(x=>x.map(q).join(",")).join("\n")],{type:"text/csv"}),a=document.createElement("a");
+a.href=URL.createObjectURL(b);a.download="transaksi-serba-jasa.csv";document.body.appendChild(a);a.click();a.remove()}
+async function muatUlasan(){try{const s=await db.collection("ulasan").orderBy("at","desc").limit(20).get();ULA=s.docs.map(d=>d.data())}catch(e){ULA=[];toast(err(e))}render()}
+async function hapusUlasan(oid){if(!confirm("Hapus ulasan ini? Rata-rata bintang jasa akan dihitung ulang."))return;
+try{await db.runTransaction(async t=>{const ur=db.doc("ulasan/"+oid),us=await t.get(ur);if(!us.exists)return;const u=us.data(),jr=db.doc("jasa/"+u.jid),js=await t.get(jr);t.delete(ur);
+if(js.exists){const d=js.data();t.update(jr,{rs:Math.max(0,(d.rs||0)-u.r),rn:Math.max(0,(d.rn||0)-1)})}});ULA=null;RV={};toast("Ulasan dihapus")}catch(e){toast(err(e))}render()}
+const _nf9=notifs,_tx=trxView,_lv9=laporanView,_v9=view;
+notifs=function(){const n=_nf9();if(UD&&UD.role==="admin"){const pk=OA.filter(o=>pay(o)==="diperiksa").length,cm=OA.filter(o=>o.cair==="diminta").length,kt=UAL.filter(u=>u.ktp==="menunggu"||u.penyedia==="menunggu").length;
+if(pk)n.push(["💳",pk+" pembayaran perlu diperiksa","a","trx"]);if(cm)n.push(["💸",cm+" pencairan diminta","a","trx"]);if(kt)n.push(["🪪",kt+" verifikasi menunggu","a","penyedia"])}return n};
+trxView=function(){return _tx()+`<button class="btn o" style="margin-top:16px" onclick="unduhCsv()">⬇ Unduh CSV transaksi</button>`};
+laporanView=function(){if(ULA===null){ULA=[];muatUlasan()}return _lv9()+`<h3>Moderasi ulasan (terbaru)</h3>${ULA.map(x=>`<div class="card"><div class="in"><div class="row"><b>${esc(x.cn)}</b><span style="color:#d99a00">${bin(x.r)}</span></div>${x.t?`<div>${esc(x.t)}</div>`:""}<button class="btn s o" style="margin-top:8px" onclick="hapusUlasan('${esc(x.oid)}')">Hapus ulasan</button></div></div>`).join("")||`<p class="mute">Belum ada ulasan.</p>`}`};
+view=function(){if(U&&UD){
+if(UD.blok&&UD.role!=="admin")return blokMsg();
+if(S.role==="a"){const t=S.tab;if(t==="dash")return dashView();if(t==="pengguna")return penggunaView();if(t==="ajasa")return ajasaView();if(t==="apesanan")return apesananView()}}
+return _v9()};
+render();
+</script><script>
+/* ===== FASE 9: RILIS (persetujuan, tautan hukum, hapus akun, PWA) ===== */
+const TAUT=`<p class="mute" style="text-align:center;margin-top:18px"><a href="privacy.html" target="_blank" rel="noopener">Kebijakan Privasi</a> · <a href="terms.html" target="_blank" rel="noopener">Syarat Layanan</a> · <a href="hapus-akun.html" target="_blank" rel="noopener">Hapus Akun</a></p>`;
+const _av10=authView,_pv10=profilView,_dft=daftar;
+authView=function(){let h=_av10();if(AM==="daftar")h=h.replace('<button class="btn y" onclick="daftar()">','<label style="display:flex;gap:8px;align-items:flex-start;margin:6px 0 12px;font-size:14px"><input type="checkbox" id="ag" style="width:auto;margin:3px 0 0"><span>Saya menyetujui <a href="privacy.html" target="_blank" rel="noopener">Kebijakan Privasi</a> dan <a href="terms.html" target="_blank" rel="noopener">Syarat Layanan</a>, serta berusia 18 tahun ke atas.</span></label><button class="btn y" onclick="daftar()">');return h+TAUT};
+daftar=function(){const c=$("#ag");if(!c||!c.checked){toast("Setujui kebijakan privasi dan syarat layanan dulu");return}return _dft()};
+profilView=function(){let h=_pv10();const b=UD&&UD.role!=="admin"?`<button class="btn o" style="margin-top:10px;color:#c0392b" onclick="hapusAkun()">Hapus akun saya</button>`:"";
+return h.replace('<button class="btn o" style="margin-top:16px" onclick="auth.signOut()">Keluar</button>','<button class="btn o" style="margin-top:16px" onclick="auth.signOut()">Keluar</button>'+b)+TAUT};
+async function hapusAkun(){
+if(!U||!UD)return;
+const aktif=[...OM,...OI].some(o=>o.st==="menunggu"||o.st==="diterima"),dana=OI.some(o=>o.st==="selesai"&&pay(o)==="lunas"&&o.cair!=="dicairkan");
+if(aktif){toast("Selesaikan atau batalkan pesanan aktif dulu");return}
+if(dana){toast("Ada pendapatan yang belum dicairkan. Ajukan dan selesaikan pencairan dulu");return}
+if(!confirm("Hapus akun secara permanen? Profil, foto KTP, dan jasa Anda akan dihapus. Catatan transaksi dipertahankan untuk pembukuan."))return;
+const pw=prompt("Masukkan sandi Anda untuk konfirmasi");if(!pw)return;
+try{const u=auth.currentUser,cr=firebase.auth.EmailAuthProvider.credential(u.email,pw);await u.reauthenticateWithCredential(cr);
+const b=db.batch();J.filter(j=>j.uid===u.uid).forEach(j=>b.delete(db.doc("jasa/"+j.id)));
+OM.filter(o=>pay(o)!=="belum").forEach(o=>b.delete(db.doc("bukti/"+o.id)));
+b.delete(db.doc("kyc/"+u.uid));b.delete(db.doc("profil/"+u.uid));(await db.collection("galeri").where("uid","==",u.uid).get()).docs.forEach(d=>b.delete(d.ref));b.delete(db.doc("users/"+u.uid));await b.commit();await u.delete();toast("Akun dihapus")}
+catch(e){toast(e.code==="auth/wrong-password"||e.code==="auth/invalid-credential"?"Sandi salah":err(e))}}
+if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+render();
+</script><script>
+/* ===== ALUR PEMBAYARAN TRANSPARAN, SALDO PENYEDIA, DAN NOTIFIKASI ===== */
+let PGM=null;
+const pg=o=>pay(o)+"|"+(o.cair||"");
+function alur(o,m){const p=pay(o),sel=o.st==="selesai",a=p!=="belum"&&p!=="ditolak",lun=p==="lunas",fin=sel&&lun;
+const nd=(ic,l,on)=>`<div style="width:80px;text-align:center"><div style="font-size:28px;line-height:34px;${on?"":"opacity:.35"}">${ic}</div><div class="mute" style="font-size:11px;line-height:1.25">${l}</div></div>`,
+ln=on=>`<div style="flex:1;height:3px;border-radius:2px;margin:0 2px 24px;background:${on?"var(--ok)":"var(--line)"}"></div>`;
+const l2=fin?"Diteruskan":lun?"Dana tertahan":p==="diperiksa"?"Memeriksa":"Menunggu";let msg="";
+if(m==="p"){
+if(p==="belum")msg="Menunggu pencari mentransfer pembayaran ke admin.";
+else if(p==="diperiksa")msg="Pencari sudah mentransfer. Admin sedang memeriksa pembayaran.";
+else if(p==="ditolak")msg="Bukti transfer ditolak admin. Menunggu pencari mengunggah ulang.";
+else if(!sel)msg=`💰 Pembayaran ${rp(o.h)} sudah diterima admin dan masih tertahan. Selesaikan pekerjaan lalu kirim bukti laporan foto agar pembayaran diteruskan ke saldo Anda (${rp(o.net||0)} setelah komisi).`;
+else if(o.cair==="dicairkan")msg=`💸 Dana ${rp(o.net||0)} sudah ditransfer admin ke rekening Anda.`;
+else if(o.cair==="diminta")msg=`⏳ Pengajuan pencairan ${rp(o.net||0)} sudah dikirim. Admin sedang memprosesnya.`;
+else msg=`✅ Laporan diterima. Segera klik “Ajukan pencairan” di bawah agar admin segera memproses dana ${rp(o.net||0)} ke rekening Anda. Dicairkan penuh, tanpa potongan biaya transfer bank.${UD&&UD.rek?"":" Isi rekening pencairan di tab Profil terlebih dahulu."}`}
+else if(m==="c"){
+if(p==="diperiksa")msg="Bukti transfer Anda sedang diperiksa admin.";
+else if(lun&&!sel)msg="🔒 Pembayaran Anda tertahan aman di admin. Dana baru diteruskan ke penyedia setelah pekerjaan selesai dan bukti foto dikirim.";
+else if(fin)msg="✅ Pekerjaan selesai dan pembayaran sudah diteruskan ke penyedia."}
+return `<div style="display:flex;align-items:center;margin:12px 0 4px">${nd("👱","Pencari<br>"+(a?"Sudah transfer":"Belum transfer"),a)}${ln(a)}${nd("🏦","Admin<br>"+l2,lun||p==="diperiksa")}${ln(lun)}${nd("👷","Penyedia<br>"+(fin?"Masuk saldo":"Kerjakan tugas"),fin)}</div>${msg?`<div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:8px 0;font-size:13px">${msg}</div>`:""}`}
+function saldoUI(){const l=OI.filter(o=>pay(o)==="lunas"),tahan=sm(l.filter(o=>o.st==="diterima"),o=>o.net||0),sedia=sm(l.filter(o=>o.st==="selesai"&&!o.cair),o=>o.net||0),proses=sm(l.filter(o=>o.cair==="diminta"),o=>o.net||0),cair=sm(l.filter(o=>o.cair==="dicairkan"),o=>o.net||0);
+return `<div class="card"><div class="in"><b>Saldo Anda</b><div class="row" style="margin-top:6px"><span>🔒 Tertahan di admin</span><b>${rp(tahan)}</b></div><div class="row"><span>💰 Saldo tersedia</span><b>${rp(sedia)}</b></div><div class="row"><span>⏳ Pencairan diproses</span><b>${rp(proses)}</b></div><div class="row"><span>✅ Sudah dicairkan</span><b>${rp(cair)}</b></div>${sedia>0?`<div style="margin-top:8px;font-weight:700">Saldo tersedia. Buka pesanan yang selesai lalu klik “Ajukan pencairan”.</div>`:""}<div class="mute" style="margin-top:6px">Dana tertahan masuk ke saldo setelah Anda mengirim bukti foto pekerjaan selesai. Dana dicairkan penuh, tanpa potongan biaya transfer bank.</div></div></div>`}
+function ntfTxt(o,prov){const p=pay(o);
+if(prov){if(p==="diperiksa")return ["💳",`${o.cn} sudah mentransfer untuk "${o.jn}". Admin sedang memeriksa pembayaran.`];
+if(p==="lunas"&&o.st==="diterima"&&!o.cair)return ["💰",`Pembayaran ${rp(o.h)} untuk "${o.jn}" sudah diterima admin dan ditahan. Kerjakan tugas dan kirim bukti foto agar dana masuk ke saldo Anda.`];
+if(o.cair==="dicairkan")return ["💸",`Pencairan ${rp(o.net||0)} untuk "${o.jn}" sudah ditransfer admin.`]}
+else{if(p==="lunas"&&o.st==="diterima")return ["🔒",`Pembayaran Anda untuk "${o.jn}" dikonfirmasi admin dan ditahan dengan aman sampai pekerjaan selesai.`];
+if(p==="ditolak")return ["⚠️",`Bukti transfer untuk "${o.jn}" ditolak admin. Unggah ulang bukti yang jelas.`]}
+return null}
+function toastL(t){const e=document.createElement("div");e.className="toast";e.style.maxWidth="88%";e.style.textAlign="center";e.style.borderRadius="16px";e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),6000)}
+function cekNotif(){if(!U||!UD)return;const all=[...OM.map(o=>[o,0]),...OI.map(o=>[o,1])];
+if(PGM===null){if(!all.length)return;PGM={};all.forEach(([o])=>PGM[o.id]=pg(o));return}
+all.forEach(([o,pr])=>{const g=pg(o);if(PGM[o.id]===undefined){PGM[o.id]=g;return}
+if(PGM[o.id]!==g){PGM[o.id]=g;const t=ntfTxt(o,pr);if(t){toastL(t[0]+" "+t[1]);try{navigator.vibrate&&navigator.vibrate(120)}catch(e){}}}})}
+const seen2=()=>{try{const r=localStorage.getItem("sj_seen2");return r===null?null:JSON.parse(r)}catch(e){return {}}};
+auth.onAuthStateChanged(()=>{PGM=null});
+const _nf10=notifs,_ms10=markSeen,_ak10=aksi,_r10=render,_v10=view;
+notifs=function(){const n=_nf10(),all=[...OM.map(o=>[o,0]),...OI.map(o=>[o,1])];let s=seen2();
+if(s===null){if(!all.length)return n;s={};all.forEach(([o])=>s[o.id]=pg(o));try{localStorage.setItem("sj_seen2",JSON.stringify(s))}catch(e){}return n}
+all.forEach(([o,pr])=>{if(s[o.id]!==pg(o)){const t=ntfTxt(o,pr);if(t)n.push([t[0],t[1],pr?"p":"c",pr?"masuk":"pesanan"])}});return n};
+markSeen=function(){_ms10();try{const s=seen2()||{};[...OM,...OI].forEach(o=>s[o.id]=pg(o));localStorage.setItem("sj_seen2",JSON.stringify(s))}catch(e){}};
+aksi=function(o,m){const h=_ak10(o,m);if(m==="a"||!["diterima","selesai"].includes(o.st))return h;return alur(o,m)+h};
+render=function(){cekNotif();_r10()};
+view=function(){const h=_v10();return(U&&UD&&S.role==="p"&&S.tab==="masuk"&&typeof h==="string"&&h.startsWith("<h2>Pesanan masuk</h2>"))?saldoUI()+h:h};
+render();
+</script><script>
+/* ===== PENGINGAT AJUKAN PENCAIRAN ===== */
+const _nf12=notifs;
+notifs=function(){const n=_nf12(),w=OI.filter(o=>o.st==="selesai"&&pay(o)==="lunas"&&!o.cair).length;
+if(w)n.push(["💰",w+" pesanan selesai. Segera klik “Ajukan pencairan” agar dana diproses admin","p","masuk"]);return n};
+render();
+</script><script>
+/* ===== REVISI: CEK LOKASI SEBELUM TERIMA, BERANDA BARU, KATEGORI BERTINGKAT, WARNA UNGU ===== */
+{const st=document.createElement("style");st.textContent=`:root{--teal:#4b1a8a;--tagbg:#efe7fb}
+header{background:linear-gradient(90deg,#3d1275,#6a2bb8)}
+#splash{background:linear-gradient(160deg,#3d1275,#7b3fc4)}
+.hero{background:linear-gradient(135deg,#4b1a8a,#8a4fd1)}
+.foto{background:linear-gradient(135deg,#4b1a8a,#8a4fd1)}
+.hero2{background:linear-gradient(135deg,#4b1a8a,#8a4fd1 70%,#b07be8);color:#fff;border-radius:22px;padding:18px;position:relative;overflow:hidden}
+.hero2::after{content:"";position:absolute;right:-30px;top:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.12)}
+.sb{background:#fff;color:#5d737b;border-radius:14px;padding:12px 14px;font-size:14px;cursor:pointer;position:relative;z-index:1}
+.hs{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}.hs::-webkit-scrollbar{display:none}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kt{border:0;border-radius:16px;padding:12px 2px;font:inherit;font-size:11.5px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:88px;text-align:center;line-height:1.2}.kt span{font-size:28px}
+.ks{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:12px 6px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;gap:2px;align-items:center;text-align:center}.ks small{font-weight:400;color:var(--mute);font-size:11px}.ks.on{background:#4b1a8a;color:#fff;border-color:#4b1a8a}.ks.on small{color:#e6d9fa}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:8px 14px;font:inherit;font-size:13px;cursor:pointer}.chip.on{background:#4b1a8a;color:#fff;border-color:#4b1a8a}
+.tr{flex:0 0 220px;border-radius:16px;padding:12px;color:#fff;font-size:13px;font-weight:600;line-height:1.35}
+.mini{flex:0 0 120px;border-radius:16px;padding:10px;background:linear-gradient(135deg,#6a2bb8,#9b5fe0);color:#fff;display:flex;flex-direction:column;gap:2px;cursor:pointer;font-size:12px}.mini b{font-size:15px}`;document.head.appendChild(st)}
+window.OLDK={Bangunan:"Bangunan & Renovasi",Otomotif:"Kendaraan & Transportasi",Digital:"Digital & Internet",Bersih:"Kebersihan Lingkungan",Foto:"Acara & Hiburan",Servis:"Listrik & Instalasi"};
+const SUB={
+"Bangunan & Renovasi":["Tukang bangunan","Tukang cat","Renovasi rumah","Pasang keramik","Atap & plafon","Las & kanopi","Tukang kayu & furnitur","Pondasi & tukang batu"],
+"Kendaraan & Transportasi":["Servis motor","Servis mobil","Cuci kendaraan","Derek & towing","Sewa kendaraan","Antar jemput","Kurir & ojek","Ban & aki"],
+"Kecantikan":["Salon & potong rambut","Rias pengantin","Perawatan wajah","Pijat & spa","Nail art & bulu mata","Barbershop"],
+"Pendidikan":["Les privat","Bimbingan belajar","Kursus bahasa","Musik & seni","Komputer & coding","Mengaji & agama"],
+"Digital & Internet":["Desain grafis","Pembuatan website","Aplikasi mobile","Pemasaran digital","Servis laptop & HP","Instalasi WiFi & jaringan","Edit video","Penulisan & terjemahan"],
+"Pertanian":["Tukang kebun","Tanam & panen","Peternakan","Pupuk & pestisida","Alat & traktor tani","Konsultasi pertanian"],
+"Acara & Hiburan":["Fotografer & videografer","MC & hiburan","Dekorasi","Sound system","Sewa tenda & kursi","Badut & permainan anak","Band & musik"],
+"Makanan & Dapur":["Katering","Kue & roti pesanan","Masak harian","Jasa koki","Makanan beku","Servis alat dapur"],
+"Keamanan":["Satpam","Pasang CCTV","Kunci & brankas","Alarm","Pengawalan"],
+"Laundry":["Cuci kiloan","Setrika","Dry clean","Cuci sepatu","Cuci karpet & sofa"],
+"Listrik & Instalasi":["Instalasi listrik","Servis AC","Servis kulkas & mesin cuci","Pompa air & pipa","Panel surya","Servis elektronik"],
+"Kebersihan Lingkungan":["Bersih rumah","Bersih kantor","Sedot WC","Pangkas pohon","Pengelolaan sampah","Pembasmi hama","Bersih kolam"]};
+KAT.length=0;[["Bangunan & Renovasi","🏗️"],["Kendaraan & Transportasi","🚗"],["Kecantikan","💄"],["Pendidikan","📚"],["Digital & Internet","💻"],["Pertanian","🌾"],["Acara & Hiburan","🎉"],["Makanan & Dapur","🍳"],["Keamanan","🛡️"],["Laundry","🧺"],["Listrik & Instalasi","⚡"],["Kebersihan Lingkungan","🧹"]].forEach(k=>KAT.push(k));
+Object.keys(IK).forEach(k=>delete IK[k]);KAT.forEach(k=>{IK[k[0]]=k[1]});
+const WARNA=[["#ede4fb","#4b1a8a"],["#e3f1ff","#0b5cab"],["#ffe6ef","#b3205a"],["#fff1d6","#8a5600"],["#e0f7f1","#0c7a5e"],["#e9f6df","#3f7a14"],["#ffe9dc","#a8440f"],["#fdeaea","#b3261e"],["#e8ecff","#2f3fa8"],["#e0f4fa","#0b7285"],["#fff8cf","#7a6000"],["#e8f5e9","#2e7d32"]];
+let UP=null,INI=false;
+list=function(q,k,sub){const t=(q||"").toLowerCase(),r=J.filter(j=>(!k||j.k===k)&&(!sub||j.sk===sub)&&[j.n,j.k,j.sk,j.l,j.deskripsi,j.p].join(" ").toLowerCase().includes(t));
+return r.length?r.map(card).join(""):`<p class="mute">Jasa tidak ditemukan. Coba kata kunci atau kategori lain.</p>`};
+card=function(j){const d=UP&&j.la?` · ${fk(km(UP.la,UP.lo,j.la,j.lo))}`:"";
+return `<div class="card tap" onclick="S.det=${j.id};render()">${imgJ(j,110)}<div class="in"><div class="row"><b>${esc(j.n)}</b>${j.sk?`<span class="tag" style="background:#efe7fb;color:#4b1a8a">${esc(j.sk)}</span>`:""}</div><div class="row" style="margin-top:4px"><span class="mute">${j.r?"⭐ "+j.r:"Baru"} · 📍 ${esc(j.l)}${d}</span><span class="price">${rp(j.h)}</span></div></div></div>`};
+function card2(j){const d=UP&&j.la?fk(km(UP.la,UP.lo,j.la,j.lo)):"";
+return `<div class="card tap" style="flex:0 0 190px;margin:0" onclick="S.det=${j.id};render()">${imgJ(j,92)}<div class="in"><b style="font-size:14px">${esc(j.n)}</b><div class="mute" style="font-size:12px">${j.r?"⭐ "+j.r+" · ":""}${esc(j.sk||j.k)}${d?" · "+d:""}</div><div class="price" style="margin-top:4px">${rp(j.h)}</div></div></div>`}
+function lokasiSaya(){if(!navigator.geolocation){toast("Perangkat tidak mendukung lokasi");return}toast("Mencari lokasi Anda...");
+navigator.geolocation.getCurrentPosition(p=>{UP={la:p.coords.latitude,lo:p.coords.longitude};render()},e=>toast(e.code===1?"Izin lokasi ditolak. Aktifkan izin lokasi untuk situs ini.":"Lokasi tidak tersedia"),{enableHighAccuracy:true,timeout:15000})}
+function bukaKat(i){S.cat=KAT[i][0];S.sub="";render();window.scrollTo(0,0)}
+function pilihKat(i){S.kat=i<0?"":KAT[i][0];S.sub="";render()}
+function pilihSub(n){const b=S.cat||S.kat,s=(SUB[b]||[])[n];S.sub=S.sub===s?"":s;render()}
+function provStrip(){if(!UD||UD.penyedia!=="disetujui")return "";
+const w=OI.filter(o=>o.st==="menunggu").length,sd=sm(OI.filter(o=>pay(o)==="lunas"&&o.st==="selesai"&&!o.cair),o=>o.net||0),g=t=>`setRole('p');go('${t}')`;
+return `<div class="hs" style="margin-top:12px"><div class="mini" onclick="${g("masuk")}">📥<b>${w}</b><span>Pesanan masuk</span></div><div class="mini" onclick="${g("masuk")}">💰<b>${rp(sd)}</b><span>Saldo tersedia</span></div><div class="mini" onclick="${g("jasa")}">🧰<b>Jasa saya</b><span>Kelola jasa</span></div><div class="mini" onclick="${g("tambah")}">➕<b>Tambah</b><span>Jasa baru</span></div></div>`}
+function homeView(){const nm=((UD&&UD.nama)||"").split(" ")[0],pop=J.slice().sort((a,b)=>(b.r||0)-(a.r||0)||b.at-a.at).slice(0,8),baru=J.slice(0,8),
+near=UP?J.filter(j=>j.la).map(j=>[j,km(UP.la,UP.lo,j.la,j.lo)]).sort((a,b)=>a[1]-b[1]).slice(0,8).map(x=>x[0]):[];
+const tr=(bg,t)=>`<div class="tr" style="background:${bg}">${t}</div>`;
+return `<div class="hero2"><div style="font-size:14px;opacity:.9">Halo${nm?", "+esc(nm):""} 👋</div><h2 style="margin:2px 0 12px;font-size:22px">Butuh jasa apa hari ini?</h2><div class="sb" onclick="S.q='';go('cari')">🔎 Cari jasa, misalnya servis AC...</div></div>${provStrip()}
+<div class="hs" style="margin-top:12px">${tr("linear-gradient(135deg,#6a2bb8,#9b5fe0)","✅ Penyedia terverifikasi KTP oleh admin")}${tr("linear-gradient(135deg,#0c7a5e,#2fb58f)","🔒 Dana aman, ditahan admin sampai pekerjaan selesai")}${tr("linear-gradient(135deg,#b3205a,#e0568a)","📍 Pantau lokasi live penyedia saat pesanan berjalan")}</div>
+<h3>Kategori</h3><div class="g4">${KAT.map((k,i)=>`<button class="kt" style="background:${WARNA[i][0]};color:${WARNA[i][1]}" onclick="bukaKat(${i})"><span>${k[0]==="Kecantikan"?"💄":k[1]}</span>${esc(k[0])}</button>`).join("")}</div>
+${UP?(near.length?`<h3>📍 Jasa terdekat dari Anda</h3><div class="hs">${near.map(card2).join("")}</div>`:""):`<button class="btn o" style="margin-top:14px" onclick="lokasiSaya()">📍 Tampilkan jasa terdekat dari saya</button>`}
+${pop.length?`<h3>⭐ Jasa terbaik</h3><div class="hs">${pop.map(card2).join("")}</div><h3>🆕 Terbaru</h3><div class="hs">${baru.map(card2).join("")}</div>`:`<p class="mute" style="margin-top:14px">Belum ada jasa tayang. Penyedia bisa menambahkannya dari menu Jasa saya.</p>`}`}
+function cariView(){const k=S.kat||"";
+return `<h2>Cari jasa</h2><input id="q" value="${esc(S.q||"")}" placeholder="Ketik nama jasa, penyedia, atau lokasi" oninput="S.q=this.value;$('#res').innerHTML=list(S.q,S.kat||'',S.sub||'')"><div class="hs" style="margin-bottom:8px"><button class="chip ${k?"":"on"}" onclick="pilihKat(-1)">Semua</button>${KAT.map((x,i)=>`<button class="chip ${k===x[0]?"on":""}" onclick="pilihKat(${i})">${x[1]} ${esc(x[0])}</button>`).join("")}</div>${k?`<div class="hs" style="margin-bottom:8px">${(SUB[k]||[]).map((s,n)=>`<button class="chip ${S.sub===s?"on":""}" onclick="pilihSub(${n})">${esc(s)}</button>`).join("")}</div>`:""}<div id="res">${list(S.q||"",k,S.sub||"")}</div>`}
+function katView(){const i=KAT.findIndex(k=>k[0]===S.cat),subs=SUB[S.cat]||[],cn=s=>J.filter(j=>j.k===S.cat&&(!s||j.sk===s)).length,c=WARNA[i>=0?i:0];
+return `<button class="back" onclick="S.cat=null;S.sub='';render()">‹ Kembali</button><div class="hero2" style="padding:14px"><div style="font-size:36px">${i>=0?KAT[i][1]:"🛠️"}</div><h2 style="margin:4px 0 0">${esc(S.cat)}</h2><div style="opacity:.9;font-size:13px">${cn("")} jasa tersedia</div></div><h3>Subkategori</h3><div class="g3">${subs.map((s,n)=>`<button class="ks ${S.sub===s?"on":""}" onclick="pilihSub(${n})">${esc(s)}<small>${cn(s)} jasa</small></button>`).join("")}</div><h3>${S.sub?esc(S.sub):"Semua jasa "+esc(S.cat)}</h3>${list("",S.cat,S.sub||"")}`}
+const _tv13=tambahView,_js13=jasaSaya;
+tambahView=function(){return _tv13().replace(/<select id="fk">[\s\S]*?<\/select>/,`<select id="fk" onchange="subOpt()">${KAT.map(k=>`<option>${esc(k[0])}</option>`).join("")}</select><select id="fs">${(SUB[KAT[0][0]]||[]).map(s=>`<option>${esc(s)}</option>`).join("")}</select>`)};
+function subOpt(){const k=$("#fk").value;$("#fs").innerHTML=(SUB[k]||[]).map(s=>`<option>${esc(s)}</option>`).join("")}
+jasaSaya=function(){return `<button class="btn y" style="margin-bottom:12px" onclick="go('tambah')">➕ Tambah jasa baru</button>`+_js13()};
+NAV.p.length=0;[["home","🏠","Beranda"],["cari","🔎","Cari"],["pesanan","📋","Pesanan"],["masuk","📥","Masuk"],["jasa","🧰","Jasa saya"],["chat","💬","Chat"],["profil","👤","Profil"]].forEach(x=>NAV.p.push(x));
+const _ak13=aksi,_om13=omapView,_g13=go,_r13=render,_au13=authView,_v13=view;
+aksi=function(o,m){if(m==="p"&&o.st==="menunggu"&&o.la)return _ak13({...o,st:"tunggu",la:null},m)+`<div class="row" style="margin-top:10px;justify-content:flex-start"><button class="btn s y" onclick="openOmap('${o.id}')">📍 Cek lokasi &amp; putuskan</button></div>`;return _ak13(o,m)};
+async function terimaO(id){await ubahO(id,"diterima")}
+async function tolakO(id){if(!confirm("Tolak pesanan ini?"))return;await ubahO(id,"ditolak");closeOmap();render()}
+omapView=function(o){const h=_om13(o);if(!(U&&o.pen===U.uid&&o.st==="menunggu"))return h;
+const j=jb(Number(o.jid))||jb(o.jid),d=j&&j.la?km(j.la,j.lo,o.la,o.lo):null,m='<div class="card"><div class="in"><div id="lv"';
+const blk=`<div class="card" style="border-color:#8a4fd1;border-width:2px"><div class="in"><b>Pesanan baru menunggu keputusan Anda</b><div class="mute" style="margin:6px 0">Pemesan: ${esc(o.cn)} · ${rp(o.h)}${o.catatan?"<br>📝 "+esc(o.catatan):""}${d!==null?"<br>📏 Jarak dari lokasi layanan Anda: ± "+fk(d)+" (garis lurus)":""}</div><div>Periksa lokasi pada peta di atas, lalu pilih:</div><div class="row" style="margin-top:10px;gap:8px"><button class="btn y" onclick="terimaO('${o.id}')">✅ Terima pesanan</button><button class="btn o" onclick="tolakO('${o.id}')">✖ Tolak</button></div></div></div>`;
+return h.includes(m)?h.replace(m,blk+m):h+blk};
+go=function(t){S.cat=null;S.sub="";_g13(t)};
+authView=function(){return `<div style="text-align:center;margin-bottom:8px"><img src="logo.png" alt="SERBA JASA" style="width:140px;height:140px;object-fit:contain"></div>`+_au13()};
+render=function(){if(U&&UD&&!INI){INI=true;if(UD.penyedia==="disetujui"&&UD.role!=="admin"&&S.role==="c"){S.role="p";S.tab="home"}}_r13()};
+auth.onAuthStateChanged(()=>{INI=false;UP=null});
+view=function(){
+if(U&&UD&&!(UD.blok&&UD.role!=="admin")&&(S.role==="c"||S.role==="p")){
+const ov=S.det||S.form||S.room||S.omap||S.loc||S.rev||S.lap||S.tab==="notif";
+if(!ov){if(S.cat)return katView();if(S.tab==="home")return homeView();if(S.tab==="cari")return cariView();
+if(S.role==="p"&&S.tab==="pesanan"){S.role="c";try{return _v13()}finally{S.role="p"}}}}
+return _v13()};
+render();
+</script><script>
+/* ===== KEAMANAN AKUN, DASBOR PROFIL, PROFIL PUBLIK, GALERI, RIWAYAT RAPI, LACAK PERJALANAN ===== */
+const OTP_AKTIF=false;
+let PF={},PUB={},GLD={},AVN=null,OPEN={},TRK=[],tUn=null,WJ=0;
+function kecilDari(d,max,q){return new Promise((ok,no)=>{const i=new Image();i.onload=()=>{const s=Math.min(1,max/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);c.getContext("2d").drawImage(i,0,0,c.width,c.height);ok(c.toDataURL("image/jpeg",q))};i.onerror=no;i.src=d})}
+function avatarDari(file){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const m=Math.min(i.width,i.height),c=document.createElement("canvas");c.width=c.height=256;c.getContext("2d").drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,256,256);let q=.8,d=c.toDataURL("image/jpeg",q);while(d.length>55000&&q>.3){q-=.1;d=c.toDataURL("image/jpeg",q)}ok(d)};i.onerror=no;i.src=r.result};r.onerror=no;r.readAsDataURL(file)})}
+function av(uid,nama,sz){const p=PF[uid]||(PUB[uid]&&PUB[uid].pf),f=p&&p.foto&&IMG.test(p.foto)?p.foto:"";
+return f?`<img alt="" src="${f}" style="width:${sz}px;height:${sz}px;border-radius:50%;object-fit:cover;flex:none">`:`<div style="width:${sz}px;height:${sz}px;border-radius:50%;background:linear-gradient(135deg,#4b1a8a,#9b5fe0);color:#fff;display:grid;place-items:center;font-weight:800;font-size:${Math.round(sz*.42)}px;flex:none">${esc((nama||"?").trim().charAt(0).toUpperCase())}</div>`}
+const sandiOk=p=>p.length>=8&&/[A-Za-z]/.test(p)&&/\d/.test(p);
+/* --- Keamanan: verifikasi email, lupa sandi, ubah sandi, OTP HP --- */
+async function kirimVerif(){try{await auth.currentUser.sendEmailVerification();toast("Tautan verifikasi dikirim ke email Anda")}catch(e){toast(e.code==="auth/too-many-requests"?"Terlalu sering, coba lagi nanti":err(e))}}
+async function cekVerif(){try{await auth.currentUser.reload();await auth.currentUser.getIdToken(true);toast(auth.currentUser.emailVerified?"Email terverifikasi ✓":"Email belum terverifikasi");render()}catch(e){toast(err(e))}}
+const bannerV=()=>U&&!U.emailVerified?`<div style="background:#fff3cd;color:#664d03;border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:13px">📧 <b>Email belum terverifikasi.</b> Verifikasi diperlukan untuk memesan dan membuat jasa. Cek kotak masuk atau folder spam.<div class="row" style="margin-top:8px;justify-content:flex-start;gap:8px"><button class="btn s y" onclick="kirimVerif()">Kirim ulang</button><button class="btn s o" style="color:#664d03;border-color:#664d03" onclick="cekVerif()">Saya sudah verifikasi</button></div></div>`:"";
+async function lupa(){const e=($("#ae")&&$("#ae").value.trim())||prompt("Masukkan email akun Anda");if(!e)return;
+try{await auth.sendPasswordResetEmail(e)}catch(x){if(x.code==="auth/invalid-email"){toast("Format email salah");return}if(x.code==="auth/too-many-requests"){toast("Terlalu sering, coba lagi nanti");return}}
+toastL("Jika email terdaftar, tautan untuk mengatur ulang kata sandi sudah dikirim. Cek kotak masuk atau folder spam.")}
+function pwView(){return `<button class="back" onclick="S.pw=false;render()">‹ Kembali</button><h2>Ubah kata sandi</h2><input id="pw1" type="password" placeholder="Kata sandi saat ini" autocomplete="current-password"><input id="pw2" type="password" placeholder="Kata sandi baru (min. 8, huruf dan angka)" autocomplete="new-password"><input id="pw3" type="password" placeholder="Ulangi kata sandi baru" autocomplete="new-password"><button class="btn y" onclick="simpanSandi()">Simpan kata sandi</button>`}
+async function simpanSandi(){const a=$("#pw1").value,b=$("#pw2").value,c=$("#pw3").value;if(!a||b!==c){toast("Isi semua kolom dan pastikan sandi baru sama");return}if(!sandiOk(b)){toast("Sandi baru minimal 8 karakter, memuat huruf dan angka");return}
+try{const u=auth.currentUser;await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email,a));await u.updatePassword(b);S.pw=false;toast("Kata sandi berhasil diubah");render()}catch(e){toast(e.code==="auth/wrong-password"||e.code==="auth/invalid-credential"?"Kata sandi saat ini salah":err(e))}}
+async function verifHP(){if(U&&U.phoneNumber){toast("Nomor HP sudah terverifikasi");return}
+if(!OTP_AKTIF){toastL("Verifikasi OTP nomor HP akan aktif setelah layanan SMS disiapkan. Saat ini identitas Anda diverifikasi lewat KTP dan selfie.");return}
+let n=(UD.hp||"").replace(/\D/g,"");if(n.startsWith("0"))n="62"+n.slice(1);const tel="+"+n;
+try{if(window.rcv){try{window.rcv.clear()}catch(e){}}window.rcv=new firebase.auth.RecaptchaVerifier("rcv",{size:"invisible"});const cf=await auth.currentUser.linkWithPhoneNumber(tel,window.rcv),k=prompt("Masukkan kode OTP yang dikirim ke "+tel);if(!k)return;await cf.confirm(k);await auth.currentUser.getIdToken(true);toast("Nomor HP terverifikasi ✓");render()}
+catch(e){toast(e.code==="auth/credential-already-in-use"?"Nomor sudah dipakai akun lain":e.code==="auth/invalid-verification-code"?"Kode OTP salah":err(e))}}
+const _dft14=daftar,_au14=authView;
+daftar=async function(){const p=$("#ap")?$("#ap").value:"";if(!sandiOk(p)){toast("Sandi minimal 8 karakter dan memuat huruf serta angka");return}
+await _dft14();const u=auth.currentUser;if(u&&!u.emailVerified){try{await u.sendEmailVerification();toastL("📧 Tautan verifikasi dikirim ke email Anda. Cek kotak masuk atau folder spam.")}catch(e){}}};
+authView=function(){return _au14().replace('onclick="masuk()">Masuk</button>','onclick="masuk()">Masuk</button><div style="text-align:center;margin:12px 0 4px;font-size:14px"><a href="#" onclick="lupa();return false">Lupa kata sandi?</a> · <a href="mailto:serbajasaa@gmail.com?subject=Bantuan%20Akun%20SERBA%20JASA">Pemulihan akun</a></div>')};
+/* --- Profil: dasbor akun, edit profil, galeri --- */
+function muatGal(uid){db.collection("galeri").where("uid","==",uid).get().then(s=>{GLD[uid]=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.at-a.at);render()}).catch(()=>{GLD[uid]=[];render()})}
+function bukaEdit(){AVN=null;S.ep=true;if(!GLD[U.uid])muatGal(U.uid);render()}
+async function fotoAv(el){const f=el.files[0];if(!f)return;try{AVN=await avatarDari(f);const w=$("#avw");if(w)w.innerHTML=`<img alt="" src="${AVN}" style="width:84px;height:84px;border-radius:50%;object-fit:cover">`}catch(e){toast("Foto gagal dibaca")}}
+async function simpanProfil(){const pf=PF[U.uid]||{},bio=$("#pb").value.trim().slice(0,200),dom=$("#pd").value.trim().slice(0,60),foto=AVN!==null?AVN:(pf.foto||"");
+try{const d={nama:UD.nama,foto,bio,dom,at:Date.now()};await db.doc("profil/"+U.uid).set(d);PF[U.uid]=d;delete PUB[U.uid];AVN=null;S.ep=false;toast("Profil tersimpan");render()}catch(e){toast(err(e))}}
+async function hapusGal(id){if(!confirm("Hapus foto ini dari galeri?"))return;try{await db.doc("galeri/"+id).delete();GLD[U.uid]=(GLD[U.uid]||[]).filter(x=>x.id!==id);delete PUB[U.uid];toast("Foto dihapus");render()}catch(e){toast(err(e))}}
+async function tambahGaleri(f){try{const o=ordO(f.id),th=await kecilDari(f.d,360,.6);await db.doc("galeri/"+f.id).set({uid:U.uid,jid:String(o.jid),jn:o.jn,foto:th,at:Date.now()});delete PUB[U.uid];delete GLD[U.uid]}catch(e){}}
+function editView(){const pf=PF[U.uid]||{},g=GLD[U.uid],isP=UD.penyedia==="disetujui"||UD.role==="admin";
+return `<button class="back" onclick="S.ep=false;render()">‹ Kembali</button><h2>Edit profil</h2><div class="row" style="justify-content:flex-start;gap:14px;margin:10px 0"><div id="avw">${av(U.uid,UD.nama,84)}</div><label class="btn s o" style="cursor:pointer">📷 Ganti foto<input type="file" accept="image/*" style="display:none" onchange="fotoAv(this)"></label></div><label class="mute">Tentang saya</label><input id="pb" maxlength="200" placeholder="Ceritakan singkat tentang diri atau keahlian Anda" value="${esc(pf.bio||"")}"><label class="mute">Lokasi domisili (kota atau kabupaten)</label><input id="pd" maxlength="60" placeholder="Contoh: Klaten, Jawa Tengah" value="${esc(pf.dom||"")}"><button class="btn y" onclick="simpanProfil()">Simpan profil</button>${isP?`<h3>Galeri pengalaman</h3><p class="mute">Foto hasil pekerjaan yang selesai masuk otomatis ke sini dan tampil di profil publik Anda. Anda bisa menghapusnya kapan saja.</p>${g?(g.length?`<div class="g3">${g.filter(x=>IMG.test(x.foto)).map(x=>`<div style="position:relative"><img alt="" src="${x.foto}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px"><button class="btn s" style="position:absolute;top:4px;right:4px;padding:2px 8px" onclick="hapusGal('${esc(x.id)}')">✕</button></div>`).join("")}</div>`:`<p class="mute">Belum ada foto.</p>`):`<p class="mute">Memuat...</p>`}`:""}`}
+function dashHead(){const pf=PF[U.uid]||{},mine=J.filter(j=>j.uid===U.uid),rs=sm(mine,j=>j.rs||0),rn=sm(mine,j=>j.rn||0),isP=UD.penyedia==="disetujui"||UD.role==="admin",sel=OI.filter(o=>o.st==="selesai").length,
+bd=(ok,t)=>`<span class="tag" style="background:${ok?"#1f8a5b":"#e4e0eb"};color:${ok?"#fff":"#4a4458"}">${t}</span>`;
+return `<div class="hero2" style="padding:16px"><div class="row" style="justify-content:flex-start;gap:14px;position:relative;z-index:1">${av(U.uid,UD.nama,72)}<div style="min-width:0"><div style="font-size:19px;font-weight:800">${esc(UD.nama)}</div><div style="opacity:.9;font-size:13px">${esc(UD.email)}</div>${pf.dom?`<div style="opacity:.92;font-size:13px">📍 ${esc(pf.dom)}</div>`:""}</div></div>${pf.bio?`<p style="margin:10px 0 0;font-size:13px;position:relative;z-index:1">${esc(pf.bio)}</p>`:""}</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0">${bd(U.emailVerified,U.emailVerified?"✉️ Email terverifikasi":"✉️ Email belum terverifikasi")}${bd(!!U.phoneNumber,U.phoneNumber?"📱 HP terverifikasi":"📱 HP belum diverifikasi")}${bd(UD.ktp==="disetujui","🪪 Identitas "+(UD.ktp==="disetujui"?"terverifikasi":UD.ktp==="ditolak"?"ditolak":"menunggu"))}${isP?bd(true,"👷 Penyedia jasa"):""}</div>
+${isP?`<div class="g3" style="margin-bottom:10px"><div class="ks"><b>${mine.length}</b><small>Jasa</small></div><div class="ks"><b>${rn?"⭐ "+(Math.round(rs/rn*10)/10):"-"}</b><small>${rn} ulasan</small></div><div class="ks"><b>${sel}</b><small>Pesanan selesai</small></div></div>`:""}
+<div class="hs" style="margin-bottom:6px"><button class="chip" onclick="bukaEdit()">✏️ Edit profil</button><button class="chip" onclick="S.prov='${esc(U.uid)}';S.tab='pp';render()">👁️ Profil publik</button><button class="chip" onclick="S.pw=true;render()">🔑 Ubah kata sandi</button><button class="chip" onclick="verifHP()">📱 Verifikasi HP</button></div><div id="rcv"></div>`}
+const _pv14=profilView;
+profilView=function(){return dashHead()+_pv14().replace(/^<h2>[\s\S]*?<\/h2><p class="mute">[\s\S]*?<\/p>/,"")};
+/* --- Profil publik penyedia --- */
+function muatPub(uid){PUB[uid]={loading:1};Promise.all([db.doc("profil/"+uid).get(),db.collection("galeri").where("uid","==",uid).get(),db.collection("ulasan").where("pen","==",uid).get()]).then(r=>{PUB[uid]={pf:r[0].exists?r[0].data():null,gl:r[1].docs.map(d=>d.data()).sort((a,b)=>b.at-a.at).slice(0,24),ul:r[2].docs.map(d=>d.data()).sort((a,b)=>b.at-a.at).slice(0,10)};if(S.prov===uid)render()}).catch(()=>{PUB[uid]={pf:null,gl:[],ul:[]};if(S.prov===uid)render()})}
+function lapAkun(uid){const l=J.find(x=>x.uid===uid);S.lapa={uid,nama:(l&&l.p)||(PUB[uid]&&PUB[uid].pf&&PUB[uid].pf.nama)||"Pengguna"};render()}
+provView=function(){const uid=S.prov,l=J.filter(x=>x.uid===uid);if(!PUB[uid])muatPub(uid);const R=PUB[uid]&&!PUB[uid].loading?PUB[uid]:null,pf=R&&R.pf||{},nama=(l[0]&&l[0].p)||pf.nama||"Penyedia",rs=sm(l,j=>j.rs||0),rn=sm(l,j=>j.rn||0);
+return `<button class="back" onclick="kembali()">‹ Kembali</button><div class="hero2" style="padding:16px"><div class="row" style="justify-content:flex-start;gap:14px;position:relative;z-index:1">${av(uid,nama,76)}<div style="min-width:0"><div style="font-size:20px;font-weight:800">${esc(nama)}</div><div style="margin-top:2px"><span class="tag" style="background:#fff;color:#4b1a8a">✅ Terverifikasi</span></div>${pf.dom?`<div style="opacity:.92;font-size:13px;margin-top:4px">📍 ${esc(pf.dom)}</div>`:""}</div></div>${pf.bio?`<p style="margin:10px 0 0;font-size:13px;position:relative;z-index:1">${esc(pf.bio)}</p>`:""}</div>
+<div class="g3" style="margin:10px 0"><div class="ks"><b>${rn?"⭐ "+(Math.round(rs/rn*10)/10):"Baru"}</b><small>${rn} ulasan</small></div><div class="ks"><b>${l.length}</b><small>Jasa</small></div><div class="ks"><b>${R?R.gl.length:"…"}</b><small>Foto pengalaman</small></div></div>
+<h3>Jasa</h3>${l.map(card).join("")||`<p class="mute">Belum ada jasa.</p>`}
+<h3>Galeri pengalaman</h3>${!R?`<p class="mute">Memuat...</p>`:R.gl.length?`<div class="g3">${R.gl.filter(x=>IMG.test(x.foto)).map((x,i)=>`<img alt="${esc(x.jn)}" src="${x.foto}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;cursor:pointer" onclick="S.lb=PUB['${esc(uid)}'].gl[${i}].foto;render()">`).join("")}</div>`:`<p class="mute">Belum ada foto pengalaman. Foto hasil pekerjaan yang selesai muncul otomatis di sini.</p>`}
+<h3>Ulasan terbaru</h3>${!R?`<p class="mute">Memuat...</p>`:R.ul.length?R.ul.map(x=>`<div class="card"><div class="in"><div class="row"><b>${esc(x.cn)}</b><span style="color:#d99a00">${bin(x.r)}</span></div>${x.t?`<div>${esc(x.t)}</div>`:""}<div class="mute">${new Date(x.at).toLocaleDateString("id-ID")}</div></div></div>`).join(""):`<p class="mute">Belum ada ulasan.</p>`}
+${U&&uid!==U.uid?`<button class="btn o" style="margin-top:16px" onclick="lapAkun('${esc(uid)}')">⚠️ Laporkan akun ini</button>`:""}`};
+function lapAkunView(){const a=S.lapa;return `<button class="back" onclick="S.lapa=null;render()">‹ Kembali</button><h2>Laporkan akun</h2><p class="mute">${esc(a.nama)}</p><label class="mute">Jenis masalah</label><select id="lk2"><option>Akun palsu atau penipuan</option><option>Perilaku tidak pantas</option><option>Lainnya</option></select><label class="mute">Penjelasan</label><input id="lt2" maxlength="500" placeholder="Jelaskan masalahnya (min. 10 huruf)"><button class="btn y" onclick="kirimLapAkun()">Kirim laporan</button>`}
+async function kirimLapAkun(){const a=S.lapa,t=$("#lt2").value.trim();if(t.length<10){toast("Jelaskan masalahnya (min. 10 huruf)");return}const id=Date.now();
+try{await db.doc("laporan/"+id).set({id,oid:"",by:U.uid,bn:UD.nama,vs:a.uid,vn:a.nama,jn:"Akun: "+a.nama,k:$("#lk2").value,t:t.slice(0,500),st:"baru",at:id});S.lapa=null;toast("Laporan terkirim ke admin");render()}catch(e){toast(err(e))}}
+/* --- Riwayat pesanan masuk penyedia yang rapi --- */
+function oRapi(o){const s=ST[o.st]||[o.st,""],p=pay(o),stc={menunggu:"#d98e00",diterima:"#2b7fd1",selesai:"#1f8a5b",ditolak:"#c0392b",dibatalkan:"#7a7a7a"}[o.st]||"#7a7a7a";let q="";
+if(o.st==="menunggu")q=o.la?`<button class="btn s y" onclick="openOmap('${o.id}')">📍 Cek lokasi &amp; putuskan</button>`:`<button class="btn s" onclick="ubahO('${o.id}','diterima')">Terima</button><button class="btn s o" onclick="ubahO('${o.id}','ditolak')">Tolak</button>`;
+else if(o.st==="diterima")q=`<span class="mute">${p==="lunas"?"💰 Dana tertahan. Kerjakan lalu kirim foto laporan.":p==="diperiksa"?"⏳ Pembayaran sedang diperiksa admin":"⏳ Menunggu pembayaran pencari"}</span>`;
+return `<div class="card" style="border-left:5px solid ${stc}"><div class="in"><div class="row"><b>${esc(o.jn)}</b><b class="price">${rp(o.h)}</b></div><div class="row" style="margin:2px 0 6px"><span class="tag" style="background:${stc};color:#fff">${s[0]}</span><span class="mute">${new Date(o.at).toLocaleDateString("id-ID")}</span></div><div class="mute">👤 ${esc(o.cn)}${o.st==="diterima"?` · <a href="tel:${esc(o.hp)}">${esc(o.hp)}</a>`:""}</div><div class="mute">📅 ${esc(o.jadwal)}</div><div class="mute" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📍 ${esc(o.alamat)}</div>${q?`<div class="row" style="margin-top:10px;justify-content:flex-start;gap:8px;flex-wrap:wrap">${q}</div>`:""}<button class="btn s o" style="margin-top:10px" onclick="OPEN['${o.id}']=!OPEN['${o.id}'];render()">${OPEN[o.id]?"Sembunyikan detail ▴":"Lihat detail ▾"}</button>${OPEN[o.id]?`<div style="margin-top:6px">${o.catatan?`<div class="mute">📝 ${esc(o.catatan)}</div>`:""}${aksi(o,"p")}</div>`:""}</div></div>`}
+function masukBaru(){const gr={baru:OI.filter(o=>o.st==="menunggu"),jalan:OI.filter(o=>o.st==="diterima"),selesai:OI.filter(o=>o.st==="selesai"),lain:OI.filter(o=>o.st==="ditolak"||o.st==="dibatalkan")},f=S.mf||(gr.baru.length?"baru":"jalan"),
+tabs=[["baru","Baru"],["jalan","Berjalan"],["selesai","Selesai"],["lain","Lainnya"]].map(x=>`<button class="chip ${f===x[0]?"on":""}" onclick="S.mf='${x[0]}';render()">${x[1]} (${gr[x[0]].length})</button>`).join("");
+return saldoUI()+`<h2>Pesanan masuk</h2><div class="hs" style="margin:10px 0">${tabs}</div>${gr[f].map(oRapi).join("")||`<p class="mute">Tidak ada pesanan di bagian ini.</p>`}`}
+/* --- Admin: lacak lokasi dan perjalanan penyedia --- */
+function openTrk(id){closeTrk();S.trk=id;TRK=[];tUn=db.collection("live/"+id+"/jejak").orderBy("at").onSnapshot(s=>{TRK=s.docs.map(d=>d.data());if(S.trk===id&&MP&&NM&&NM.kind==="trk"&&$("#mp")){trkDraw();const e=$("#ti"),o=OA.find(x=>String(x.id)===String(id));if(e&&o)e.innerHTML=trkInfo(o)}else if(S.trk===id)render()},e=>toast(err(e)));render()}
+function closeTrk(){S.trk=null;if(tUn){tUn();tUn=null}TRK=[]}
+function jarakTot(a){let d=0;for(let i=1;i<a.length;i++)d+=km(a[i-1].la,a[i-1].lo,a[i].la,a[i].lo);return d}
+function trkDraw(){if(!MP||typeof L==="undefined")return;const pts=TRK.map(p=>[p.la,p.lo]);
+["pl","st","en"].forEach(k=>{if(MK[k]){MP.removeLayer(MK[k]);MK[k]=null}});
+if(pts.length){MK.pl=L.polyline(pts,{color:"#8a4fd1",weight:5,opacity:.85}).addTo(MP);MK.st=L.marker(pts[0],{icon:ic("🚩")}).addTo(MP);MK.en=L.marker(pts[pts.length-1],{icon:ic("🛵")}).addTo(MP)}
+const g=Object.values(MK).filter(x=>x&&x.addTo);if(g.length){try{MP.fitBounds(L.featureGroup(g).getBounds().pad(.3),{maxZoom:17})}catch(e){}}}
+function trkInfo(o){const n=TRK.length,l=TRK[n-1],f=TRK[0];if(!n)return "Belum ada jejak perjalanan. Jejak tercatat saat penyedia menekan “Mulai bagikan lokasi live”.";
+const dur=Math.max(0,Math.round((l.at-f.at)/60000));return `🛵 <b>${n}</b> titik tercatat · jarak tempuh ± <b>${fk(jarakTot(TRK))}</b> · durasi ${dur} menit<br><span class="mute">Posisi terakhir: ${new Date(l.at).toLocaleString("id-ID")}${o.la?" · "+fk(km(l.la,l.lo,o.la,o.lo))+" dari lokasi pesanan":""}</span>`}
+function timeline(o){const e=[[o.at,"🛒","Pesanan dibuat"],[o.tb,"🧾","Bukti transfer dikirim pencari"],[o.tp,"🏦","Pembayaran dikonfirmasi admin, dana ditahan"],[o.ta,"✅","Pesanan diterima penyedia"],[TRK[0]&&TRK[0].at,"🚩","Penyedia mulai berbagi lokasi"],[TRK.length>1&&TRK[TRK.length-1].at,"📍","Posisi terakhir tercatat"],[o.ts,"📷","Pekerjaan selesai, foto laporan dikirim"]].filter(x=>x[0]).sort((a,b)=>a[0]-b[0]);
+return `<div class="card"><div class="in">${e.map(x=>`<div class="row" style="justify-content:flex-start;gap:10px;margin:6px 0"><span style="font-size:20px">${x[1]}</span><div><div>${x[2]}</div><div class="mute">${new Date(x[0]).toLocaleString("id-ID")}</div></div></div>`).join("")}</div></div>`}
+function trkView(o){const j=jb(Number(o.jid))||jb(o.jid);NM={kind:"trk",o,j,c:o.la?[o.la,o.lo]:null,z:14};
+return `<button class="back" onclick="closeTrk();render()">‹ Kembali</button><h2>Lacak pesanan</h2><p class="mute">${esc(o.jn)} · ${esc(o.pn)} → ${esc(o.cn)}<br>📍 ${esc(o.alamat)}</p><div id="mp" style="height:320px;border-radius:12px;margin:8px 0"></div><div class="card"><div class="in" id="ti">${trkInfo(o)}</div></div><h3>Garis waktu</h3>${timeline(o)}<p class="mute">Waktu dicatat dari perangkat pengguna dan titik perjalanan dicatat sekitar tiap 15 detik selama penyedia membagikan lokasi.</p>`}
+const _mi14=mapInit;
+mapInit=function(){_mi14();if(!MP||!NM||NM.kind!=="trk")return;const o=NM.o,j=NM.j;if(o.la)MK.s=L.marker([o.la,o.lo],{icon:ic("📍")}).addTo(MP);if(j&&j.la)MK.b=L.marker([j.la,j.lo],{icon:ic("🏠")}).addTo(MP);trkDraw()};
+const _ak14=aksi,_g14=go,_s14=setRole,_v14=view;
+aksi=function(o,m){const h=_ak14(o,m);return m==="a"?h+`<div class="row" style="margin-top:8px;justify-content:flex-start"><button class="btn s y" onclick="openTrk('${o.id}')">🧭 Lacak perjalanan</button></div>`:h};
+go=function(t){closeTrk();S.ep=false;S.pw=false;S.lapa=null;S.lb=null;_g14(t)};
+setRole=function(r){closeTrk();S.ep=false;S.pw=false;S.lapa=null;S.lb=null;_s14(r)};
+auth.onAuthStateChanged(u=>{PF={};PUB={};GLD={};AVN=null;if(u)db.doc("profil/"+u.uid).get().then(s=>{PF[u.uid]=s.exists?s.data():{};render()}).catch(()=>{})});
+view=function(){if(U&&UD){
+if(UD.blok&&UD.role!=="admin")return _v14();
+if(S.trk&&UD.role==="admin"){const o=OA.find(x=>String(x.id)===String(S.trk));if(o)return trkView(o);closeTrk()}
+if(S.lb&&IMG.test(S.lb))return `<button class="back" onclick="S.lb=null;render()">‹ Kembali</button><img alt="Foto" src="${S.lb}" style="width:100%;border-radius:14px">`;
+if(S.lapa)return lapAkunView();
+if(S.pw)return pwView();
+if(S.ep)return editView();
+const ov=S.det||S.form||S.room||S.omap||S.loc||S.rev||S.lap;
+if(!ov&&S.role==="p"&&S.tab==="masuk")return bannerV()+masukBaru();
+const h=_v14();return typeof h==="string"?bannerV()+h:h}
+return _v14()};
+render();
+</script><script>
+/* ===== REVISI: RIWAYAT PENCARI RAPI, QRIS, PORTAL ADMIN TERPISAH DAN LEBIH BERWARNA ===== */
+const ADM=!!window.SJ_ADMIN;
+if(ADM)document.body.classList.add("adm");
+{const st=document.createElement("style");st.textContent=`body.adm{--teal:#3730a3;--tagbg:#e0e7ff}
+body.adm header{background:linear-gradient(90deg,#111827,#3730a3)}
+body.adm #splash{background:linear-gradient(160deg,#111827,#4338ca)}
+body.adm nav{background:#111827;border-top:0}
+body.adm nav button{color:#9ca3af}
+body.adm nav button.on{color:#fbbf24}
+body.adm .hero2{background:linear-gradient(135deg,#111827,#3730a3 60%,#6366f1)}
+body.adm .back{color:#4338ca}
+body.adm .chip.on,body.adm .ks.on{background:#3730a3;border-color:#3730a3}
+.kpi{border-radius:16px;padding:12px;color:#fff;display:flex;flex-direction:column;gap:2px}.kpi b{font-size:19px}.kpi span{font-size:12px;opacity:.92}
+.act{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:var(--card);border:1px solid var(--line);margin-bottom:8px;cursor:pointer;border-left-width:5px}
+.bdg{min-width:28px;text-align:center;border-radius:99px;padding:2px 9px;font-weight:800;color:#fff;font-size:13px}
+.bar{height:10px;border-radius:6px;background:linear-gradient(90deg,#6366f1,#a78bfa)}`;document.head.appendChild(st)}
+const STC={menunggu:"#d98e00",diterima:"#2b7fd1",selesai:"#1f8a5b",ditolak:"#c0392b",dibatalkan:"#7a7a7a"};
+const ago=t=>{const s=Math.max(1,Math.round((Date.now()-t)/1000));return s<60?s+" dtk lalu":s<3600?Math.round(s/60)+" mnt lalu":s<86400?Math.round(s/3600)+" jam lalu":Math.round(s/86400)+" hari lalu"};
+/* --- Pencari: riwayat pesanan yang rapi --- */
+function oRapiC(o){const s=ST[o.st]||[o.st,""],p=pay(o),c=STC[o.st]||"#7a7a7a";let q="";
+if(o.st==="menunggu")q=`<button class="btn s o" onclick="ubahO('${o.id}','dibatalkan')">Batalkan</button>`;
+else if(o.st==="diterima")q=(p==="belum"||p==="ditolak")?`<button class="btn s y" onclick="OPEN['${o.id}']=true;render()">💳 Bayar sekarang</button>`:`<span class="mute">${p==="diperiksa"?"⏳ Pembayaran sedang diperiksa admin":"🔒 Dana tertahan aman di admin"}</span>`;
+else if(o.st==="selesai")q=UL[String(o.id)]?`<span class="mute">⭐ ${bin(UL[String(o.id)].r)}</span>`:`<button class="btn s y" onclick="RS=0;RT='';S.rev='${o.id}';render()">⭐ Beri ulasan</button>`;
+return `<div class="card" style="border-left:5px solid ${c}"><div class="in"><div class="row"><b>${esc(o.jn)}</b><b class="price">${rp(o.h)}</b></div><div class="row" style="margin:2px 0 6px"><span class="tag" style="background:${c};color:#fff">${s[0]}</span><span class="mute">${new Date(o.at).toLocaleDateString("id-ID")}</span></div><div class="mute">👷 ${esc(o.pn)}</div><div class="mute">📅 ${esc(o.jadwal)}</div><div class="mute" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📍 ${esc(o.alamat)}</div>${q?`<div class="row" style="margin-top:10px;justify-content:flex-start;gap:8px;flex-wrap:wrap">${q}</div>`:""}<button class="btn s o" style="margin-top:10px" onclick="OPEN['${o.id}']=!OPEN['${o.id}'];render()">${OPEN[o.id]?"Sembunyikan detail ▴":"Lihat detail ▾"}</button>${OPEN[o.id]?`<div style="margin-top:6px">${o.catatan?`<div class="mute">📝 ${esc(o.catatan)}</div>`:""}${aksi(o,"c")}</div>`:""}</div></div>`}
+function pesananBaru(){const g={menunggu:OM.filter(o=>o.st==="menunggu"),jalan:OM.filter(o=>o.st==="diterima"),selesai:OM.filter(o=>o.st==="selesai"),lain:OM.filter(o=>o.st==="ditolak"||o.st==="dibatalkan")},
+f=S.cf||(g.jalan.length?"jalan":g.menunggu.length?"menunggu":g.selesai.length?"selesai":"menunggu"),
+t=[["menunggu","Menunggu"],["jalan","Berjalan"],["selesai","Selesai"],["lain","Lainnya"]].map(x=>`<button class="chip ${f===x[0]?"on":""}" onclick="S.cf='${x[0]}';render()">${x[1]} (${g[x[0]].length})</button>`).join("");
+return `<h2>Pesanan saya</h2><div class="hs" style="margin:10px 0">${t}</div>${g[f].map(oRapiC).join("")||`<p class="mute">Tidak ada pesanan di bagian ini.</p>`}`}
+/* --- Pembayaran: QRIS dan transfer, tanpa biaya dari SERBA JASA --- */
+bayarUI=function(o){if(!CFG.rek&&!CFG.qris)return `<div class="mute" style="margin-top:6px">Admin belum mengatur metode pembayaran.</div>`;
+const on=BPP&&BPP.id==o.id,pre=on?`<img alt="Pratinjau bukti" src="${BPP.d}" style="width:100%;border-radius:10px;margin-top:8px">`:"",
+act=on?`<button class="btn s y" onclick="kirimBukti()">Kirim bukti</button><button class="btn s o" onclick="BPP=null;render()">Ganti foto</button>`:`<label class="btn s y" style="display:inline-block;cursor:pointer">📷 Unggah bukti pembayaran<input type="file" accept="image/*" style="display:none" onchange="buktiFoto('${o.id}',this)"></label>`,
+q=CFG.qris&&IMG.test(CFG.qris)?`<div style="text-align:center"><b>Bayar dengan QRIS</b><img alt="QRIS" src="${CFG.qris}" style="width:100%;max-width:300px;background:#fff;border-radius:12px;margin:8px 0"><div style="font-size:20px;font-weight:800">${rp(o.h)}</div><div class="mute">Masukkan nominal persis ${rp(o.h)}. Tekan lama gambar untuk menyimpan, lalu unggah dari galeri di aplikasi e-wallet atau m-banking Anda.</div>${CFG.qn?`<div class="mute">Merchant: ${esc(CFG.qn)}</div>`:""}</div>`:"",
+t=CFG.rek?`<div style="margin-top:10px"><b>${q?"Atau transfer ":"Transfer "}${rp(o.h)}</b><div class="mute">${esc(CFG.bank)} · ${esc(CFG.rek)}<br>a.n. ${esc(CFG.an)}</div></div>`:"";
+return `<div class="card" style="margin:10px 0 0"><div class="in">${q}${t}${pre}<div class="row" style="margin-top:8px;justify-content:flex-start;flex-wrap:wrap">${act}</div><div class="mute" style="margin-top:6px">SERBA JASA tidak menambah biaya apa pun. Unggah bukti setelah membayar agar admin dapat memeriksanya.</div></div></div>`};
+/* --- Admin: pengaturan QRIS --- */
+let QRN=null;
+function qrisDari(d,max,q){return new Promise((ok,no)=>{const i=new Image();i.onload=()=>{const s=Math.min(1,max/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(i,0,0,c.width,c.height);ok(c.toDataURL("image/jpeg",q))};i.onerror=no;i.src=d})}
+async function fotoQris(el){const f=el.files[0];if(!f)return;try{const r=await new Promise((ok,no)=>{const fr=new FileReader();fr.onload=()=>ok(fr.result);fr.onerror=no;fr.readAsDataURL(f)});let q=.92,d=await qrisDari(r,900,q);while(d.length>145000&&q>.5){q-=.1;d=await qrisDari(r,900,q)}QRN=d;const e=$("#qpv");if(e)e.innerHTML=`<img alt="QRIS" src="${d}" style="width:96px;height:96px;object-fit:contain;background:#fff;border-radius:8px">`}catch(e){toast("Gambar gagal dibaca")}}
+simpanCfg=async function(){const bank=$("#cb").value.trim(),rek=$("#cr").value.trim(),an=$("#ca").value.trim(),persen=+$("#cp").value,qn=($("#cn2")?$("#cn2").value.trim():"").slice(0,60),qris=QRN!==null?QRN:(CFG.qris||"");
+if(!(persen>=0&&persen<=50)){toast("Komisi 0 sampai 50");return}
+if(!qris&&(!bank||rek.length<5||!an)){toast("Isi QRIS atau lengkapi rekening transfer");return}
+try{await db.doc("config/bayar").set({bank,rek,an,persen,qris,qn});QRN=null;EDC=false;render();toast("Pengaturan tersimpan")}catch(e){toast(err(e))}};
+function cfgBox2(){const has=CFG.rek||CFG.qris,qi=CFG.qris&&IMG.test(CFG.qris)?`<img alt="QRIS" src="${CFG.qris}" style="width:96px;height:96px;object-fit:contain;background:#fff;border-radius:8px">`:"";
+if(has&&!EDC)return `<div class="card"><div class="in">${qi?`<div class="row" style="justify-content:flex-start;gap:12px">${qi}<div><b>QRIS aktif</b><div class="mute">${esc(CFG.qn||"")}</div></div></div>`:`<div class="mute">QRIS belum diunggah.</div>`}<div style="border-top:1px solid var(--line);margin:10px 0"></div>${CFG.rek?`<b>${esc(CFG.bank)}</b><div class="mute">${esc(CFG.rek)} · a.n. ${esc(CFG.an)}</div>`:`<div class="mute">Rekening transfer belum diisi.</div>`}<div class="mute" style="margin-top:6px">Komisi ${CFG.persen}% · pencairan penuh tanpa potongan biaya bank</div><button class="btn s o" style="margin-top:10px" onclick="EDC=true;render()">Ubah pengaturan</button></div></div>`;
+return `<div class="card"><div class="in"><b>QRIS</b><p class="mute">Unggah gambar kode QRIS merchant Anda dari bank atau e-wallet. Pembayar memindai lalu memasukkan nominal.</p><div class="row" style="justify-content:flex-start;gap:12px"><div id="qpv">${qi}</div><label class="btn s o" style="cursor:pointer">📷 Unggah QRIS<input type="file" accept="image/*" style="display:none" onchange="fotoQris(this)"></label></div><input id="cn2" maxlength="60" placeholder="Nama merchant QRIS (opsional)" value="${esc(CFG.qn||"")}"><b>Rekening transfer (cadangan)</b><input id="cb" placeholder="Bank atau e-wallet" value="${esc(CFG.bank)}"><input id="cr" inputmode="numeric" placeholder="Nomor rekening" value="${esc(CFG.rek)}"><input id="ca" placeholder="Atas nama" value="${esc(CFG.an)}"><input id="cp" type="number" inputmode="numeric" placeholder="Komisi (%)" value="${CFG.persen}"><button class="btn y" onclick="simpanCfg()">Simpan pengaturan</button>${has?`<button class="btn o" style="margin-top:8px" onclick="EDC=false;render()">Batal</button>`:""}</div></div>`}
+/* --- Admin: tampilan baru --- */
+const kpi=(bg,ic,v,l)=>`<div class="kpi" style="background:${bg}"><span>${ic} ${l}</span><b>${v}</b></div>`;
+const actRow=(c,ic,t,n,tab)=>`<div class="act" style="border-left-color:${n?c:"#9ca3af"}" onclick="go('${tab}')"><span style="font-size:22px">${ic}</span><div style="flex:1"><b>${t}</b><div class="mute">${n?"Perlu ditindaklanjuti":"Aman ✓"}</div></div><span class="bdg" style="background:${n?c:"#9ca3af"}">${n}</span></div>`;
+function days7(f){const d=[],now=new Date();for(let i=6;i>=0;i--){const x=new Date(now);x.setDate(now.getDate()-i);x.setHours(0,0,0,0);d.push({t:x.getTime(),l:x.toLocaleDateString("id-ID",{weekday:"short"}),n:0})}
+OA.forEach(o=>{const r=f(o);if(!r)return;for(let i=d.length-1;i>=0;i--)if(r[0]>=d[i].t){d[i].n+=r[1];break}});return d}
+function dayBars(v,col,fmt){const m=Math.max(1,...v.map(x=>x.n));return `<div class="card"><div class="in row" style="align-items:flex-end;height:130px;gap:6px">${v.map(x=>`<div style="flex:1;text-align:center"><div style="font-size:10px">${fmt(x.n)}</div><div style="height:${Math.round(x.n/m*70)+2}px;background:${col};border-radius:6px 6px 0 0"></div><div class="mute" style="font-size:11px">${x.l}</div></div>`).join("")}</div></div>`}
+function dashView2(){const lun=OA.filter(o=>pay(o)==="lunas"),kt=UAL.filter(u=>u.ktp==="menunggu").length,pp=UAL.filter(u=>u.penyedia==="menunggu").length,pk=OA.filter(o=>pay(o)==="diperiksa").length,cm=OA.filter(o=>o.cair==="diminta").length,lb=LA.filter(l=>l.st==="baru").length,tot=kt+pp+pk+cm+lb,
+cat=OA.reduce((m,o)=>{const j=jb(Number(o.jid))||jb(o.jid),k=j?j.k:"Lainnya";m[k]=(m[k]||0)+1;return m},{}),top=Object.entries(cat).sort((a,b)=>b[1]-a[1]).slice(0,5),mx=Math.max(1,...top.map(x=>x[1])),
+pr={};J.forEach(j=>{const p=pr[j.uid]||(pr[j.uid]={n:j.p,rs:0,rn:0,j:0,sel:0,uid:j.uid});p.rs+=j.rs||0;p.rn+=j.rn||0;p.j++});OA.filter(o=>o.st==="selesai").forEach(o=>{if(pr[o.pen])pr[o.pen].sel++});
+const tp=Object.values(pr).sort((a,b)=>(b.rn?b.rs/b.rn:0)-(a.rn?a.rs/a.rn:0)||b.sel-a.sel).slice(0,5),
+ev=[...OA.map(o=>[o.at,"🛒",`Pesanan baru: ${o.jn} (${o.cn})`]),...OA.filter(o=>o.tp).map(o=>[o.tp,"💰",`Pembayaran lunas ${rp(o.h)}: ${o.jn}`]),...OA.filter(o=>o.ts).map(o=>[o.ts,"✅",`Pesanan selesai: ${o.jn}`]),...LA.map(l=>[l.at,"🚨",`Laporan ${l.st}: ${l.k}`])].sort((a,b)=>b[0]-a[0]).slice(0,8);
+return `<div class="hero2"><div style="font-size:13px;opacity:.9;position:relative;z-index:1">${new Date().toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</div><h2 style="margin:4px 0;position:relative;z-index:1">Halo, ${esc((UD.nama||"Admin").split(" ")[0])} 👋</h2><div style="position:relative;z-index:1;font-size:14px">${tot?`<b>${tot}</b> hal menunggu tindakan Anda`:"Semua beres. Tidak ada tindakan tertunda ✓"}</div></div>
+<h3>Perlu tindakan</h3>${actRow("#e11d48","🪪","Verifikasi KTP",kt,"penyedia")}${actRow("#7c3aed","👷","Pengajuan penyedia",pp,"penyedia")}${actRow("#d97706","💳","Pembayaran perlu diperiksa",pk,"trx")}${actRow("#0891b2","💸","Pencairan diminta",cm,"trx")}${actRow("#dc2626","🚨","Laporan baru",lb,"laporan")}
+<h3>Ringkasan</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${kpi("linear-gradient(135deg,#4338ca,#818cf8)","👥",UAL.length,"Pengguna")}${kpi("linear-gradient(135deg,#7c3aed,#c084fc)","👷",UAL.filter(u=>u.penyedia==="disetujui").length,"Penyedia aktif")}${kpi("linear-gradient(135deg,#0e7490,#22d3ee)","🛠️",J.length,"Jasa tayang")}${kpi("linear-gradient(135deg,#be185d,#f472b6)","📦",OA.length,"Total pesanan")}${kpi("linear-gradient(135deg,#047857,#34d399)","💰",rp(sm(lun,o=>o.h)),"Omzet lunas")}${kpi("linear-gradient(135deg,#b45309,#fbbf24)","🏷️",rp(sm(lun,o=>o.kom||0)),"Komisi")}</div>
+<h3>Pesanan 7 hari terakhir</h3>${dayBars(days7(o=>[o.at,1]),"#6366f1",n=>n)}<h3>Omzet lunas 7 hari terakhir</h3>${dayBars(days7(o=>pay(o)==="lunas"?[o.tp||o.at,o.h]:null),"#10b981",n=>n?Math.round(n/1000)+"rb":"0")}
+<h3>Kategori terpopuler</h3><div class="card"><div class="in">${top.map(x=>`<div style="margin:8px 0"><div class="row"><span>${esc(x[0])}</span><b>${x[1]}</b></div><div class="bar" style="width:${Math.round(x[1]/mx*100)}%"></div></div>`).join("")||`<p class="mute">Belum ada data pesanan.</p>`}</div></div>
+<h3>Penyedia teratas</h3>${tp.map((p,i)=>`<div class="card"><div class="in row"><div style="display:flex;gap:10px;align-items:center"><b style="font-size:18px;width:22px">${i+1}</b><div><b>${esc(p.n)}</b><div class="mute">${p.j} jasa · ${p.sel} pesanan selesai</div></div></div><b>${p.rn?"⭐ "+(Math.round(p.rs/p.rn*10)/10):"-"}</b></div></div>`).join("")||`<p class="mute">Belum ada penyedia.</p>`}
+<h3>Aktivitas terbaru</h3><div class="card"><div class="in">${ev.map(e=>`<div class="row" style="justify-content:flex-start;gap:10px;margin:6px 0"><span style="font-size:18px">${e[1]}</span><div style="min-width:0"><div>${esc(e[2])}</div><div class="mute">${ago(e[0])}</div></div></div>`).join("")||`<p class="mute">Belum ada aktivitas.</p>`}</div></div>`}
+let UF="",JK="",FP2="",QO="",LF="baru";
+function uList2(){const q=QU.toLowerCase(),a=UAL.filter(u=>((u.nama||"")+(u.email||"")).toLowerCase().includes(q)&&(!UF||(UF==="penyedia"&&u.penyedia==="disetujui")||(UF==="pencari"&&u.penyedia!=="disetujui"&&u.role!=="admin")||(UF==="blok"&&u.blok)||(UF==="ktp"&&u.ktp==="menunggu"))).sort((x,y)=>(y.at||0)-(x.at||0));
+return a.map(u=>`<div class="card"><div class="in"><div class="row" style="justify-content:flex-start;gap:12px"><div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#4338ca,#a78bfa);color:#fff;display:grid;place-items:center;font-weight:800;flex:none">${esc((u.nama||"?").charAt(0).toUpperCase())}</div><div style="min-width:0;flex:1"><b>${esc(u.nama)}</b>${u.role==="admin"?` <span class="tag ok">Admin</span>`:""}<div class="mute" style="overflow:hidden;text-overflow:ellipsis">${esc(u.email)}</div></div></div><div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px"><span class="tag ${u.ktp==="disetujui"?"ok":""}">KTP ${esc(u.ktp)}</span><span class="tag ${u.penyedia==="disetujui"?"ok":""}">Penyedia: ${esc(u.penyedia)}</span>${u.blok?`<span class="tag" style="background:#c0392b;color:#fff">Diblokir</span>`:""}</div><div class="mute" style="margin-top:6px">📱 ${esc(u.hp)} · Bergabung ${u.at?new Date(u.at).toLocaleDateString("id-ID"):"-"}</div>${u.role!=="admin"?`<div class="row" style="margin-top:10px;justify-content:flex-start;gap:8px">${u.penyedia==="disetujui"?`<button class="btn s o" onclick="S.prov='${esc(u.id)}';S.tab='pp';render()">Profil</button>`:""}<button class="btn s o" onclick="blokir('${esc(u.id)}',${u.blok?0:1})">${u.blok?"Buka blokir":"Blokir akun"}</button></div>`:""}</div></div>`).join("")||`<p class="mute">Tidak ada pengguna.</p>`}
+function penggunaView2(){const c=fn=>UAL.filter(fn).length,ch=[["","Semua",UAL.length],["penyedia","Penyedia",c(u=>u.penyedia==="disetujui")],["pencari","Pencari",c(u=>u.penyedia!=="disetujui"&&u.role!=="admin")],["ktp","KTP menunggu",c(u=>u.ktp==="menunggu")],["blok","Diblokir",c(u=>u.blok)]];
+return `<h2>Pengguna</h2><input id="qu" placeholder="Cari nama atau email" value="${esc(QU)}" oninput="QU=this.value;$('#ul').innerHTML=uList2()"><div class="hs" style="margin:6px 0">${ch.map(x=>`<button class="chip ${UF===x[0]?"on":""}" onclick="UF='${x[0]}';render()">${x[1]} (${x[2]})</button>`).join("")}</div><div id="ul">${uList2()}</div>`}
+function penyediaView2(){const kt=UAL.filter(u=>u.ktp==="menunggu").length,pp=UAL.filter(u=>u.penyedia==="menunggu").length,pa=UAL.filter(u=>u.penyedia==="disetujui").length;
+return `<div class="hero2" style="padding:14px"><h2 style="margin:0;position:relative;z-index:1">Verifikasi &amp; Penyedia</h2><div style="opacity:.92;font-size:13px;margin-top:4px;position:relative;z-index:1">🪪 ${kt} KTP menunggu · 👷 ${pp} pengajuan · ✅ ${pa} penyedia aktif</div></div><br>`+adminView()}
+function jList2(){const q=QJ.toLowerCase(),a=J.filter(j=>(!JK||j.k===JK)&&((j.n||"")+(j.p||"")+(j.sk||"")+(j.k||"")).toLowerCase().includes(q));
+return a.map(j=>`<div class="card">${imgJ(j,80)}<div class="in"><div class="row"><b>${esc(j.n)}</b><b class="price">${rp(j.h)}</b></div><div class="mute">${esc(j.p)} · ${esc(j.k)}${j.sk?" › "+esc(j.sk):""}</div><div class="mute">${j.rn?"⭐ "+j.r+" ("+j.rn+")":"Belum ada ulasan"} · ${j.la?"lokasi diatur":"tanpa lokasi"} · 📍 ${esc(j.l)}</div><div class="row" style="margin-top:8px;justify-content:flex-start;gap:8px"><button class="btn s o" onclick="S.prov='${esc(j.uid)}';S.tab='pp';render()">Profil penyedia</button><button class="btn s o" style="color:#c0392b" onclick="hapus(${j.id})">Hapus</button></div></div></div>`).join("")||`<p class="mute">Tidak ada jasa.</p>`}
+function jasaView2(){return `<h2>Jasa (${J.length})</h2><input id="qj" placeholder="Cari jasa, penyedia, atau kategori" value="${esc(QJ)}" oninput="QJ=this.value;$('#jl').innerHTML=jList2()"><div class="hs" style="margin:6px 0"><button class="chip ${JK?"":"on"}" onclick="JK='';render()">Semua</button>${KAT.map((k,i)=>`<button class="chip ${JK===k[0]?"on":""}" onclick="JK=KAT[${i}][0];render()">${k[1]} ${esc(k[0])}</button>`).join("")}</div><div id="jl">${jList2()}</div>`}
+function oAdm(o){const s=ST[o.st]||[o.st,""],p=pay(o),c=STC[o.st]||"#7a7a7a",pc={belum:"#9ca3af",diperiksa:"#d98e00",lunas:"#1f8a5b",ditolak:"#c0392b"}[p];
+return `<div class="card" style="border-left:5px solid ${c}"><div class="in"><div class="row"><b>${esc(o.jn)}</b><b class="price">${rp(o.h)}</b></div><div class="mute">${esc(o.cn)} → ${esc(o.pn)}</div><div style="margin:6px 0;display:flex;gap:6px;flex-wrap:wrap"><span class="tag" style="background:${c};color:#fff">${s[0]}</span><span class="tag" style="background:${pc};color:#fff">💳 ${p}</span>${o.cair?`<span class="tag">💸 ${esc(o.cair)}</span>`:""}</div><div class="mute">📅 ${esc(o.jadwal)} · dibuat ${new Date(o.at).toLocaleString("id-ID")}</div><div class="row" style="margin-top:10px;justify-content:flex-start;gap:8px"><button class="btn s y" onclick="openTrk('${o.id}')">🧭 Lacak</button><button class="btn s o" onclick="OPEN['${o.id}']=!OPEN['${o.id}'];render()">${OPEN[o.id]?"Tutup ▴":"Detail ▾"}</button></div>${OPEN[o.id]?`<div style="margin-top:8px">${oCard(o,"a")}</div>`:""}</div></div>`}
+function oList(){const q=QO.toLowerCase();return OA.filter(o=>(!FP2||o.st===FP2)&&((o.jn||"")+(o.cn||"")+(o.pn||"")).toLowerCase().includes(q)).map(oAdm).join("")||`<p class="mute">Tidak ada pesanan.</p>`}
+function pesananView2(){const st=[["","Semua"],["menunggu","Menunggu"],["diterima","Berjalan"],["selesai","Selesai"],["ditolak","Ditolak"],["dibatalkan","Batal"]];
+return `<h2>Pesanan (${OA.length})</h2><input placeholder="Cari jasa, pemesan, atau penyedia" value="${esc(QO)}" oninput="QO=this.value;$('#ol').innerHTML=oList()"><div class="hs" style="margin:6px 0">${st.map(x=>`<button class="chip ${FP2===x[0]?"on":""}" onclick="FP2='${x[0]}';render()">${x[1]} (${OA.filter(o=>!x[0]||o.st===x[0]).length})</button>`).join("")}</div><div id="ol">${oList()}</div>`}
+const btB=o=>BK&&BK.id==o.id?`<img alt="Bukti" src="${BK.img}" style="width:100%;border-radius:10px;margin-top:8px">`:`<button class="btn s o" style="margin-top:8px" onclick="lihatBukti('${o.id}')">Lihat bukti pembayaran</button>`;
+const rkB=o=>RK&&RK.uid===o.pen?`<div class="mute" style="margin-top:6px">Rekening: ${esc(RK.rek)}</div>`:`<button class="btn s o" style="margin-top:8px" onclick="lihatRek('${esc(o.pen)}')">Lihat rekening penyedia</button>`;
+function bayarView2(){const k=OA.filter(o=>pay(o)==="diperiksa"),c=OA.filter(o=>o.cair==="diminta"),l=OA.filter(o=>pay(o)==="lunas"),tahan=sm(l.filter(o=>o.st==="diterima"),o=>o.h),utang=sm(l.filter(o=>o.st==="selesai"&&o.cair!=="dicairkan"),o=>o.net||0);
+return `<h2>Pembayaran</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">${kpi("linear-gradient(135deg,#4338ca,#818cf8)","💰",rp(sm(l,o=>o.h)),"Total lunas")}${kpi("linear-gradient(135deg,#047857,#34d399)","🏷️",rp(sm(l,o=>o.kom||0)),"Komisi SERBA JASA")}${kpi("linear-gradient(135deg,#b45309,#fbbf24)","🔒",rp(tahan),"Dana tertahan")}${kpi("linear-gradient(135deg,#be185d,#f472b6)","⏳",rp(utang),"Saldo penyedia belum cair")}</div>
+<h3>Pembayaran perlu diperiksa (${k.length})</h3>${k.map(o=>oMini(o,btB(o)+`<div class="row" style="margin-top:8px;justify-content:flex-start"><button class="btn s" onclick="bayarOk('${o.id}',1)">Setujui</button><button class="btn s o" onclick="bayarOk('${o.id}',0)">Tolak</button></div>`)).join("")||`<p class="mute">Tidak ada.</p>`}
+<h3>Pencairan diminta (${c.length})</h3>${c.map(o=>oMini(o,`<div class="mute">Transfer penuh: <b>${rp(o.net||0)}</b> (komisi ${rp(o.kom||0)}). Tanpa potongan biaya bank dari penyedia.</div>`+rkB(o)+`<button class="btn s y" style="margin-top:8px" onclick="cairOk('${o.id}')">Sudah ditransfer</button>`)).join("")||`<p class="mute">Tidak ada.</p>`}
+<h3>Pengaturan pembayaran</h3>${cfgBox2()}
+<h3>Riwayat pembayaran lunas</h3>${l.slice(0,10).map(o=>oMini(o,`<div class="mute">Komisi ${rp(o.kom||0)} · penyedia ${rp(o.net||0)} · ${o.cair==="dicairkan"?"sudah dicairkan":o.cair==="diminta"?"pencairan diminta":"belum dicairkan"}</div>`)).join("")||`<p class="mute">Belum ada.</p>`}
+<button class="btn o" style="margin-top:16px" onclick="unduhCsv()">⬇ Unduh CSV transaksi</button>`}
+function laporanView2(){if(ULA===null){ULA=[];muatUlasan()}const ch=[["baru","Baru"],["diproses","Diproses"],["selesai","Selesai"],["","Semua"]],a=LA.filter(l=>!LF||l.st===LF).sort((x,y)=>y.at-x.at);
+return `<h2>Laporan &amp; komplain</h2><div class="hs" style="margin:8px 0">${ch.map(x=>`<button class="chip ${LF===x[0]?"on":""}" onclick="LF='${x[0]}';render()">${x[1]} (${LA.filter(l=>!x[0]||l.st===x[0]).length})</button>`).join("")}</div>${a.map(lapCard).join("")||`<p class="mute">Tidak ada laporan di bagian ini.</p>`}<h3>Moderasi ulasan (terbaru)</h3>${(ULA||[]).map(x=>`<div class="card"><div class="in"><div class="row"><b>${esc(x.cn)}</b><span style="color:#d99a00">${bin(x.r)}</span></div>${x.t?`<div>${esc(x.t)}</div>`:""}<button class="btn s o" style="margin-top:8px" onclick="hapusUlasan('${esc(x.oid)}')">Hapus ulasan</button></div></div>`).join("")||`<p class="mute">Belum ada ulasan.</p>`}`}
+function profilAdmin(){const ac=UAL.filter(u=>u.ktp==="menunggu"||u.penyedia==="menunggu").length+OA.filter(o=>pay(o)==="diperiksa"||o.cair==="diminta").length+LA.filter(l=>l.st==="baru").length;
+return `<div class="hero2" style="padding:18px"><div class="row" style="justify-content:flex-start;gap:14px;position:relative;z-index:1"><div style="width:64px;height:64px;border-radius:50%;background:#fbbf24;color:#111827;display:grid;place-items:center;font-weight:800;font-size:26px;flex:none">${esc((UD.nama||"A").charAt(0).toUpperCase())}</div><div style="min-width:0"><div style="font-size:19px;font-weight:800">${esc(UD.nama)}</div><div style="opacity:.9;font-size:13px">${esc(UD.email)}</div><span class="tag" style="background:#fbbf24;color:#111827;margin-top:4px">Administrator</span></div></div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0">${kpi("linear-gradient(135deg,#4338ca,#818cf8)","👥",UAL.length,"Pengguna")}${kpi("linear-gradient(135deg,#e11d48,#fb7185)","⏳",ac,"Tindakan tertunda")}</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"><span class="tag" style="background:${U.emailVerified?"#1f8a5b":"#e4e0eb"};color:${U.emailVerified?"#fff":"#4a4458"}">${U.emailVerified?"✉️ Email terverifikasi":"✉️ Email belum terverifikasi"}</span></div>
+<button class="btn y" onclick="S.pw=true;render()">🔑 Ubah kata sandi</button><button class="btn o" style="margin-top:8px" onclick="auth.signOut()">Keluar</button><p class="mute" style="margin-top:12px">Portal admin terpisah dari aplikasi pengguna. Akun admin tidak dipakai untuk memesan atau menyediakan jasa.</p>`}
+function admView(){if(S.trk){const o=OA.find(x=>String(x.id)===String(S.trk));if(o)return trkView(o);closeTrk()}
+if(S.pw)return pwView();const t=S.tab;
+if(t==="pp")return provView();if(t==="pengguna")return penggunaView2();if(t==="penyedia")return penyediaView2();if(t==="ajasa")return jasaView2();if(t==="apesanan")return pesananView2();if(t==="trx")return bayarView2();if(t==="laporan")return laporanView2();if(t==="profil")return profilAdmin();if(t==="notif")return notifView();return dashView2()}
+NAV.a.length=0;[["dash","📊","Dashboard"],["pengguna","👥","Pengguna"],["penyedia","👷","Penyedia"],["ajasa","🛠️","Jasa"],["apesanan","📦","Pesanan"],["trx","💳","Pembayaran"],["laporan","🚨","Laporan"],["profil","👤","Profil"]].forEach(x=>NAV.a.push(x));
+const denyAdm=()=>`<div class="hero2"><h2 style="margin:0;position:relative;z-index:1">Portal admin</h2><div style="opacity:.9;margin-top:6px;position:relative;z-index:1">Halaman ini khusus akun administrator.</div></div><p>Akun Anda bukan admin. Gunakan aplikasi SERBA JASA untuk memesan atau menyediakan jasa.</p><a class="btn y" style="display:block;text-align:center;text-decoration:none;margin-bottom:8px" href="index.html">Buka aplikasi SERBA JASA</a><button class="btn o" onclick="auth.signOut()">Keluar</button>`;
+const blokAdm=()=>`<div class="hero2"><h2 style="margin:0;position:relative;z-index:1">Akun admin</h2></div><p>Akun admin hanya dapat dipakai di portal admin, terpisah dari aplikasi pengguna.</p><a class="btn y" style="display:block;text-align:center;text-decoration:none;margin-bottom:8px" href="admin.html">Buka portal admin</a><button class="btn o" onclick="auth.signOut()">Keluar</button>`;
+const _au15=authView,_r15=render,_v15=view;
+authView=function(){if(!ADM)return _au15();AM="masuk";return _au15().replace("<h2>Masuk</h2>","<h2>Masuk Admin</h2>").replace(/<button class="btn o"[^>]*onclick="ganti\('daftar'\)">[^<]*<\/button>/,"")};
+render=function(){if(ADM&&U&&UD&&UD.role==="admin"&&S.role!=="a"){S.role="a";S.tab="dash"}
+_r15();const n=$("#n");if(n&&U&&UD&&((ADM&&UD.role!=="admin")||(!ADM&&UD.role==="admin")))n.style.display="none";
+if(ADM){const b=document.querySelector("header b");if(b&&!b.dataset.a){b.dataset.a=1;b.innerHTML='SERBA JASA <span style="background:#fbbf24;color:#111827;border-radius:6px;padding:1px 6px;font-size:11px;vertical-align:middle">ADMIN</span><small>Portal pengelola</small>'}}};
+view=function(){if(U&&UD){
+if(ADM)return UD.role!=="admin"?denyAdm():admView();
+if(UD.role==="admin")return blokAdm();
+if(!(UD.blok)&&(S.role==="c"||S.role==="p")&&S.tab==="pesanan"&&!(S.det||S.form||S.room||S.omap||S.loc||S.rev||S.lap||S.lb||S.lapa||S.pw||S.ep||S.cat))return bannerV()+pesananBaru()}
+return _v15()};
+render();
+</script></body></html>
