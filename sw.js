@@ -1,4 +1,4 @@
-const C = "serba-jasa-v4";
+const C = "serba-jasa-v5";
 const A = ["./", "index.html", "manifest.webmanifest", "ikon-ungu-192.png", "ikon-ungu-512.png", "logo.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(C).then(c => c.addAll(A)).then(() => self.skipWaiting()));
