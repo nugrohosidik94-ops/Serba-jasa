@@ -581,14 +581,14 @@ const pw=prompt("Masukkan sandi Anda untuk konfirmasi");if(!pw)return;
 try{const u=auth.currentUser,cr=firebase.auth.EmailAuthProvider.credential(u.email,pw);await u.reauthenticateWithCredential(cr);
 const b=db.batch();J.filter(j=>j.uid===u.uid).forEach(j=>b.delete(db.doc("jasa/"+j.id)));
 OM.filter(o=>pay(o)!=="belum").forEach(o=>b.delete(db.doc("bukti/"+o.id)));
-b.delete(db.doc("kyc/"+u.uid));b.delete(db.doc("profil/"+u.uid));b.delete(db.doc("fav/"+u.uid));(await db.collection("galeri").where("uid","==",u.uid).get()).docs.forEach(d=>b.delete(d.ref));b.delete(db.doc("users/"+u.uid));await b.commit();await u.delete();toast("Akun dihapus")}
+b.delete(db.doc("kyc/"+u.uid));b.delete(db.doc("profil/"+u.uid));b.delete(db.doc("fav/"+u.uid));b.delete(db.doc("terima/"+u.uid));(await db.collection("galeri").where("uid","==",u.uid).get()).docs.forEach(d=>b.delete(d.ref));b.delete(db.doc("users/"+u.uid));await b.commit();await u.delete();toast("Akun dihapus")}
 catch(e){toast(e.code==="auth/wrong-password"||e.code==="auth/invalid-credential"?"Sandi salah":err(e))}}
 if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 render();
 </script><script>
 /* ===== ALUR PEMBAYARAN TRANSPARAN, SALDO PENYEDIA, DAN NOTIFIKASI ===== */
 let PGM=null;
-const pg=o=>pay(o)+"|"+(o.cair||"")+"|"+(o.ob||"")+"|"+o.h;
+const pg=o=>pay(o)+"|"+(o.cair||"")+"|"+(o.ob||"")+"|"+o.h+"|"+(o.kc||0)+"|"+o.st;
 function alur(o,m){const p=pay(o),sel=o.st==="selesai",a=p!=="belum"&&p!=="ditolak",lun=p==="lunas",fin=sel&&lun;
 const nd=(ic,l,on)=>`<div style="width:80px;text-align:center"><div style="font-size:28px;line-height:34px;${on?"":"opacity:.35"}">${ic}</div><div class="mute" style="font-size:11px;line-height:1.25">${l}</div></div>`,
 ln=on=>`<div style="flex:1;height:3px;border-radius:2px;margin:0 2px 24px;background:${on?"var(--ok)":"var(--line)"}"></div>`;
@@ -606,9 +606,10 @@ if(p==="diperiksa")msg="Bukti transfer Anda sedang diperiksa admin.";
 else if(lun&&!sel)msg="🔒 Pembayaran Anda tertahan aman di admin. Dana baru diteruskan ke penyedia setelah pekerjaan selesai dan bukti foto dikirim.";
 else if(fin)msg="✅ Pekerjaan selesai dan pembayaran sudah diteruskan ke penyedia."}
 return `<div style="display:flex;align-items:center;margin:12px 0 4px">${nd("👱","Pencari<br>"+(a?"Sudah transfer":"Belum transfer"),a)}${ln(a)}${nd("🏦","Admin<br>"+l2,lun||p==="diperiksa")}${ln(lun)}${nd("👷","Penyedia<br>"+(fin?"Masuk saldo":"Kerjakan tugas"),fin)}</div>${msg?`<div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:8px 0;font-size:13px">${msg}</div>`:""}`}
-function saldoUI(){const l=OI.filter(o=>pay(o)==="lunas"),tahan=sm(l.filter(o=>o.st==="diterima"),o=>o.net||0),sedia=sm(l.filter(o=>o.st==="selesai"&&!o.cair),o=>o.net||0),proses=sm(l.filter(o=>o.cair==="diminta"),o=>o.net||0),cair=sm(l.filter(o=>o.cair==="dicairkan"),o=>o.net||0);
+function saldoUI(){const l=OI.filter(o=>pay(o)==="lunas"),tahan=sm(l.filter(o=>o.st==="diterima"||(o.st==="selesai"&&!o.cair&&!konfOk(o))),o=>o.net||0),sedia=sm(l.filter(o=>o.st==="selesai"&&!o.cair&&konfOk(o)),o=>o.net||0),proses=sm(l.filter(o=>o.cair==="diminta"),o=>o.net||0),cair=sm(l.filter(o=>o.cair==="dicairkan"),o=>o.net||0);
 return `<div class="card"><div class="in"><b>Saldo Anda</b><div class="row" style="margin-top:6px"><span>🔒 Tertahan di admin</span><b>${rp(tahan)}</b></div><div class="row"><span>💰 Saldo tersedia</span><b>${rp(sedia)}</b></div><div class="row"><span>⏳ Pencairan diproses</span><b>${rp(proses)}</b></div><div class="row"><span>✅ Sudah dicairkan</span><b>${rp(cair)}</b></div>${sedia>0?`<div style="margin-top:8px;font-weight:700">Saldo tersedia. Buka pesanan yang selesai lalu klik “Ajukan pencairan”.</div>`:""}<div class="mute" style="margin-top:6px">Dana tertahan masuk ke saldo setelah Anda mengirim bukti foto pekerjaan selesai. Dana dicairkan penuh, tanpa potongan biaya transfer bank.</div></div></div>`}
 function ntfTxt(o,prov){const p=pay(o);
+if(o.st==="selesai"&&p==="lunas"){if(prov&&(o.kc||0)>0&&!o.cair)return ["💰",`Saldo ${rp(o.net||0)} dari "${o.jn}" masuk ke saldo tersedia: pencari sudah mengonfirmasi pekerjaan. Silakan ajukan pencairan.`];if(!prov&&!(o.kc>0))return ["✅",`Pekerjaan "${o.jn}" sudah selesai. Konfirmasi jika sudah beres agar dana diteruskan ke penyedia.`]}
 if(o.st==="menunggu"&&(o.nh||[]).length>1){if(prov&&o.ob==="c")return ["💬",`${o.cn} menawar ${rp(o.h)} untuk "${o.jn}". Buka pesanan untuk menjawab.`];if(!prov&&o.ob==="p")return ["💬",`Penyedia menawar ${rp(o.h)} untuk "${o.jn}". Jawab di tab Pesanan.`]}
 if(prov){if(p==="diperiksa")return ["💳",`${o.cn} sudah mentransfer untuk "${o.jn}". Admin sedang memeriksa pembayaran.`];
 if(p==="lunas"&&o.st==="diterima"&&!o.cair)return ["💰",`Pembayaran ${rp(o.h)} untuk "${o.jn}" sudah diterima admin dan ditahan. Kerjakan tugas dan kirim bukti foto agar dana masuk ke saldo Anda.`];
@@ -635,7 +636,7 @@ render();
 </script><script>
 /* ===== PENGINGAT AJUKAN PENCAIRAN ===== */
 const _nf12=notifs;
-notifs=function(){const n=_nf12(),w=OI.filter(o=>o.st==="selesai"&&pay(o)==="lunas"&&!o.cair).length;
+notifs=function(){const n=_nf12(),w=OI.filter(o=>o.st==="selesai"&&pay(o)==="lunas"&&!o.cair&&konfOk(o)).length;
 if(w)n.push(["💰",w+" pesanan selesai. Segera klik “Ajukan pencairan” agar dana diproses admin","p","masuk"]);return n};
 render();
 </script><script>
@@ -685,7 +686,7 @@ function bukaKat(i){S.cat=KAT[i][0];S.sub="";render();window.scrollTo(0,0)}
 function pilihKat(i){S.kat=i<0?"":KAT[i][0];S.sub="";render()}
 function pilihSub(n){const b=S.cat||S.kat,s=(SUB[b]||[])[n];S.sub=S.sub===s?"":s;render()}
 function provStrip(){if(!UD||UD.penyedia!=="disetujui")return "";
-const w=OI.filter(o=>o.st==="menunggu").length,sd=sm(OI.filter(o=>pay(o)==="lunas"&&o.st==="selesai"&&!o.cair),o=>o.net||0),g=t=>`setRole('p');go('${t}')`;
+const w=OI.filter(o=>o.st==="menunggu").length,sd=sm(OI.filter(o=>pay(o)==="lunas"&&o.st==="selesai"&&!o.cair&&konfOk(o)),o=>o.net||0),g=t=>`setRole('p');go('${t}')`;
 return `<div class="hs" style="margin-top:12px"><div class="mini" onclick="${g("masuk")}">📥<b>${w}</b><span>Pesanan masuk</span></div><div class="mini" onclick="${g("masuk")}">💰<b>${rp(sd)}</b><span>Saldo tersedia</span></div><div class="mini" onclick="${g("jasa")}">🧰<b>Jasa saya</b><span>Kelola jasa</span></div><div class="mini" onclick="${g("tambah")}">➕<b>Tambah</b><span>Jasa baru</span></div></div>`}
 function homeView(){const nm=((UD&&UD.nama)||"").split(" ")[0],pop=J.slice().sort((a,b)=>(b.r||0)-(a.r||0)||b.at-a.at).slice(0,8),baru=J.slice(0,8),
 near=UP?J.filter(j=>j.la).map(j=>[j,km(UP.la,UP.lo,j.la,j.lo)]).sort((a,b)=>a[1]-b[1]).slice(0,8).map(x=>x[0]):[];
@@ -909,8 +910,8 @@ const rkB=o=>RK&&RK.uid===o.pen?`<div class="mute" style="margin-top:6px">Rekeni
 function bayarView2(){const k=OA.filter(o=>pay(o)==="diperiksa"),c=OA.filter(o=>o.cair==="diminta"),l=OA.filter(o=>pay(o)==="lunas"),tahan=sm(l.filter(o=>o.st==="diterima"),o=>o.h),utang=sm(l.filter(o=>o.st==="selesai"&&o.cair!=="dicairkan"),o=>o.net||0);
 return `<h2>Pembayaran</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">${kpi("linear-gradient(135deg,#4338ca,#818cf8)","💰",rp(sm(l,o=>o.h)),"Total lunas")}${kpi("linear-gradient(135deg,#047857,#34d399)","🏷️",rp(sm(l,o=>o.kom||0)),"Komisi SERBA JASA")}${kpi("linear-gradient(135deg,#b45309,#fbbf24)","🔒",rp(tahan),"Dana tertahan")}${kpi("linear-gradient(135deg,#be185d,#f472b6)","⏳",rp(utang),"Saldo penyedia belum cair")}</div>
 <h3>Pembayaran perlu diperiksa (${k.length})</h3>${k.map(o=>oMini(o,expAdm(o)+btB(o)+`<div class="row" style="margin-top:8px;justify-content:flex-start"><button class="btn s" onclick="bayarOk('${o.id}',1)">Setujui</button><button class="btn s o" onclick="bayarOk('${o.id}',0)">Tolak</button></div>`)).join("")||`<p class="mute">Tidak ada.</p>`}
-<h3>Pencairan diminta (${c.length})</h3>${c.map(o=>oMini(o,`<div class="mute">Transfer penuh: <b>${rp(o.net||0)}</b> (komisi ${rp(o.kom||0)}). Tanpa potongan biaya bank dari penyedia.</div>`+rkB(o)+`<button class="btn s y" style="margin-top:8px" onclick="cairOk('${o.id}')">Sudah ditransfer</button>`)).join("")||`<p class="mute">Tidak ada.</p>`}
-<h3>Pengaturan pembayaran</h3>${cfgBox2()}
+<h3>Pencairan diminta (${c.length})</h3>${c.map(cairCard).join("")||`<p class="mute">Tidak ada.</p>`}
+${saldoAdminUI()}<h3>Pengaturan pembayaran</h3>${cfgBox2()}
 <h3>Riwayat pembayaran lunas</h3>${l.slice(0,10).map(o=>oMini(o,`<div class="mute">Komisi ${rp(o.kom||0)} · penyedia ${rp(o.net||0)} · ${o.cair==="dicairkan"?"sudah dicairkan":o.cair==="diminta"?"pencairan diminta":"belum dicairkan"}</div>`)).join("")||`<p class="mute">Belum ada.</p>`}
 <button class="btn o" style="margin-top:16px" onclick="unduhCsv()">⬇ Unduh CSV transaksi</button>`}
 function laporanView2(){if(ULA===null){ULA=[];muatUlasan()}const ch=[["baru","Baru"],["diproses","Diproses"],["selesai","Selesai"],["","Semua"]],a=LA.filter(l=>!LF||l.st===LF).sort((x,y)=>y.at-x.at);
@@ -1038,5 +1039,96 @@ go=function(t){S.bayar=null;_g17(t)};
 setRole=function(r){S.bayar=null;_s17(r)};
 view=function(){if(U&&UD&&UD.role!=="admin"&&!UD.blok&&S.bayar){const o=OM.find(x=>String(x.id)===S.bayar);if(o&&o.st==="diterima")return bannerV()+bayarPage(o);S.bayar=null}return _v17()};
 render=function(){try{_r17()}catch(e){console.error(e);const m=$("#m");if(m)m.innerHTML=`<h2>Terjadi kesalahan tampilan</h2><p class="mute">${esc(e.message||"")}</p><button class="btn" onclick="S.bayar=null;S.det=null;S.form=null;location.reload()">Muat ulang</button>`}};
+render();
+</script><script>
+/* ===== REVISI: AKSES PEMBAYARAN, KONFIRMASI GANDA, PENCAIRAN, SALDO, DAN LAPORAN ===== */
+const J48=172800000;
+const konfOk=o=>(o.kc||0)>0||Date.now()>(o.ts||0)+J48;
+const salin=t=>{const f=()=>prompt("Salin manual:",t);try{navigator.clipboard.writeText(t).then(()=>toast("Disalin ✓")).catch(f)}catch(e){f()}};
+let PM="",TQ="",QPR=null,BCF=null,BCV=null,BCM={},TARIK=[],tkUn=null,tkUn2=null,LSP=30;
+/* --- Halaman bayar: QRIS atau transfer ke akun admin --- */
+bayarUI=function(o){const q=!!(CFG.qris&&IMG.test(CFG.qris)),b=!!CFG.rek;if(!q&&!b)return `<div class="mute" style="margin-top:6px">Admin belum mengatur metode pembayaran.</div>`;
+const m=((PM==="bank"&&b)||(!q&&b))?"bank":"qris",jml=bayarJumlah(o),pot=potC(o),
+sel=q&&b?`<div class="hs" style="margin:6px 0"><button class="chip ${m==="qris"?"on":""}" onclick="PM='qris';render()">📱 QRIS</button><button class="chip ${m==="bank"?"on":""}" onclick="PM='bank';render()">🏦 Transfer bank</button></div>`:"",
+nom=`<div class="row" style="margin:8px 0"><div><div class="mute">Nominal yang harus dibayar</div><div style="font-size:22px;font-weight:800">${rp(jml)}</div></div><button class="btn s o" onclick="salin('${jml}')">Salin nominal</button></div>`,
+body=m==="qris"?`<div style="text-align:center"><b>Bayar dengan QRIS admin</b><img alt="QRIS" src="${CFG.qris}" style="width:100%;max-width:300px;background:#fff;border-radius:12px;margin:8px 0">${CFG.qn?`<div class="mute">Merchant: ${esc(CFG.qn)}</div>`:""}</div>${nom}<ol class="mute" style="margin:6px 0 0;padding-left:18px"><li>Tekan lama gambar QRIS lalu simpan, atau ambil tangkapan layar.</li><li>Buka e-wallet atau m-banking, pilih bayar dengan QRIS, lalu unggah gambar dari galeri.</li><li>Masukkan nominal persis ${rp(jml)} dan selesaikan pembayaran.</li><li>Unggah bukti pembayaran di bawah ini.</li></ol>`:`<b>Transfer ke rekening admin</b><div class="row" style="margin-top:6px"><div><div style="font-weight:700">${esc(CFG.bank)}</div><div style="font-size:18px;letter-spacing:.5px">${esc(CFG.rek)}</div><div class="mute">a.n. ${esc(CFG.an)}</div></div><button class="btn s o" onclick="salin('${esc(CFG.rek)}')">Salin rekening</button></div>${nom}<ol class="mute" style="margin:6px 0 0;padding-left:18px"><li>Transfer persis ${rp(jml)} ke rekening di atas.</li><li>Simpan bukti transfer dari aplikasi bank atau e-wallet Anda.</li><li>Unggah bukti pembayaran di bawah ini.</li></ol>`,
+on=BPP&&BPP.id==o.id,pre=on?`<img alt="Pratinjau bukti" src="${BPP.d}" style="width:100%;border-radius:10px;margin-top:8px">`:"",
+act=on?`<button class="btn s y" onclick="kirimBukti()">Kirim bukti</button><button class="btn s o" onclick="BPP=null;render()">Ganti foto</button>`:`<label class="btn s y" style="display:inline-block;cursor:pointer">📷 Unggah bukti pembayaran<input type="file" accept="image/*" style="display:none" onchange="buktiFoto('${o.id}',this)"></label>`;
+return `<div class="card" style="margin:10px 0 0"><div class="in">${pot?`<div class="mute" style="margin-bottom:6px">🎁 Potongan pelanggan langganan ${rp(pot)} sudah dihitung dari harga ${rp(o.h)}.</div>`:""}${sel}${body}${pre}<div class="row" style="margin-top:10px;justify-content:flex-start;flex-wrap:wrap">${act}</div><div class="mute" style="margin-top:6px">Dana ditahan admin sampai pekerjaan selesai dan Anda mengonfirmasi. SERBA JASA tidak menambah biaya apa pun.</div></div></div>`};
+/* --- Konfirmasi pekerjaan oleh pencari dan penyedia --- */
+async function konfSelesai(id){if(!confirm("Konfirmasi bahwa pekerjaan sudah selesai dan sesuai? Dana akan diteruskan ke penyedia."))return;try{await db.doc("pesanan/"+id).update({kc:Date.now()});toast("Terima kasih, pekerjaan dikonfirmasi ✓")}catch(e){toast(err(e))}}
+function konfUI(o,m){if(o.st!=="selesai"||pay(o)!=="lunas")return "";
+const kp=`✅ Penyedia: laporan foto terkirim${o.ts?" · "+new Date(o.ts).toLocaleString("id-ID"):""}`,
+kc=o.kc>0?`✅ Pencari: pekerjaan dikonfirmasi · ${new Date(o.kc).toLocaleString("id-ID")}`:konfOk(o)?"✅ Pencari: dikonfirmasi otomatis (lewat 48 jam)":`⏳ Pencari: menunggu konfirmasi (otomatis ${Math.max(1,Math.ceil(((o.ts||0)+J48-Date.now())/3600000))} jam lagi)`;
+let a="";if(m==="c"&&!(o.kc>0)&&!o.cair)a=`<div class="row" style="margin-top:8px;gap:8px;flex-wrap:wrap"><button class="btn y" onclick="konfSelesai('${o.id}')">✅ Pekerjaan sudah beres</button><button class="btn o" onclick="S.lap='${o.id}';render()">⚠️ Ada masalah</button></div>`;
+return `<div class="card" style="margin:10px 0 0;border-color:#8a4fd1"><div class="in"><b>Konfirmasi pekerjaan</b><div class="mute" style="margin-top:4px">${kp}<br>${kc}</div>${a}</div></div>`}
+/* --- Pencairan oleh penyedia --- */
+cairUI=function(o){if(o.st!=="selesai")return "";const c=o.cair||"belum";
+if(c==="dicairkan")return `<div class="mute">💸 Sudah dicairkan${o.cm?" via "+esc(o.cm):""}${o.tc?" · "+new Date(o.tc).toLocaleString("id-ID"):""} ✓</div>`;
+if(c==="diminta")return `<div class="mute">💸 Pencairan sedang diproses admin</div>`;
+if(!konfOk(o))return `<div class="mute">⏳ Pencairan dibuka setelah pencari mengonfirmasi pekerjaan (atau otomatis 48 jam setelah laporan).</div>`;
+if(!UD.rek&&!TQ)return `<div class="mute">Isi rekening atau QRIS penerima di tab Profil untuk mencairkan.</div>`;
+return `<button class="btn s y" style="margin-top:6px" onclick="mintaCair('${o.id}')">Ajukan pencairan</button>`};
+mintaCair=async function(id){try{await db.doc("pesanan/"+id).update({cair:"diminta",tr:Date.now()});toast("Pencairan diajukan. Admin akan memprosesnya")}catch(e){toast(err(e))}};
+const siapCair=()=>OI.filter(o=>o.st==="selesai"&&pay(o)==="lunas"&&!o.cair&&konfOk(o));
+async function tarikSemua(){const l=siapCair();if(!l.length){toast("Belum ada saldo yang bisa ditarik");return}if(!UD.rek&&!TQ){toast("Isi rekening atau QRIS penerima di tab Profil dulu");return}
+const tot=sm(l,o=>o.net||0);if(!confirm("Tarik semua saldo tersedia "+rp(tot)+" ("+l.length+" pesanan) ke akun penerima Anda?"))return;
+try{const b=db.batch(),t=Date.now();l.forEach(o=>b.update(db.doc("pesanan/"+o.id),{cair:"diminta",tr:t}));await b.commit();toast("Penarikan diajukan ke admin ✓")}catch(e){toast(err(e))}}
+/* --- QRIS penerima milik penyedia --- */
+async function fotoTerima(el){const f=el.files[0];if(!f)return;try{const r=await new Promise((ok,no)=>{const fr=new FileReader();fr.onload=()=>ok(fr.result);fr.onerror=no;fr.readAsDataURL(f)});let q=.92,d=await qrisDari(r,900,q);while(d.length>145000&&q>.5){q-=.1;d=await qrisDari(r,900,q)}QPR=d;const e=$("#qtp");if(e)e.innerHTML=`<img alt="QRIS penerima" src="${d}" style="width:96px;height:96px;object-fit:contain;background:#fff;border-radius:8px">`}catch(e){toast("Gambar gagal dibaca")}}
+async function simpanTerima(){if(!QPR){toast("Pilih gambar QRIS dulu");return}try{await db.doc("terima/"+U.uid).set({qris:QPR});TQ=QPR;QPR=null;toast("QRIS penerima tersimpan ✓");render()}catch(e){toast(err(e))}}
+/* --- Admin: tinjau pekerjaan lalu kirim pencairan --- */
+async function lihatTujuan(uid){try{const u=await db.doc("users/"+uid).get(),t=await db.doc("terima/"+uid).get();RK={uid,rek:(u.data()||{}).rek||"Rekening belum diisi",qris:t.exists?(t.data().qris||""):""};render()}catch(e){toast(err(e))}}
+async function fotoBc(id,el){const f=el.files[0];if(!f)return;try{BCF={id:String(id),d:await kecilJ(f)};render()}catch(e){toast("Foto gagal dibaca")}}
+function cairCard(o){const sel=RK&&RK.uid===o.pen,bc=BCF&&BCF.id===String(o.id),mt=BCM[o.id]||"Transfer bank";
+return `<div class="card" style="border-left:5px solid #0891b2"><div class="in"><div class="row"><b>${esc(o.jn)}</b><b class="price">${rp(o.net||0)}</b></div><div class="mute">${esc(o.cn)} → ${esc(o.pn)}</div><div class="mute">📅 ${esc(o.jadwal)} · 📍 ${esc(o.alamat)}</div>
+<div class="mute" style="margin:6px 0">✅ Penyedia: laporan foto${o.ts?" "+new Date(o.ts).toLocaleString("id-ID"):""}<br>${o.kc>0?"✅ Pencari mengonfirmasi "+new Date(o.kc).toLocaleString("id-ID"):"⌛ Pencari dikonfirmasi otomatis (lewat 48 jam)"}</div>
+${o.fs&&IMG.test(o.fs)?`<img alt="Foto laporan selesai" src="${o.fs}" style="width:100%;border-radius:10px">`:""}
+<div class="mute" style="margin-top:6px">Harga ${rp(o.h)} · komisi ${rp(o.kom||0)} · potongan pencari ${rp(o.pot||0)} · diajukan ${o.tr?new Date(o.tr).toLocaleString("id-ID"):"-"}</div>
+${sel?`<div style="margin-top:8px"><b>Tujuan pencairan</b><div class="mute">${esc(RK.rek)}</div>${RK.qris&&IMG.test(RK.qris)?`<img alt="QRIS penerima" src="${RK.qris}" style="width:100%;max-width:260px;background:#fff;border-radius:10px;margin-top:6px"><div class="mute">QRIS penerima: pindai untuk mengirim ${rp(o.net||0)}</div>`:""}</div>`:`<button class="btn s o" style="margin-top:8px" onclick="lihatTujuan('${esc(o.pen)}')">Lihat tujuan pencairan</button>`}
+<div style="margin-top:10px"><label class="mute">Metode pengiriman</label><select onchange="BCM['${o.id}']=this.value">${["Transfer bank","E-wallet","QRIS"].map(x=>`<option ${mt===x?"selected":""}>${x}</option>`).join("")}</select><label class="btn s o" style="cursor:pointer;display:inline-block">📷 Bukti pengiriman (opsional)<input type="file" accept="image/*" style="display:none" onchange="fotoBc('${o.id}',this)"></label>${bc?`<img alt="Bukti" src="${BCF.d}" style="width:100%;border-radius:10px;margin-top:8px">`:""}<button class="btn y" style="margin-top:8px" onclick="cairOk('${o.id}')">Kirim pencairan ${rp(o.net||0)} (sudah dikirim)</button></div></div></div>`}
+cairOk=async function(id){const o=OA.find(x=>String(x.id)===String(id));if(!o)return;if(!confirm("Pastikan dana "+rp(o.net||0)+" sudah dikirim ke penyedia. Lanjutkan?"))return;
+const b=db.batch();b.update(db.doc("pesanan/"+id),{cair:"dicairkan",cm:BCM[id]||"Transfer bank",tc:Date.now()});if(BCF&&BCF.id===String(id))b.set(db.doc("bc/"+id),{pen:o.pen,bp:BCF.d,at:Date.now()});
+try{await b.commit();RK=null;BCF=null;toast("Pencairan dicatat ✓")}catch(e){toast(err(e))}};
+/* --- Admin: saldo platform, tarik komisi, laporan --- */
+auth.onAuthStateChanged(u=>{if(tkUn){tkUn();tkUn=null}if(tkUn2){tkUn2();tkUn2=null}TARIK=[];TQ="";
+if(u){tkUn2=db.doc("users/"+u.uid).onSnapshot(s=>{const a=!!(s.exists&&s.data().role==="admin");if(a&&!tkUn)tkUn=db.collection("tarik").onSnapshot(q=>{TARIK=q.docs.map(d=>d.data()).sort((x,y)=>y.at-x.at);soft()},()=>{});if(!a&&tkUn){tkUn();tkUn=null;TARIK=[]}});
+db.doc("terima/"+u.uid).get().then(s=>{TQ=s.exists?(s.data().qris||""):"";render()}).catch(()=>{})}});
+const komTersedia=()=>sm(OA.filter(o=>pay(o)==="lunas"&&o.st==="selesai"&&konfOk(o)),o=>o.kom||0)-sm(TARIK,t=>t.jumlah||0);
+async function tarikKomisi(){const v=Math.round(+($("#ta")?$("#ta").value:0)),ket=($("#tk")?$("#tk").value.trim():"").slice(0,100),tsd=komTersedia();
+if(!(v>0)){toast("Masukkan jumlah penarikan");return}if(v>tsd){toast("Melebihi saldo komisi tersedia ("+rp(tsd)+")");return}
+const id=Date.now();try{await db.doc("tarik/"+id).set({jumlah:v,ket,at:id});toast("Penarikan komisi dicatat ✓")}catch(e){toast(err(e))}}
+function saldoAdminUI(){const l=OA.filter(o=>pay(o)==="lunas"),hutang=sm(l.filter(o=>o.cair!=="dicairkan"),o=>o.net||0),cair=sm(l.filter(o=>o.cair==="dicairkan"),o=>o.net||0),tarik=sm(TARIK,t=>t.jumlah||0);
+return `<h3>Saldo &amp; laporan platform</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${kpi("linear-gradient(135deg,#047857,#34d399)","🏷️",rp(komTersedia()),"Saldo komisi tersedia")}${kpi("linear-gradient(135deg,#be185d,#f472b6)","⏳",rp(hutang),"Kewajiban ke penyedia")}${kpi("linear-gradient(135deg,#0e7490,#22d3ee)","💸",rp(cair),"Sudah dicairkan ke penyedia")}${kpi("linear-gradient(135deg,#4338ca,#818cf8)","🏦",rp(tarik),"Komisi sudah ditarik")}</div>
+<div class="card" style="margin-top:10px"><div class="in"><b>Tarik komisi ke rekening admin</b><div class="mute">Tujuan: ${CFG.rek?esc(CFG.bank)+" · "+esc(CFG.rek)+" a.n. "+esc(CFG.an):"rekening admin belum diisi di Pengaturan pembayaran"}. Transfer dari rekening operasional Anda, lalu catat di sini.</div><input id="ta" type="number" inputmode="numeric" placeholder="Jumlah (maks ${rp(komTersedia())})"><input id="tk" maxlength="100" placeholder="Catatan (opsional)"><button class="btn y" onclick="tarikKomisi()">Catat penarikan komisi</button></div></div>
+${TARIK.length?`<h3>Riwayat penarikan komisi</h3>${TARIK.slice(0,8).map(t=>`<div class="card"><div class="in row"><div><b>${rp(t.jumlah)}</b><div class="mute">${esc(t.ket||"")}</div></div><span class="mute">${new Date(t.at).toLocaleString("id-ID")}</span></div></div>`).join("")}`:""}
+<button class="btn o" style="margin-top:8px" onclick="unduhSaldo()">⬇ Unduh laporan saldo platform (CSV)</button>`}
+function csvOut(nama,h,r){const q=v=>{let s=String(v==null?"":v);if(/^[=+\-@]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'},b=new Blob(["\ufeff"+[h,...r].map(x=>x.map(q).join(",")).join("\n")],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=nama;document.body.appendChild(a);a.click();a.remove()}
+const tgl=t=>t?new Date(t).toISOString().slice(0,10):"";
+function unduhSaldo(){csvOut("laporan-saldo-platform.csv",["tanggal","jenis","keterangan","jumlah"],[...OA.filter(o=>pay(o)==="lunas").map(o=>[tgl(o.tp||o.at),"Dana masuk",o.jn+" ("+o.cn+")",o.h-(o.pot||0)]),...OA.filter(o=>pay(o)==="lunas").map(o=>[tgl(o.tp||o.at),"Komisi",o.jn,o.kom||0]),...OA.filter(o=>o.cair==="dicairkan").map(o=>[tgl(o.tc),"Pencairan ke penyedia ("+(o.cm||"-")+")",o.jn+" ("+o.pn+")",-(o.net||0)]),...TARIK.map(t=>[tgl(t.at),"Penarikan komisi",t.ket||"",-t.jumlah])])}
+/* --- Penyedia: laporan saldo --- */
+async function lihatBc(id){try{const s=await db.doc("bc/"+id).get(),d=s.data();if(!d||!IMG.test(d.bp)){toast("Bukti pencairan tidak tersedia");return}BCV={id:String(id),img:d.bp};render()}catch(e){toast(err(e))}}
+function saldoView(){const all=OI.filter(o=>pay(o)==="lunas"),lim=LSP?Date.now()-LSP*86400000:0,l=all.filter(o=>(o.tp||o.at)>=lim).sort((a,b)=>(b.tc||b.tr||b.ts||b.tp||b.at)-(a.tc||a.tr||a.ts||a.tp||a.at)),
+tahan=sm(all.filter(o=>o.st==="diterima"||(o.st==="selesai"&&!o.cair&&!konfOk(o))),o=>o.net||0),sedia=sm(all.filter(o=>o.st==="selesai"&&!o.cair&&konfOk(o)),o=>o.net||0),proses=sm(all.filter(o=>o.cair==="diminta"),o=>o.net||0),cair=sm(all.filter(o=>o.cair==="dicairkan"),o=>o.net||0),
+row=o=>{const sts=o.cair==="dicairkan"?["Dicairkan","#1f8a5b"]:o.cair==="diminta"?["Pencairan diproses","#2b7fd1"]:o.st==="selesai"&&konfOk(o)?["Saldo tersedia","#7c3aed"]:["Tertahan di admin","#d98e00"];
+return `<div class="card"><div class="in"><div class="row"><b>${esc(o.jn)}</b><b class="price">+ ${rp(o.net||0)}</b></div><div class="mute">Harga ${rp(o.h)} · biaya layanan ${rp(o.h-(o.net||0))} · pemesan ${esc(o.cn)}</div><div style="margin:6px 0"><span class="tag" style="background:${sts[1]};color:#fff">${sts[0]}</span></div><div class="mute">${o.tp?"💰 Dana masuk admin "+new Date(o.tp).toLocaleString("id-ID")+"<br>":""}${o.ts?"📷 Laporan selesai "+new Date(o.ts).toLocaleString("id-ID")+"<br>":""}${o.kc>0?"✅ Dikonfirmasi pencari "+new Date(o.kc).toLocaleString("id-ID")+"<br>":""}${o.tr?"⏳ Diajukan "+new Date(o.tr).toLocaleString("id-ID")+"<br>":""}${o.tc?"💸 Dicairkan "+new Date(o.tc).toLocaleString("id-ID")+(o.cm?" via "+esc(o.cm):""):""}</div>${o.cair==="dicairkan"?`<button class="btn s o" style="margin-top:6px" onclick="lihatBc('${o.id}')">Lihat bukti pencairan</button>${BCV&&BCV.id===String(o.id)?`<img alt="Bukti pencairan" src="${BCV.img}" style="width:100%;border-radius:10px;margin-top:8px">`:""}`:""}</div></div>`},
+ch=[[7,"7 hari"],[30,"30 hari"],[0,"Semua"]].map(x=>`<button class="chip ${LSP===x[0]?"on":""}" onclick="LSP=${x[0]};render()">${x[1]}</button>`).join("");
+return `<button class="back" onclick="S.ls=false;render()">‹ Kembali</button><div class="hero2" style="padding:16px"><div style="font-size:13px;opacity:.9;position:relative;z-index:1">Laporan saldo</div><div style="font-size:26px;font-weight:800;position:relative;z-index:1">${rp(sedia)}</div><div style="opacity:.9;font-size:13px;position:relative;z-index:1">tersedia untuk ditarik</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0">${kpi("linear-gradient(135deg,#b45309,#fbbf24)","🔒",rp(tahan),"Tertahan di admin")}${kpi("linear-gradient(135deg,#2563eb,#60a5fa)","⏳",rp(proses),"Pencairan diproses")}${kpi("linear-gradient(135deg,#047857,#34d399)","✅",rp(cair),"Sudah dicairkan")}${kpi("linear-gradient(135deg,#7c3aed,#c084fc)","💰",rp(sm(all,o=>o.net||0)),"Total pendapatan bersih")}</div><div class="row" style="justify-content:flex-start;gap:8px;flex-wrap:wrap"><button class="btn s y" onclick="tarikSemua()">💸 Tarik saldo ${rp(sedia)}</button><button class="btn s o" onclick="unduhSaldoP()">⬇ Unduh CSV</button></div><h3>Riwayat</h3><div class="hs" style="margin-bottom:8px">${ch}</div>${l.map(row).join("")||`<p class="mute">Belum ada transaksi pada periode ini.</p>`}`}
+function unduhSaldoP(){csvOut("laporan-saldo-penyedia.csv",["tanggal","jasa","pemesan","harga","biaya layanan","bersih","status","metode","tanggal cair"],OI.filter(o=>pay(o)==="lunas").map(o=>[tgl(o.tp||o.at),o.jn,o.cn,o.h,o.h-(o.net||0),o.net||0,o.cair==="dicairkan"?"Dicairkan":o.cair==="diminta"?"Diproses":o.st==="selesai"&&konfOk(o)?"Tersedia":"Tertahan",o.cm||"",tgl(o.tc)]))}
+/* --- Penyambungan ke tampilan yang ada --- */
+const _ak18=aksi,_al18=alur,_orc18=oRapiC,_rf18=rekForm,_sd18=saldoUI,_nf18=notifs,_g18=go,_s18=setRole,_v18=view;
+aksi=function(o,m){const h=_ak18(o,m);return(m==="c"||m==="p")&&o.st==="selesai"?konfUI(o,m)+h:h};
+alur=function(o,m){let h=_al18(o,m);if(o.st==="selesai"&&pay(o)==="lunas"&&!o.cair&&!konfOk(o)){h=h.replace("Penyedia<br>Masuk saldo","Penyedia<br>Menunggu konfirmasi").replace("Admin<br>Diteruskan","Admin<br>Dana tertahan");
+if(m==="p")h=h.replace(/✅ Laporan diterima\.[^<]*/,"⏳ Laporan terkirim. Menunggu konfirmasi pekerjaan dari pencari (otomatis dalam 48 jam). Setelah itu saldo "+rp(o.net||0)+" tersedia untuk dicairkan.");
+if(m==="c")h=h.replace(/✅ Pekerjaan selesai dan pembayaran[^<]*/,"Pekerjaan selesai. Mohon konfirmasi jika sudah beres; dana baru diteruskan ke penyedia setelah itu.")}return h};
+oRapiC=function(o){const h=_orc18(o),m='<button class="btn s o" style="margin-top:10px" onclick="togDetail(';
+if(o.st==="selesai"&&pay(o)==="lunas"&&!(o.kc>0)&&!o.cair){const x=`<div class="row" style="margin-top:10px;justify-content:flex-start"><button class="btn s y" onclick="konfSelesai('${o.id}')">✅ Pekerjaan sudah beres</button></div>`;return h.includes(m)?h.replace(m,x+m):h+x}return h};
+rekForm=function(){const v=QPR||TQ,pv=v&&IMG.test(v)?`<img alt="QRIS penerima" src="${v}" style="width:96px;height:96px;object-fit:contain;background:#fff;border-radius:8px">`:"";
+return _rf18()+`<div class="card" style="margin-top:10px"><div class="in"><b>QRIS penerima (opsional)</b><p class="mute">Unggah QRIS e-wallet atau bank Anda agar admin bisa mengirim pencairan lewat pindai QRIS.</p><div class="row" style="justify-content:flex-start;gap:12px"><div id="qtp">${pv}</div><label class="btn s o" style="cursor:pointer">📷 Unggah QRIS<input type="file" accept="image/*" style="display:none" onchange="fotoTerima(this)"></label></div><button class="btn s y" style="margin-top:8px" onclick="simpanTerima()">Simpan QRIS penerima</button></div></div>`};
+saldoUI=function(){const tot=sm(siapCair(),o=>o.net||0);return _sd18()+`<div class="row" style="justify-content:flex-start;gap:8px;flex-wrap:wrap;margin:-4px 0 12px"><button class="btn s y" onclick="tarikSemua()">💸 Tarik saldo${tot?" "+rp(tot):""}</button><button class="btn s o" onclick="S.ls=true;render()">📒 Laporan saldo</button></div>`};
+notifs=function(){const n=_nf18(),w=OM.filter(o=>o.st==="selesai"&&pay(o)==="lunas"&&!(o.kc>0)&&!o.cair).length;if(w)n.push(["✅",w+" pesanan selesai menunggu konfirmasi Anda","c","pesanan"]);return n};
+go=function(t){S.ls=false;_g18(t)};
+setRole=function(r){S.ls=false;_s18(r)};
+view=function(){if(U&&UD&&UD.role!=="admin"&&!UD.blok&&S.ls)return saldoView();return _v18()};
 render();
 </script></body></html>
