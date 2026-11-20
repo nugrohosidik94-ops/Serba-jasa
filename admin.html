@@ -1014,4 +1014,28 @@ dashHead=function(){return _dh16()+hematUI()};
 homeView=function(){return _hv16().replace('<h3>Kategori</h3>',untungUI()+'<h3>Kategori</h3>')};
 provView=function(){const h=_pv16(),uid=S.prov;if(!U||uid===U.uid)return h;const f=FAV.includes(uid);return h.replace('<h3>Jasa</h3>',`<button class="btn ${f?"o":"y"}" style="margin:4px 0 8px" onclick="toggleFav('${esc(uid)}')">${f?"💔 Hapus dari langganan":"❤️ Jadikan langganan"}</button><h3>Jasa</h3>`)};
 render();
+</script><script>
+/* ===== PERBAIKAN: HALAMAN PEMBAYARAN, POSISI GULIR, DAN PENANGKAP KESALAHAN ===== */
+window.addEventListener("error",e=>{try{toastL("⚠️ Kesalahan: "+(e.message||"tidak diketahui"))}catch(x){}});
+window.addEventListener("unhandledrejection",e=>{try{const r=e.reason,m=r&&(r.message||r.code)||"";if(m)toastL("⚠️ "+m)}catch(x){}});
+function bukaBayar(id){S.bayar=String(id);render();window.scrollTo(0,0)}
+function tutupBayar(){S.bayar=null;render()}
+function togDetail(id){const y=window.scrollY;OPEN[id]=!OPEN[id];render();window.scrollTo(0,y)}
+function bukaDetail(id){const y=window.scrollY;OPEN[id]=true;render();window.scrollTo(0,y)}
+function bayarPage(o){const p=pay(o),pot=potC(o),
+head=`<button class="back" onclick="tutupBayar()">‹ Kembali</button><h2>Pembayaran</h2><div class="card"><div class="in"><div class="row"><b>${esc(o.jn)}</b><span class="price">${rp(o.h)}</span></div><div class="mute">👷 ${esc(o.pn)}</div>${pot?`<div class="row" style="margin-top:6px"><span>🎁 Potongan langganan</span><b>- ${rp(pot)}</b></div>`:""}<div class="row" style="margin-top:6px"><span>Total yang dibayar</span><b class="price" style="font-size:18px">${rp(o.h-pot)}</b></div></div></div>`;
+if(p==="diperiksa")return head+alur(o,"c")+`<div class="card"><div class="in">⏳ Bukti pembayaran sudah dikirim. Admin sedang memeriksanya, dan Anda akan mendapat pemberitahuan setelah dikonfirmasi.</div></div>`;
+if(p==="lunas")return head+alur(o,"c");
+return head+alur(o,"c")+(p==="ditolak"?`<div class="card" style="border-color:#c0392b"><div class="in">⚠️ Bukti sebelumnya ditolak admin. Unggah bukti yang jelas dengan nominal ${rp(o.h-pot)}.</div></div>`:"")+bayarUI(o)}
+const fixTog=(o,h)=>h.split("OPEN['"+o.id+"']=!OPEN['"+o.id+"'];render()").join("togDetail('"+o.id+"')").split("OPEN['"+o.id+"']=true;render()").join("bukaDetail('"+o.id+"')");
+const _orc17=oRapiC,_or17=oRapi,_oa17=oAdm,_nf17=notifs,_g17=go,_s17=setRole,_v17=view,_r17=render;
+oRapiC=function(o){return fixTog(o,_orc17(o)).replace(`bukaDetail('${o.id}')">💳 Bayar sekarang`,`bukaBayar('${o.id}')">💳 Bayar sekarang`)};
+oRapi=function(o){return fixTog(o,_or17(o))};
+oAdm=function(o){return fixTog(o,_oa17(o))};
+notifs=function(){const n=_nf17(),w=OM.filter(o=>o.st==="diterima"&&(pay(o)==="belum"||pay(o)==="ditolak")).length;if(w)n.push(["💳",w+" pesanan diterima menunggu pembayaran Anda","c","pesanan"]);return n};
+go=function(t){S.bayar=null;_g17(t)};
+setRole=function(r){S.bayar=null;_s17(r)};
+view=function(){if(U&&UD&&UD.role!=="admin"&&!UD.blok&&S.bayar){const o=OM.find(x=>String(x.id)===S.bayar);if(o&&o.st==="diterima")return bannerV()+bayarPage(o);S.bayar=null}return _v17()};
+render=function(){try{_r17()}catch(e){console.error(e);const m=$("#m");if(m)m.innerHTML=`<h2>Terjadi kesalahan tampilan</h2><p class="mute">${esc(e.message||"")}</p><button class="btn" onclick="S.bayar=null;S.det=null;S.form=null;location.reload()">Muat ulang</button>`}};
+render();
 </script></body></html>
