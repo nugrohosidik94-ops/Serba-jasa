@@ -1093,7 +1093,7 @@ try{await b.commit();RK=null;BCF=null;toast("Pencairan dicatat ✓")}catch(e){to
 auth.onAuthStateChanged(u=>{if(tkUn){tkUn();tkUn=null}if(tkUn2){tkUn2();tkUn2=null}TARIK=[];TQ="";
 if(u){tkUn2=db.doc("users/"+u.uid).onSnapshot(s=>{const a=!!(s.exists&&s.data().role==="admin");if(a&&!tkUn)tkUn=db.collection("tarik").onSnapshot(q=>{TARIK=q.docs.map(d=>d.data()).sort((x,y)=>y.at-x.at);soft()},()=>{});if(!a&&tkUn){tkUn();tkUn=null;TARIK=[]}});
 db.doc("terima/"+u.uid).get().then(s=>{TQ=s.exists?(s.data().qris||""):"";render()}).catch(()=>{})}});
-const komTersedia=()=>sm(OA.filter(o=>pay(o)==="lunas"&&o.st==="selesai"&&konfOk(o)),o=>o.kom||0)-sm(TARIK,t=>t.jumlah||0);
+let komTersedia=()=>sm(OA.filter(o=>pay(o)==="lunas"&&o.st==="selesai"&&konfOk(o)),o=>o.kom||0)-sm(TARIK,t=>t.jumlah||0);
 async function tarikKomisi(){const v=Math.round(+($("#ta")?$("#ta").value:0)),ket=($("#tk")?$("#tk").value.trim():"").slice(0,100),tsd=komTersedia();
 if(!(v>0)){toast("Masukkan jumlah penarikan");return}if(v>tsd){toast("Melebihi saldo komisi tersedia ("+rp(tsd)+")");return}
 const id=Date.now();try{await db.doc("tarik/"+id).set({jumlah:v,ket,at:id});toast("Penarikan komisi dicatat ✓")}catch(e){toast(err(e))}}
