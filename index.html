@@ -68,6 +68,7 @@ nav button.on{color:var(--teal);font-weight:800}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
 <script>if(typeof firebase==="undefined"){["app","auth","firestore"].forEach(function(n){document.write('<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-'+n+'-compat.js"><\/script>')})}</script>
 <script>
 /* ===== FASE 1: FONDASI ===== */
@@ -1271,4 +1272,14 @@ go=function(t){S.dp=false;S.isiv=false;_g19(t)};
 setRole=function(r){S.dp=false;S.isiv=false;_s19(r)};
 view=function(){if(U&&UD&&UD.role!=="admin"&&!UD.blok){if(S.isiv)return isiView();if(S.dp)return dompetView()}return _v19()};
 render();
+
+/* Payment gateway (Midtrans via Cloud Functions): tombol tambahan di atas metode pembayaran yang sudah ada */
+function muatSnap(src,key){return new Promise((ok,no)=>{if(window.snap)return ok();const s=document.createElement("script");s.src=src;s.setAttribute("data-client-key",key);s.onload=ok;s.onerror=()=>no(new Error("Gagal memuat jendela pembayaran"));document.head.appendChild(s)})}
+async function bayarOnline(id){try{toast("Membuka pembayaran...");const r=(await firebase.app().functions("asia-southeast2").httpsCallable("buatTransaksi")({oid:String(id)})).data;
+try{await muatSnap(r.snapJs,r.clientKey)}catch(e){location.href=r.url;return}
+window.snap.pay(r.token,{onSuccess:()=>toast("Pembayaran berhasil. Status akan otomatis menjadi Lunas."),onPending:()=>toast("Menunggu pembayaran. Selesaikan sesuai instruksi."),onError:()=>toast("Pembayaran gagal, silakan coba lagi."),onClose:()=>toast("Jendela pembayaran ditutup")})}catch(e){toast(err(e))}}
+{const _buGw=bayarUI;bayarUI=function(o){return `<div class="row" style="margin-top:8px;justify-content:flex-start"><button class="btn s y" onclick="bayarOnline('${o.id}')">💳 Bayar online (QRIS, VA, e-wallet)</button></div>`+_buGw(o)}}
+
+/* Kartu dana payment gateway yang tertahan di admin sebelum diteruskan ke dompet penyedia */
+{const _saGw=saldoAdminUI;saldoAdminUI=function(){const g=OA.filter(o=>o.via==="gateway"&&pay(o)==="lunas"&&!masukDompet(o)),t=sm(g,o=>o.h-(o.pot||0));return `<div class="card" style="margin:10px 0"><div class="in"><b>🏦 Dana payment gateway (tertahan di admin)</b><div class="price" style="margin:4px 0">${rp(t)}</div><div class="mute">${g.length} pesanan dibayar online. Dana masuk ke saldo admin lebih dulu, lalu diteruskan ke dompet penyedia lewat daftar "Siap diteruskan" setelah pesanan selesai.</div></div></div>`+_saGw()}}
 </script></body></html>
