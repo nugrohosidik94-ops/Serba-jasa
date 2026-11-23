@@ -124,7 +124,7 @@ if(t==="apesanan")return `<h2>Pesanan</h2><br>${S.orders.length?S.orders.map(o=>
 /* --- Aksi pengguna (Fase 4: dihubungkan ke database) --- */
 function pesan(id){S.orders.unshift({id:S.oid++,j:id,st:"Menunggu"});S.tab="pesanan";S.det=null;toast("Pesanan dikirim");render()}
 function kirim(){const v=$("#cm").value.trim();if(!v)return;S.msg.push(["me",v]);render();setTimeout(()=>{S.msg.push(["them","Baik, saya konfirmasi sebentar lagi."]);if(S.tab==="chat"&&S.role==="c")render()},900)}
-function tambah(){const n=$("#fn").value.trim(),h=+$("#fh").value,l=$("#fl").value.trim();if(!n||!h||!l){toast("Isi semua kolom dulu");return}
+function tambah(){const n=$("#fn").value.trim(),h=Math.round(+$("#fh").value),l=$("#fl").value.trim();if(!n||!h||!l){toast("Isi semua kolom dulu");return}
 J.push({id:Date.now(),n,k:$("#fk").value,h,r:5.0,l,p:"Budi Teknik",own:1});toast("Jasa disimpan");go("jasa")}
 function hapus(id){J=J.filter(j=>j.id!==id);toast("Jasa dihapus");render()}
 function render(){$("#m").innerHTML=view();$("#n").innerHTML=NAV[S.role].map(x=>`<button class="${S.tab===x[0]&&!S.det?"on":""}" onclick="go('${x[0]}')"><span>${x[1]}</span>${x[2]}</button>`).join("");window.scrollTo(0,0)}
@@ -195,7 +195,7 @@ if(!l.length)return b+`<p class="mute">Penyedia ini belum punya jasa.</p>`;
 return b+`<h2>${esc(l[0].p)}</h2><p class="mute">${l.length} jasa · <span class="tag ok">Terverifikasi</span></p><br>${l.map(card).join("")}`}
 function jasaSaya(){const m=J.filter(j=>U&&j.uid===U.uid);return `<h2>Jasa saya</h2><br>${m.length?m.map(j=>card(j)+`<button class="btn s o" style="margin:-4px 0 14px" onclick="hapusJasa(${j.id})">Hapus jasa</button>`).join(""):`<p class="mute">Belum ada jasa. Tekan Tambah untuk membuat jasa pertama.</p>`}`}
 function tambahView(){return `<h2>Tambah jasa</h2><input id="fn" placeholder="Nama jasa"><select id="fk">${KAT.map(k=>`<option>${k[0]}</option>`).join("")}</select><input id="fh" type="number" inputmode="numeric" placeholder="Harga mulai (Rp)"><input id="fl" placeholder="Lokasi atau area layanan"><input id="fd" maxlength="300" placeholder="Deskripsi singkat"><label class="mute">Foto jasa (opsional)</label><input type="file" accept="image/*" onchange="fotoJ(this)"><button class="btn y" onclick="simpanJasa()">Simpan jasa</button>`}
-async function simpanJasa(){const n=$("#fn").value.trim(),h=+$("#fh").value,l=$("#fl").value.trim();
+async function simpanJasa(){const n=$("#fn").value.trim(),h=Math.round(+$("#fh").value),l=$("#fl").value.trim();
 if(n.length<3||!(h>0)||!l){toast("Isi nama, harga, dan lokasi");return}
 const id=Date.now();
 try{await db.doc("jasa/"+id).set({id,n,k:$("#fk").value,h,l,p:UD.nama,uid:U.uid,deskripsi:$("#fd").value.trim().slice(0,300),foto:FOTJ,r:0,at:id});FOTJ="";toast("Jasa disimpan");go("jasa")}catch(e){toast(err(e))}}
@@ -395,7 +395,7 @@ function gps(){if(!navigator.geolocation){toast("Perangkat tidak mendukung lokas
 navigator.geolocation.getCurrentPosition(p=>{if(MK.set)MK.set(p.coords.latitude,p.coords.longitude,true)},e=>toast(e.code===1?"Izin lokasi ditolak. Aktifkan izin lokasi untuk situs ini.":"Lokasi tidak tersedia"),{enableHighAccuracy:true,timeout:15000})}
 function pickUI(l,c){NM={kind:"pick",c:PIN?[PIN.la,PIN.lo]:c||null,z:PIN?16:13};
 return `<label class="mute">${l} (ketuk peta atau geser penanda)</label><div id="mp" style="height:240px;border-radius:12px;margin:6px 0 8px"></div><div class="row" style="margin-bottom:10px"><span class="mute" id="pt">${PIN?"Lokasi dipilih ✓":"Belum ada lokasi dipilih"}</span><button class="btn s o" onclick="gps()">📍 Lokasi saya</button></div>`}
-simpanJasa=async function(){const n=$("#fn").value.trim(),h=+$("#fh").value,l=$("#fl").value.trim();
+simpanJasa=async function(){const n=$("#fn").value.trim(),h=Math.round(+$("#fh").value),l=$("#fl").value.trim();
 if(n.length<3||!(h>0)||!l){toast("Isi nama, harga, dan lokasi");return}
 if(!PIN){toast("Tandai lokasi layanan di peta");return}
 const id=Date.now();
