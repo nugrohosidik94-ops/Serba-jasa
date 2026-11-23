@@ -95,8 +95,22 @@ exports.midtransWebhook = onRequest({region: REGION, secrets: [KEY], maxInstance
     const paid = s.transaction_status === "settlement" || (s.transaction_status === "capture" && s.fraud_status === "accept");
     if (!paid) {
       if (["expire", "cancel", "deny", "failure"].includes(s.transaction_status) && g.st === "menunggu") await tref.update({st: s.transaction_status});
-      if (["refund", "partial_refund", "chargeback", "partial_chargeback"].includes(s.transaction_status) && g.st === "lunas")
-        await tref.update({st: "perlu-cek", cat: "Midtrans melaporkan " + s.transaction_status + " (cek pesanan & saldo)"});
+      if (["refund", "partial_refund", "chargeback", "partial_chargeback"].includes(s.transaction_status) && g.st === "lunas") {
+        // Admin me-refund di dashboard Midtrans -> pesanan di aplikasi ikut ditandai refund (jika dana belum masuk saldo penyedia).
+        const full = s.transaction_status === "refund", pr = db.doc("pesanan/" + g.oid);
+        await db.runTransaction(async (t) => {
+          const [a, p] = await Promise.all([t.get(tref), t.get(pr)]);
+          if (a.data().st !== "lunas") return;
+          const po = p.exists ? p.data() : null;
+          const belumCair = !!po && !["saldo", "dicairkan"].includes(po.cair);
+          if (full && belumCair && po.via === "gateway" && po.pay === "lunas") {
+            t.update(pr, {pay: "refund", trf: Date.now(), ...(po.st === "diterima" ? {st: "dibatalkan"} : {})});
+            t.update(tref, {st: "refund", tr: Date.now()});
+          } else {
+            t.update(tref, {st: "perlu-cek", cat: "Midtrans melaporkan " + s.transaction_status + (belumCair ? "" : " (dana sudah masuk saldo penyedia)")});
+          }
+        });
+      }
       return res.send("ok");
     }
     if (g.st === "lunas") return res.send("ok");
@@ -111,7 +125,7 @@ exports.midtransWebhook = onRequest({region: REGION, secrets: [KEY], maxInstance
       const po = p.exists ? p.data() : null;
       const ok = po && po.st === "diterima" && ["belum", "ditolak"].includes(po.pay || "belum") && r && r.bayar === g.amt && !(pk && pk.exists);
       if (ok) {
-        t.update(pref, {pay: "lunas", kom: r.kom, net: r.net, pot: r.pot, tp: Date.now(), via: "gateway", ...(r.prev ? {prev: r.prev} : {})});
+        t.update(pref, {pay: "lunas", kom: r.kom, net: r.net, pot: r.pot, tp: Date.now(), via: "gateway", lp: true, ...(r.prev ? {prev: r.prev} : {})});
         if (pkr) t.set(pkr, {uid: po.cus, oid: g.oid, at: Date.now()});
         t.update(tref, {st: "lunas", tp: Date.now()});
       } else {
@@ -127,25 +141,46 @@ async function lepas(oid) {
   if (!p0.exists) return "tidak-ada";
   const o = p0.data();
   if (o.st !== "selesai" || (o.pay || "belum") !== "lunas" || !["belum", "diminta", undefined].includes(o.cair)) return "skip";
+  if (MODE.value() === "konfirmasi" && !((o.kc || 0) > 0 || Date.now() > p0.updateTime.toMillis() + 172800000)) return "menunggu-konfirmasi";
   const ids = [String(oid), Number(oid)].filter((x) => x === String(oid) || Number.isFinite(x));
   const lap = await db.collection("laporan").where("oid", "in", ids).get();
   if (lap.docs.some((d) => d.data().st !== "selesai")) return "ada-laporan";
-  if (MODE.value() === "konfirmasi" && !((o.kc || 0) > 0 || Date.now() > p0.updateTime.toMillis() + 172800000)) return "menunggu-konfirmasi";
   const r = await hitung(o), g = r.gross, kom = Math.max(0, g - (o.pot || 0)), net = o.h - g, mid = "s_" + oid, now = Date.now();
   await db.runTransaction(async (t) => {
     const rf = db.doc("dompet/" + o.pen), [ps, ds] = await Promise.all([t.get(pref), t.get(rf)]);
-    if (["saldo", "dicairkan"].includes(ps.data().cair)) return;
-    t.update(pref, {cair: "saldo", tc: now, kom, net, auto: true});
+    const pd = ps.data();
+    if (["saldo", "dicairkan"].includes(pd.cair) || pd.pay !== "lunas" || pd.st !== "selesai") return;
+    t.update(pref, {cair: "saldo", tc: now, kom, net, auto: true, lp: admin.firestore.FieldValue.delete()});
     t.set(db.doc("mutasi/" + mid), {uid: o.pen, j: "pendapatan", d: net, k: "Pendapatan: " + o.jn, ref: String(oid), at: now});
     if (ds.exists) t.update(rf, {s: ds.data().s + net, lm: mid, at: now}); else t.set(rf, {s: net, lm: mid, at: now});
   });
   return "ok";
 }
 
-exports.lepasOtomatis = onSchedule({region: "asia-southeast1", schedule: "every 5 minutes", timeZone: "Asia/Jakarta"}, async () => {
+// Hemat biaya baca: tiap 5 menit hanya pesanan bertanda lp == true (menunggu dilepas ke dompet penyedia).
+// Field "lp" hanya dipakai server; tampilan aplikasi tidak membacanya, jadi field "cair" tetap kosong sampai dana benar-benar diteruskan.
+const FV = () => admin.firestore.FieldValue;
+async function proses(d) {
+  try {
+    const h = await lepas(d.id);
+    if (h === "ok" || h === "skip" || h === "tidak-ada") await d.ref.update({lp: FV().delete()});
+  } catch (e) { console.error("lepas", d.id, e); }
+}
+
+exports.lepasOtomatis = onSchedule({region: "asia-southeast1", schedule: "every 5 minutes", timeZone: "Asia/Jakarta", maxInstances: 1}, async () => {
+  const q = await db.collection("pesanan").where("st", "==", "selesai").where("lp", "==", true).get();
+  for (const d of q.docs) await proses(d);
+});
+
+// Sapuan harian: pesanan lunas yang belum bertanda lp (mis. dibayar lewat dompet) diberi lp = true lalu diproses.
+exports.sapuHarian = onSchedule({region: "asia-southeast1", schedule: "every day 03:00", timeZone: "Asia/Jakarta", maxInstances: 1}, async () => {
   const q = await db.collection("pesanan").where("st", "==", "selesai").where("pay", "==", "lunas").get();
   for (const d of q.docs) {
-    const c = d.data().cair;
-    if (!c || c === "belum" || c === "diminta") { try { await lepas(d.id); } catch (e) { console.error("lepas", d.id, e); } }
+    const o = d.data();
+    if (o.cair && o.cair !== "diminta") continue;
+    try {
+      if (o.lp !== true) await d.ref.update({lp: true});
+    } catch (e) { console.error("sapu", d.id, e); continue; }
+    await proses(d);
   }
 });
