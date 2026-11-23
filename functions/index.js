@@ -12,7 +12,7 @@ const ENV = defineString("MIDTRANS_ENV", {default: "sandbox"});
 const CLIENT = defineString("MIDTRANS_CLIENT_KEY", {default: ""});
 const PAYMENTS = defineString("PAY_METHODS", {default: ""});
 const SITE = defineString("SITE_URL", {default: "https://serba-jasa.web.app"});
-const MODE = defineString("AUTO_RELEASE", {default: "selesai"});
+const MODE = defineString("AUTO_RELEASE", {default: "konfirmasi"});
 const REGION = "asia-southeast2";
 const prod = () => ENV.value() === "production";
 const SNAP = () => (prod() ? "https://app.midtrans.com" : "https://app.sandbox.midtrans.com");
@@ -24,13 +24,21 @@ async function hitung(o) {
   const persen = cfg.persen ?? 10, PU = cfg.pu ?? 5, PD = cfg.pd ?? 2;
   const done = await db.collection("pesanan").where("pen", "==", o.pen).where("st", "==", "selesai").get();
   const n = done.size, cut = n >= 30 ? 2 : n >= 10 ? 1 : 0, base = Math.max(0, persen - cut);
-  const ul = done.docs.some((d) => { const x = d.data(); return x.cus === o.cus && String(x.id) !== String(o.id) && x.at < o.at; });
+  const prevs = done.docs.filter((d) => { const x = d.data(); return x.cus === o.cus && String(x.id) !== String(o.id) && x.at < o.at; });
+  const ul = prevs.length > 0;
+  // Diskon pesan-ulang hanya jika ada pesanan selesai sebelumnya yang BELUM dipakai (penanda /pakai/{id}), sama seperti jalur dompet.
+  let prev = null;
+  if (ul) {
+    const used = await Promise.all(prevs.map((d) => db.doc("pakai/" + d.id).get()));
+    const free = prevs.find((d, i) => !used[i].exists);
+    prev = free ? free.id : null;
+  }
   const gross = Math.round(o.h * (ul ? Math.min(base, PU) : base) / 100);
-  const pot = ul ? Math.min(Math.round(o.h * PD / 100), gross) : 0;
-  return {gross, pot, kom: gross - pot, net: o.h - gross, bayar: o.h - pot};
+  const pot = prev ? Math.min(Math.round(o.h * PD / 100), gross) : 0;
+  return {gross, pot, kom: gross - pot, net: o.h - gross, bayar: o.h - pot, prev};
 }
 
-exports.buatTransaksi = onCall({region: REGION, secrets: [KEY]}, async (req) => {
+exports.buatTransaksi = onCall({region: REGION, secrets: [KEY], maxInstances: 10}, async (req) => {
   try { return await buat(req); } catch (e) {
     if (e instanceof HttpsError) throw e;
     console.error("buatTransaksi", e); throw new HttpsError("internal", "Server pembayaran error: " + (e.message || e));
@@ -53,6 +61,7 @@ async function buat(req) {
   if (u.blok) throw new HttpsError("permission-denied", "Akun diblokir.");
 
   const r = await hitung(o);
+  if (!Number.isInteger(r.bayar) || r.bayar < 1) throw new HttpsError("failed-precondition", "Nominal pesanan tidak valid.");
   const orderId = `SJ-${oid}-${Date.now()}`;
   const res = await fetch(SNAP() + "/snap/v1/transactions", {
     method: "POST",
@@ -72,7 +81,7 @@ async function buat(req) {
   return {token: j.token, url: j.redirect_url, clientKey: CLIENT.value(), snapJs: SNAP() + "/snap/snap.js"};
 }
 
-exports.midtransWebhook = onRequest({region: REGION, secrets: [KEY]}, async (req, res) => {
+exports.midtransWebhook = onRequest({region: REGION, secrets: [KEY], maxInstances: 10}, async (req, res) => {
   try {
     const b = req.body || {};
     const sig = crypto.createHash("sha512").update(String(b.order_id) + String(b.status_code) + String(b.gross_amount) + KEY.value()).digest("hex");
@@ -86,6 +95,8 @@ exports.midtransWebhook = onRequest({region: REGION, secrets: [KEY]}, async (req
     const paid = s.transaction_status === "settlement" || (s.transaction_status === "capture" && s.fraud_status === "accept");
     if (!paid) {
       if (["expire", "cancel", "deny", "failure"].includes(s.transaction_status) && g.st === "menunggu") await tref.update({st: s.transaction_status});
+      if (["refund", "partial_refund", "chargeback", "partial_chargeback"].includes(s.transaction_status) && g.st === "lunas")
+        await tref.update({st: "perlu-cek", cat: "Midtrans melaporkan " + s.transaction_status + " (cek pesanan & saldo)"});
       return res.send("ok");
     }
     if (g.st === "lunas") return res.send("ok");
@@ -94,12 +105,14 @@ exports.midtransWebhook = onRequest({region: REGION, secrets: [KEY]}, async (req
     const pref = db.doc("pesanan/" + g.oid), p0 = await pref.get();
     const r = p0.exists ? await hitung(p0.data()) : null;
     await db.runTransaction(async (t) => {
-      const [a, p] = await Promise.all([t.get(tref), t.get(pref)]);
+      const pkr = r && r.prev ? db.doc("pakai/" + r.prev) : null;
+      const [a, p, pk] = await Promise.all([t.get(tref), t.get(pref), pkr ? t.get(pkr) : null]);
       if (a.data().st === "lunas") return;
       const po = p.exists ? p.data() : null;
-      const ok = po && po.st === "diterima" && ["belum", "ditolak"].includes(po.pay || "belum") && r && r.bayar === g.amt;
+      const ok = po && po.st === "diterima" && ["belum", "ditolak"].includes(po.pay || "belum") && r && r.bayar === g.amt && !(pk && pk.exists);
       if (ok) {
-        t.update(pref, {pay: "lunas", kom: r.kom, net: r.net, pot: r.pot, tp: Date.now(), via: "gateway"});
+        t.update(pref, {pay: "lunas", kom: r.kom, net: r.net, pot: r.pot, tp: Date.now(), via: "gateway", ...(r.prev ? {prev: r.prev} : {})});
+        if (pkr) t.set(pkr, {uid: po.cus, oid: g.oid, at: Date.now()});
         t.update(tref, {st: "lunas", tp: Date.now()});
       } else {
         t.update(tref, {st: "perlu-cek", cat: "dibayar tapi pesanan tidak bisa dilunasi otomatis (refund manual?)"});
