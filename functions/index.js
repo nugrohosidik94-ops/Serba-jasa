@@ -117,7 +117,7 @@ async function lepas(oid) {
   const ids = [String(oid), Number(oid)].filter((x) => x === String(oid) || Number.isFinite(x));
   const lap = await db.collection("laporan").where("oid", "in", ids).get();
   if (lap.docs.some((d) => d.data().st !== "selesai")) return "ada-laporan";
-  if (MODE.value() === "konfirmasi" && !((o.kc || 0) > 0 || Date.now() > (o.ts || 0) + 172800000)) return "menunggu-konfirmasi";
+  if (MODE.value() === "konfirmasi" && !((o.kc || 0) > 0 || Date.now() > p0.updateTime.toMillis() + 172800000)) return "menunggu-konfirmasi";
   const r = await hitung(o), g = r.gross, kom = Math.max(0, g - (o.pot || 0)), net = o.h - g, mid = "s_" + oid, now = Date.now();
   await db.runTransaction(async (t) => {
     const rf = db.doc("dompet/" + o.pen), [ps, ds] = await Promise.all([t.get(pref), t.get(rf)]);
