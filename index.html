@@ -1924,4 +1924,47 @@ window.render=function(){_r();T(()=>{const n=document.getElementById("n");if(!n|
 try{render()}catch(e){}
 })();
 </script>
-</body></html>
+</body></html><!-- ===== DASHBOARD ADMIN V2: ikon SVG, ilustrasi hero, kartu pastel mengikuti desain. Logika lama tidak diubah ===== -->
+<style>
+body.adm{background:#eef3ff}
+.ad-hero{background:radial-gradient(circle at 85% 30%,#3d8bff 0,transparent 45%),linear-gradient(160deg,#0a2a8f,#1550d8 62%,#2a74ee);padding-bottom:78px}
+.ad-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:34px;background:#eef3ff;border-radius:50% 50% 0 0/100% 100% 0 0}
+.ad-art{font-size:0;width:150px;height:130px;right:6px;bottom:34px;z-index:1}
+.ad-art svg{width:100%;height:100%}
+.ad-st{background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 20%,#fff),color-mix(in srgb,var(--ac) 7%,#fff));border-color:color-mix(in srgb,var(--ac) 28%,#fff);color:#0d1f4d;border-radius:20px}
+.ad-st small{color:#3b4a6b}.ad-st>span{background:color-mix(in srgb,var(--ac) 30%,#fff);color:var(--ac);width:52px;height:52px;border-radius:50%}
+.ad-st>span svg,.ad-mn span svg{width:60%;height:60%}
+.ad-mn{background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 18%,#fff),color-mix(in srgb,var(--ac) 7%,#fff));color:#0d1f4d;border-color:color-mix(in srgb,var(--ac) 24%,#fff)}
+.ad-mn span{background:color-mix(in srgb,var(--ac) 30%,#fff);color:var(--ac)}
+.ad-fin{background:linear-gradient(135deg,#1d1470,#4a2fc0);position:relative;overflow:hidden}
+.ad-fin::after{content:"";position:absolute;right:-6px;bottom:-6px;width:56px;height:56px;border-radius:50%;background:radial-gradient(circle,#ffd45a,#e9a400);opacity:.9;box-shadow:-22px 8px 0 -6px #f5b800}
+.ad-me i{background:linear-gradient(135deg,#ffd45a,#ffb300)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body.adm{background:#0b1430}:root:not([data-theme="light"]) .ad-hero::after{background:#0b1430}}
+</style>
+<script>
+(function(){
+const P={u:'<path d="M9 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7zm7 1a3 3 0 100-6 3 3 0 000 6zM2 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5v1H2zm15 1v-1c0-1.6-.6-3-1.6-4 .5-.1 1-.2 1.6-.2 3 0 5 1.7 5 4.2v1z"/>',
+s:'<path d="M3 9l1.6-5h14.8L21 9v1.5a2.5 2.5 0 01-1 2V20H4v-7.5a2.5 2.5 0 01-1-2zm3 5v4h5v-4zm7 0v4h5v-4z"/>',
+v:'<path d="M12 2l8 3v6c0 5-3.4 9-8 11-4.6-2-8-6-8-11V5zm-1.2 13l5-5-1.4-1.4-3.6 3.6-1.6-1.6L7.8 12z"/>',
+w:'<path d="M4 6a2 2 0 012-2h11v3H6v1h13a1 1 0 011 1v9a2 2 0 01-2 2H6a2 2 0 01-2-2zm12 7a1.3 1.3 0 100 2.6 1.3 1.3 0 000-2.6z"/>',
+a:'<path d="M12 2l10 18H2zm-1 7v5h2V9zm0 7v2h2v-2z"/>',
+d:'<path d="M6 2h8l5 5v15H6zm7 1.5V8h4.5zM9 12v2h7v-2zm0 4v2h7v-2z"/>',
+k:'<path d="M12 2l2.9 6.2 6.8.8-5 4.7 1.3 6.7-6-3.4-6 3.4 1.3-6.7-5-4.7 6.8-.8z"/>',
+g:'<path d="M19.4 13a7.6 7.6 0 000-2l2-1.6-2-3.4-2.4 1a7.7 7.7 0 00-1.7-1L15 3.4h-4L10.7 6a7.7 7.7 0 00-1.7 1l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 000 2l-2 1.6 2 3.4 2.4-1c.5.4 1.1.7 1.7 1l.3 2.6h4l.3-2.6c.6-.3 1.2-.6 1.7-1l2.4 1 2-3.4zM13 15.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z"/>',
+c:'<path d="M3 4h2.5l.6 2H21l-2 8H8l.4 2H19v2H7L4.6 6H3zm5 15a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm9 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"/>',
+r:'<path d="M12 3a3 3 0 013 3c0 1-.4 1.7-1 2.3h2.3l1.7 5H6l1.7-5H10c-.6-.6-1-1.300-1-2.300a3 3 0 013-3zM5 16h14l1 5H4zm5 1.500v2h4v-2z"/>',
+b:'<path d="M12 22a2.500 2.500 0 002.400-2h-4.800A2.500 2.500 0 0012 22zm7-6V11a7 7 0 00-5.500-6.800V3.500a1.500 1.500 0 00-3 0v.7A7 7 0 005 11v5l-2 2v1h18v-1z"/>',
+o:'<path d="M3 10h5v10H3zm7-6h5v16h-5zm7 8h4v8h-4z"/>',
+p:'<path d="M3 11l9-8 9 8h-2.500v9h-5v-6h-3v6h-5v-9z"/>'};
+const ic=k=>'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">'+P[k]+'</svg>';
+const MAP={"👥":"u","🏪":"s","🛡️":"v","👛":"w","⚠️":"a","📄":"d","⭐":"k","⚙️":"g","🛒":"c","💰":"r","📦":"c","🔔":"b","👤":"u","📊":"o","🏠":"p"};
+const ART='<svg viewBox="0 0 150 130"><g opacity=".35" fill="#8fc2ff"><rect x="6" y="50" width="14" height="70"/><rect x="24" y="30" width="16" height="90"/><rect x="118" y="44" width="16" height="76"/><rect x="100" y="64" width="14" height="56"/></g><g transform="rotate(14 75 55)"><rect x="46" y="8" width="52" height="96" rx="10" fill="#0d1f4d"/><rect x="50" y="14" width="44" height="84" rx="6" fill="#fff"/><path d="M60 52l12-9 12 9-12 10z" fill="#ffc229"/><path d="M58 56l14 8 14-8" fill="none" stroke="#1d5de8" stroke-width="4"/></g><rect x="86" y="74" width="50" height="44" fill="#fff"/><path d="M80 74h62l-6-16H86z" fill="#ff7a2f"/><path d="M88 58h8v16h-8zm14 0h8v16h-8zm14 0h8v16h-8z" fill="#fff" opacity=".9"/><rect x="96" y="92" width="16" height="26" fill="#2a74ee"/><circle cx="34" cy="100" r="15" fill="#c9d6ee"/><circle cx="34" cy="100" r="6" fill="#1550d8"/></svg>';
+function skin(){const q=s=>document.querySelectorAll(s);
+q(".ad-st>span,.ad-mn>span,.ad-act>i").forEach(e=>{if(e.dataset.sk)return;const t=e.textContent.trim(),k=MAP[t];if(k){e.innerHTML=ic(k);e.dataset.sk=1}});
+q(".ad-bell").forEach(e=>{if(e.dataset.sk)return;const n=e.querySelector("em");e.innerHTML='<span style="display:block;width:28px;height:28px">'+ic("b")+'</span>'+(n?n.outerHTML:"");e.dataset.sk=1});
+q(".ad-art").forEach(e=>{if(!e.dataset.sk){e.innerHTML=ART;e.dataset.sk=1}});
+q("nav.adn button:not(.fab) span").forEach(e=>{if(e.dataset.sk)return;const k=MAP[e.textContent.trim()];if(k){e.innerHTML='<b style="display:block;width:22px;height:22px;margin:0 auto 2px">'+ic(k)+'</b>';e.dataset.sk=1}})}
+const _r=window.render;window.render=function(){_r();try{skin()}catch(e){console.error(e)}};
+try{render()}catch(e){}
+})();
+</script>
