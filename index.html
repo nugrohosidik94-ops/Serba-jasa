@@ -60,7 +60,7 @@ nav button.on{color:var(--teal);font-weight:800}
 </style><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#4b1a8a">
+<meta name="theme-color" content="#7B3FE4">
 <link rel="icon" type="image/png" href="ikon-ungu-192.png">
 <link rel="apple-touch-icon" href="ikon-ungu-apple-180.png">
 </head>
@@ -1639,5 +1639,27 @@ const _vL=view;window.view=function(){if(U&&!UD&&GN===true&&viaGoogle())return l
 const _rL=render;window.render=function(){document.body.classList.toggle("sj-auth",!window.SJ_ADMIN&&(!U||(!UD&&GN===true&&viaGoogle())));_rL()};
 try{render()}catch(e){}
 })();
+</script>
+<!-- ===== TEMA V2 bagian 6: ungu muda cerah, warna serasi dengan menu bawah, login ungu-putih ===== -->
+<style id="tema6">
+:root{--teal:#7B3FE4;--acc:#6D33D6;--tagbg:#F1EAFE;--line:#E9E3F5;--ink:#1F1A2B}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--teal:#8B5CF6}}
+:root[data-theme="dark"]{--teal:#8B5CF6}
+header,#splash{background:var(--teal)}
+nav button{position:relative}
+nav button.on{box-shadow:none;color:var(--acc)}
+nav button.on::before{content:"";position:absolute;top:0;left:24%;right:24%;height:3px;border-radius:0 0 3px 3px;background:var(--yel)}
+.tr{background:var(--tagbg)!important;color:var(--ink)!important;border:1px solid var(--line);font-weight:500}
+.tr b{color:var(--acc);font-weight:700}
+.tr:nth-child(2){background:#FFF4DC!important}
+.tr:nth-child(2) b{color:#8A5A00}
+.bar{background:var(--teal)}
+.btn.sj-go{background:linear-gradient(90deg,#7B3FE4,#A06BFF)}
+.sj-hero{background:repeating-radial-gradient(circle at 15% 130%,rgba(255,255,255,.16) 0 1px,transparent 1px 8px),linear-gradient(180deg,#7B3FE4 0%,#9366F0 62%,#CDB9FF 100%)}
+.sj-sheet{box-shadow:0 -8px 24px rgba(123,63,228,.10)}
+.sj-tabs button.on{color:var(--acc)}
+</style>
+<script>
+(function(){try{let m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement("meta");m.name="theme-color";document.head.appendChild(m)}m.setAttribute("content","#7B3FE4")}catch(e){}})();
 </script>
 </body></html>
