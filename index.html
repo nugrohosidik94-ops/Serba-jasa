@@ -1692,6 +1692,13 @@ nav button{position:relative}
 .pc .pi{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
 .hb{background:none;border:0;font-size:22px;line-height:1;color:var(--acc);cursor:pointer;padding:0 2px}
 .pc .btn.s{width:auto;padding:8px 12px}
+.hero2{position:relative}.vf2{color:#9EC0FF}
+.wl{display:flex;justify-content:space-between;align-items:center;margin-top:12px;background:rgba(255,255,255,.14);border-radius:12px;padding:9px 12px;position:relative;z-index:1;font-size:13px;line-height:1.25}.wl b{font-size:17px}.wl .btn{background:#fff!important;color:var(--acc)!important;width:auto;border-radius:99px;padding:8px 18px;font-weight:800;border:0}
+.tg3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.tl{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:86px;padding:10px 6px;background:var(--card);border:1px solid var(--line);border-radius:14px;font:inherit;font-size:12px;font-weight:600;color:var(--ink);text-align:center;cursor:pointer;line-height:1.2}
+.tl svg{font-size:26px;color:var(--acc)}
+.tl em{position:absolute;top:6px;right:8px;background:#E53935;color:#fff;font-style:normal;font-size:10px;border-radius:99px;padding:2px 6px}
+.tl:active{background:var(--tagbg)}
 .pf-h{display:flex;align-items:center;gap:14px;margin-bottom:12px}.pf-h>div{flex:1}
 .pf-n{font-size:18px;font-weight:800}.vf{color:var(--acc)}
 .gear{background:none;border:0;font-size:24px;cursor:pointer;color:var(--mute)}
@@ -1731,15 +1738,28 @@ window.homeView=function(){let h=_h7();return T(()=>{
 const _p7=window.profilView;
 window.profilView=function(){let h=_p7();return T(()=>{
  if(!U||!UD||S.role!=='c'||S.ep||S.pw||S.ls||S.dp||S.isiv)return h;
- const ok=UD.ktp==='disetujui';
- h=h.replace(/<h2>[^<]*<\/h2><p class="mute">[^<]*<\/p>/,'');
- const hd='<div class="pf-h">'+av(U.uid,UD.nama,72)+'<div style="min-width:0"><div class="pf-n">'+esc(UD.nama)+(ok?' <span class="vf">\u2714</span>':'')+'</div><div class="mute">'+esc(UD.hp||UD.email||'')+'</div></div><button class="gear" aria-label="Pengaturan akun" onclick="bukaEdit()">\u2699</button></div>';
- let w='';
- if(typeof dwOn==='function'&&(dwOn()||(DP.s||0)>0)){w='<div class="wal" onclick="S.dp=true;render()"><div><small>Saldo Wallet</small><b>'+rp(DP.s||0)+'</b></div>'+(dwOn()?'<button class="btn s tp" onclick="event.stopPropagation();S.isiv=true;render()">Top Up</button>':'<button class="btn s tp">Lihat</button>')+'</div>'}
+ const d=document.createElement('div');d.innerHTML=h;
+ const hero=d.querySelector('.hero2'),row=[...d.querySelectorAll('.hs')].find(x=>x.querySelector('.chip'));
+ if(!hero||!row)return h;
+ /* satu kartu profil: nama + centang, HP, dan saldo + Top Up di dalam kartu yang sama */
+ const nm=hero.querySelector('div[style*="font-size:19px"]');
+ if(nm&&UD.ktp==='disetujui')nm.insertAdjacentHTML('beforeend',' <span class="vf2">\u2714</span>');
+ if(typeof dwOn==='function'&&(dwOn()||(DP.s||0)>0))hero.insertAdjacentHTML('beforeend','<div class="wl"><span>Saldo Wallet<br><b>'+rp(DP.s||0)+'</b></span>'+(dwOn()?'<button type="button" class="btn s" onclick="S.isiv=true;render()">Top Up</button>':'<button type="button" class="btn s" onclick="S.dp=true;render()">Lihat</button>')+'</div>');
+ /* menu jadi kisi 3 kolom: menggantikan daftar panjang + baris chip, semua tombol lama tetap dipakai */
+ const ic=q=>'<svg class="i" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+q+'</svg>';
  const nO=(OM||[]).filter(o=>o.st==='diterima'||o.st==='menunggu').length,nN=notifs().length;
- const it=(ic,t,fn,n)=>'<button onclick="'+fn+'"><b>'+ic+'</b><span>'+t+'</span>'+(n?'<em>'+n+'</em>':'')+'</button>';
- const mn='<div class="mn">'+it('\uD83D\uDCCB','Pesanan Saya',"go('pesanan')",nO)+it('\u2764\uFE0F','Favorit','favSheet()',(FAV||[]).length)+it('\u2B50','Ulasan Saya','ulSheet()',Object.keys(UL||{}).length)+it('\uD83D\uDD14','Notifikasi',"NL=notifs();markSeen();go('notif')",nN)+it('\u2699\uFE0F','Pengaturan Akun','bukaEdit()',0)+'</div>';
- return hd+w+mn+h})||h};
+ const mk=(q,t,fn,n)=>'<button type="button" class="tl" onclick="'+fn+'">'+ic(q)+t+(n?'<em>'+n+'</em>':'')+'</button>';
+ const chips=[...row.querySelectorAll('.chip')],dom=chips.find(c=>(c.getAttribute('onclick')||'').includes('S.dp'));
+ const cv=c=>'<button type="button" class="tl" onclick="'+(c.getAttribute('onclick')||'').replace(/"/g,'&quot;')+'">'+c.innerHTML+'</button>';
+ const g=document.createElement('div');g.className='tg3';
+ g.innerHTML=mk('<path d="M9 4h6v3H9zM7 5H5v16h14V5h-2M9 12h6M9 16h4"/>','Pesanan Saya',"go('pesanan')",nO)
+  +(dom?cv(dom):'')
+  +mk('<path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2 4.5 4.5 0 0 1 8 2c0 6-8 11-8 11z"/>','Favorit','favSheet()',0)
+  +mk('<polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/>','Ulasan Saya','ulSheet()',0)
+  +mk('<path d="M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15zM10 21h4"/>','Notifikasi',"NL=notifs();markSeen();go('notif')",nN)
+  +chips.filter(c=>c!==dom).map(cv).join('');
+ row.replaceWith(g);
+ return d.innerHTML})||h};
 window.favSheet=function(){T(()=>{const rows=(FAV||[]).map(u=>{const j=J.find(x=>x.uid===u),nm=(j&&j.p)||(PUB[u]&&PUB[u].pf&&PUB[u].pf.nama)||'Penyedia';
  return '<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><div style="display:flex;gap:10px;align-items:center;cursor:pointer" onclick="tutup();S.prov=\''+esc(u)+'\';S.tab=\'pp\';render()">'+av(u,nm,36)+'<b>'+esc(nm)+'</b></div><button class="btn s o" style="width:auto" onclick="toggleFav(\''+esc(u)+'\');setTimeout(favSheet,350)">Hapus</button></div>'}).join('')||'<p class="mute">Belum ada penyedia favorit. Ketuk \u2661 pada sebuah jasa.</p>';
  ov('<h2 style="margin:0 0 8px">Favorit</h2>'+rows+'<button class="btn o" style="margin-top:12px" onclick="tutup()">Tutup</button>')})};
