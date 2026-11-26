@@ -1,10 +1,24 @@
 (function () {
   const WORKER = "https://serba-jasa-push.nugrohosidik94.workers.dev";
   const VAPID = "BNzq57ovmTgIuLmBtPOclXcc22aNHQS6BvSU-NlO1_vaf2bENqL2KSf0nvvhPqLoJO209DGjXgwqxwRs7DBMQYw";
+  const MCFG = {
+    apiKey: "AIzaSyAcp03rTmdn-lcvqtd6OG0lD2mI1C6BlHA",
+    authDomain: "serba-jasa.firebaseapp.com",
+    projectId: "serba-jasa",
+    messagingSenderId: "949487663228",
+    appId: "1:949487663228:web:7f33f574afca4a576b71f9"
+  };
   const canRecv = "Notification" in window && "serviceWorker" in navigator &&
     typeof firebase !== "undefined" && !!firebase.messaging && firebase.messaging.isSupported();
-  let TKD = false;
+  let TKD = false, MAPP = null;
   window.NTD = false;
+
+  function msg() {
+    if (!MAPP) {
+      MAPP = firebase.apps.find(a => a.name === "msg") || firebase.initializeApp(MCFG, "msg");
+    }
+    return firebase.messaging(MAPP);
+  }
 
   async function kirimNotif(toUid, type, detail) {
     try {
@@ -21,7 +35,7 @@
 
   async function simpanToken() {
     const reg = await navigator.serviceWorker.register("firebase-messaging-sw.js", { scope: "fcm-scope/" });
-    const t = await firebase.messaging().getToken({ vapidKey: VAPID, serviceWorkerRegistration: reg });
+    const t = await msg().getToken({ vapidKey: VAPID, serviceWorkerRegistration: reg });
     if (!t) throw new Error("Token notifikasi kosong");
     const idt = await U.getIdToken();
     const r = await fetch(WORKER + "/register", {
@@ -46,7 +60,7 @@
 
   if (canRecv) {
     try {
-      firebase.messaging().onMessage(m => {
+      msg().onMessage(m => {
         const n = m.notification || {};
         toastL("🔔 " + (n.title || "Notifikasi") + (n.body ? ": " + n.body : ""));
       });
