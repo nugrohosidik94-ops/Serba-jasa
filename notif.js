@@ -149,3 +149,42 @@
   });
   window.Notification = Pengganti;
 })();
+(function () {
+  const WORKER = "https://serba-jasa-push.nugrohosidik94.workers.dev";
+  window.NTT = false;
+
+  async function panggil(delay) {
+    try {
+      const idt = await U.getIdToken();
+      const r = await fetch(WORKER + "/test", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + idt, "Content-Type": "application/json" },
+        body: JSON.stringify({ delay: delay })
+      });
+      return await r.json();
+    } catch (e) { return { error: String(e) }; }
+  }
+  window.ujiPushSekarang = async function () {
+    toast("Mengirim tes...");
+    const j = await panggil(0);
+    toastL("Hasil tes: " + JSON.stringify(j).slice(0, 300));
+  };
+  window.ujiPushTunda = async function () {
+    const j = await panggil(15);
+    toastL(j.ok
+      ? "Tes dijadwalkan. KUNCI LAYAR sekarang, notifikasi muncul dalam 15 detik."
+      : "Gagal: " + JSON.stringify(j).slice(0, 250));
+  };
+
+  const KT = `<div class="card" style="border-left:5px solid var(--acc)"><div class="in"><b>Notifikasi aktif</b><div class="mute" style="margin:4px 0 8px">Tes dulu agar yakin bisa muncul saat layar terkunci.</div><div class="row" style="justify-content:flex-start;gap:8px;flex-wrap:wrap"><button class="btn s y" onclick="ujiPushTunda()">Tes 15 detik (kunci layar)</button><button class="btn s o" onclick="ujiPushSekarang()">Tes sekarang</button><button class="btn s o" onclick="NTT=true;render()">Tutup</button></div></div></div>`;
+  const _v = window.view;
+  window.view = function () {
+    const h = _v();
+    if (typeof h !== "string" || !U || !UD || window.SJ_ADMIN || window.NTT ||
+        !("Notification" in window) || Notification.permission !== "granted") return h;
+    if (S.det || S.form || S.room || S.omap || S.loc || S.rev || S.lap || S.bayar || S.ep ||
+        S.pw || S.dp || S.isiv || S.trk || S.lb || S.lapa) return h;
+    return KT + h;
+  };
+  try { render(); } catch (e) {}
+})();
