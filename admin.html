@@ -1726,7 +1726,7 @@ adm=function(){return UD&&UD.role==="admin"},isP=function(){return UD&&UD.penyed
 var pf=function(){return PF[U.uid]||{}},getAl=function(){return pf().alamat||ls("sj_al_"+U.uid,"")},hasP=function(id){return!!(auth.currentUser&&auth.currentUser.providerData.some(function(p){return p.providerId===id}))};
 /* ---------- navigasi ---------- */
 window.pgGo=function(s){S.set=s;render();var m=document.querySelector("main");if(m)m.scrollTop=0;window.scrollTo(0,0)};
-window.pgBack=function(){if(S.set){S.set=null;render();return}var b=document.querySelector("#n button");if(b)b.click()};
+window.pgBack=function(){window.sjBack&&sjBack()};
 /* ---------- lembar edit ---------- */
 var sheet=function(t,h){var s=document.createElement("div");s.className="pg-sh";s.innerHTML="<div><h3>"+t+"</h3>"+h+"</div>";s.onclick=function(e){if(e.target===s)s.remove()};document.body.appendChild(s);var i=s.querySelector("input");if(i){i.focus();i.select&&i.select()}};
 window.pgEdit=function(k){var lb={nama:L("Nama Lengkap","Full name"),hp:L("Nomor HP","Phone number"),alamat:L("Alamat","Address"),email:L("Email baru","New email")}[k],v=k==="nama"?UD.nama:k==="hp"?UD.hp:k==="alamat"?getAl():"";
@@ -1809,6 +1809,43 @@ var _g=go;go=function(t){S.set=null;_g(t)};
 var _sr=setRole;setRole=function(r){S.set=null;_sr(r)};
 var _rr=render;render=function(){_rr();T(function(){document.body.classList.toggle("pgx",!!(U&&UD&&S.tab==="profil"&&!S.pw&&!S.ep&&!S.trk&&!S.det));chkN()})};
 try{var th0=ls("sj_theme","auto");if(th0==="light"||th0==="dark")document.documentElement.setAttribute("data-theme",th0);var fs0=ls("sj_fs","m");if(FS[fs0]&&fs0!=="m")document.body.style.zoom=FS[fs0];document.documentElement.lang=LG}catch(e){}
+render();
+})();
+</script>
+<script>
+/* ===== RIWAYAT NAVIGASI v2: semua tombol Kembali (HP, browser, dan tombol ‹ Kembali di aplikasi) mundur sesuai urutan klik ===== */
+(function(){
+var K=["role","tab","det","form","room","cat","sub","rev","lap","pw","prov","loc","omap","bayar","trk","lapa","ep","lb","dp","isiv","ls","set"],
+ OV=".pg-sh,.ad-sheet,#hpsov",ST=[],cur=-1,LK=null,lock=false,pend=false,armed=false;
+var T=function(f){try{return f()}catch(e){console.error(e)}};
+var snap=function(){var o={};K.forEach(function(k){o[k]=S[k]});return o};
+var sig=function(o){return JSON.stringify(K.map(function(k){var v=o[k];return v&&typeof v==="object"?"o:"+(v.id!==undefined?v.id:v.uid!==undefined?v.uid:v.n!==undefined?v.n:v.jid!==undefined?v.jid:""):v===undefined?null:v}))};
+var apply=function(sn){T(function(){if(S.room)closeRoom()});T(function(){if(S.trk)closeTrk()});T(function(){if(S.omap)closeOmap()});
+ K.forEach(function(k){S[k]=sn[k]});["room","trk","omap","loc"].forEach(function(k){if(S[k])S[k]=null});T(function(){PIN=null})};
+var init=function(){var s=snap();ST=[{g:1},{s:s,k:sig(s),sc:0}];cur=1;LK=ST[1].k;history.replaceState({sj:1,i:0},"");history.pushState({sj:1,i:1},"")};
+window.sjBack=function(){if(cur>1)history.back();else if(S.set){S.set=null;render()}else{var b=document.querySelector("#n button");if(b)b.click()}};
+/* klik pertama (punya gesture pengguna) menyiapkan riwayat; tombol Kembali di aplikasi diarahkan ke riwayat */
+document.addEventListener("click",function(e){
+ if(cur<0&&U&&UD)T(init);
+ var b=e.target&&e.target.closest?e.target.closest(".back,.pg-bar button"):null;
+ if(b&&cur>1){e.preventDefault();e.stopPropagation();history.back()}},true);
+window.addEventListener("popstate",function(e){var i=e.state&&e.state.sj?e.state.i:null;
+ if(pend){pend=false;if(i!==null)cur=i;return}
+ if(i===null||!ST.length)return;
+ var ov=document.querySelector(OV);if(ov){ov.remove();history.pushState({sj:1,i:cur},"");return}
+ if(i===0){if(armed){armed=false;history.back();return}armed=true;toast("Tekan sekali lagi untuk keluar");setTimeout(function(){armed=false},2000);history.pushState({sj:1,i:1},"");cur=1;return}
+ var t=ST[i];if(!t||!t.s)return;
+ lock=true;apply(t.s);lock=false;cur=i;LK=sig(snap());render();
+ setTimeout(function(){var m=document.querySelector("main");if(m)m.scrollTop=t.sc||0},0)});
+document.addEventListener("scroll",function(e){if(cur>0&&ST[cur]&&e.target&&e.target.tagName==="MAIN")ST[cur].sc=e.target.scrollTop},true);
+var _rr=render;
+render=function(){_rr();T(function(){
+ if(lock)return;
+ if(!U||!UD){ST=[];cur=-1;LK=null;return}
+ if(cur<0)return;
+ var s=snap(),k=sig(s);if(k===LK)return;
+ if(cur>=2&&ST[cur-1].k===k){pend=true;LK=k;cur--;history.back();setTimeout(function(){pend=false},600);return}
+ ST.length=cur+1;ST.push({s:s,k:k,sc:0});cur++;history.pushState({sj:1,i:cur},"");LK=k})};
 render();
 })();
 </script>
