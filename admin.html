@@ -1730,20 +1730,26 @@ if(!SJ.es&&U.email&&UD.email&&U.email!==UD.email){SJ.es=1;db.doc("users/"+U.uid)
 watch()}catch(e){}};
 
 /* ===== Tombol Kembali: ikuti riwayat langkah demi langkah ===== */
-var HK=null,popping=false,exitT=0,hsOK=typeof history!=="undefined"&&history.pushState;
+var HK=null,KS=[],ign=0,popping=false,exitT=0,hsOK=typeof history!=="undefined"&&history.pushState;
 function hkey(){return [S.tab,S.det==null?"":S.det,S.prov||"",(S.trk?1:0),(S.pw?1:0)].join("|")}
 function hsnap(){return {sj:1,tab:S.tab,det:S.det==null?null:S.det,prov:S.prov||null,k:hkey()}}
-function hsync(){if(!hsOK||popping)return;var adm=false;try{adm=U&&UD&&UD.role==="admin"}catch(e){}if(!adm)return;
-var k=hkey();if(HK===null){try{history.replaceState({sj:"base"},"");history.pushState(hsnap(),"")}catch(e){}HK=k;return}
-if(k===HK)return;HK=k;try{history.pushState(hsnap(),"")}catch(e){}}
+function isAdm(){try{return !!(U&&UD&&UD.role==="admin")}catch(e){return false}}
+function hpush(){try{history.pushState(hsnap(),"")}catch(e){}KS.push(hkey())}
+function hsync(){if(!hsOK||popping||!isAdm())return;
+var k=hkey();if(HK===null){try{history.replaceState({sj:"base"},"")}catch(e){}KS=[];hpush();HK=k;return}
+if(k===HK)return;
+/* kembali lewat tombol di dalam halaman = mundur satu langkah riwayat, bukan menambah entri baru */
+if(KS.length>1&&KS[KS.length-2]===k){KS.pop();HK=k;ign=1;try{history.back()}catch(e){ign=0}return}
+HK=k;hpush()}
 var _r3=render;
 render=function(){_r3();hsync()};
-if(hsOK)window.addEventListener("popstate",function(e){var st=e.state,adm=false;try{adm=U&&UD&&UD.role==="admin"}catch(x){}if(!adm)return;
-if(st&&st.sj===1){popping=true;try{if(S.tab!==st.tab||S.trk||S.pw){_go2(st.tab)}S.det=st.det;S.prov=st.prov;render()}catch(x){}popping=false;HK=hkey();return}
+if(hsOK)window.addEventListener("popstate",function(e){if(ign){ign=0;return}if(!isAdm())return;var st=e.state;
+if(st&&st.sj===1){var ix=KS.lastIndexOf(st.k);if(ix>=0)KS.length=ix+1;else KS=[st.k];
+popping=true;try{if(S.tab!==st.tab||S.trk||S.pw){_go2(st.tab)}S.det=st.det;S.prov=st.prov;render()}catch(x){}popping=false;HK=hkey();return}
 /* sudah di dasar riwayat: di Beranda minta konfirmasi sebelum keluar */
-if(S.tab!=="dash"){popping=true;try{_go2("dash")}catch(x){}popping=false;HK=hkey();try{history.pushState(hsnap(),"")}catch(x){}return}
+KS=[];if(S.tab!=="dash"){popping=true;try{_go2("dash")}catch(x){}popping=false;HK=hkey();hpush();return}
 if(Date.now()-exitT<2000){exitT=0;HK=null;try{history.back()}catch(x){}return}
-exitT=Date.now();toast("Tekan Kembali sekali lagi untuk keluar");try{history.pushState(hsnap(),"")}catch(x){}});
+exitT=Date.now();toast("Tekan Kembali sekali lagi untuk keluar");HK=hkey();hpush()});
 /* tombol ← di halaman pengaturan memakai riwayat yang sama */
 SJ.back=function(){if(hsOK&&HK!==null){history.back()}else go(lastT&&lastT!==S.tab&&lastT!=="notif"?lastT:"dash")};
 
