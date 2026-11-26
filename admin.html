@@ -1421,7 +1421,7 @@ var growth=function(a,tf,wf){var n=Date.now(),c=0,p=0;a.forEach(function(x){var 
 var fk2=function(n){if(n>=1e6)return dec(parseFloat((n/1e6).toFixed(2)))+"jt";if(n>=1000)return Math.round(n/1000)+"rb";return Math.round(n)+""};
 var nice=function(m){if(m<=0)return 1e5;var e=Math.pow(10,Math.floor(Math.log(m)/Math.LN10)),f=m/e;return(f<=1?1:f<=2?2:f<=5?5:10)*e};
 var tgl2=function(t){return new Date(t).toLocaleDateString("id-ID",{day:"numeric",month:"short"})};
-var bk=function(){return '<button class="back" onclick="go(\'dash\')">‹ Dashboard</button>'};
+var bk=function(){return '<button class="back" onclick="SJ.back()">‹ Kembali</button>'};
 var cnt=function(){var kt=UAL.filter(function(u){return u.ktp==="menunggu"}).length,pp=UAL.filter(function(u){return u.penyedia==="menunggu"}).length,pk=OA.filter(function(o){return pay(o)==="diperiksa"}).length,cm=OA.filter(siapDiteruskan).length,lb=LA.filter(function(l){return l.st==="baru"}).length,is=ISI.filter(function(x){return x.st==="menunggu"}).length,tp=TP.filter(function(x){return x.st==="menunggu"}).length;return{kt:kt,pp:pp,pk:pk,cm:cm,lb:lb,is:is,tp:tp,tot:kt+pp+pk+cm+lb+is+tp}};
 var masalah=function(){var s={};OA.forEach(function(o){if(pay(o)==="ditolak")s[o.id]=1});LA.forEach(function(l){if(l.oid&&l.st!=="selesai")s[l.oid]=1});return Object.keys(s).length};
 /* ---------- Grafik ---------- */
@@ -1523,7 +1523,7 @@ return bk()+'<h2>Semua Menu</h2><p class="mute">Seluruh fitur pengelolaan SERBA 
 +mrow("aktivitas","⚡","#eab308","Aktivitas Terbaru","Riwayat pendaftaran, transaksi, pengaduan, dan saldo",0)
 +mrow("notif","🔔","#6366f1","Notifikasi","Semua yang perlu ditindaklanjuti",notifs().length)
 +'<h3>Pengaturan</h3>'+mrow("setelan","⚙️","#475569","Pengaturan Aplikasi","QRIS, rekening, komisi, dompet, tampilan, keamanan",0)
-+mrow("profil","👤","#0f766e","Profil &amp; Akun","Ubah kata sandi, keluar",0)};
++mrow("profil","👤","#0f766e","Akun &amp; Pengaturan","Profil, keamanan, notifikasi, tampilan, bantuan",0)};
 /* ---------- Aktivitas ---------- */
 SJ.af=function(k){keep(function(){S.af=k})};
 var aktView=function(){var f=S.af||"",a=events().filter(function(x){return!f||x.k===f}).slice(0,60),ch=[["","Semua"],["u","Pengguna"],["t","Transaksi"],["l","Pengaduan"],["s","Saldo"]];
@@ -1579,6 +1579,174 @@ var _r=render;
 render=function(){_r();try{var adm=U&&UD&&UD.role==="admin";if(adm)headerPro();document.body.classList.toggle("dm",!!(adm&&S.tab==="dash"&&!S.trk&&!S.pw));
 var nb=document.querySelectorAll("#n button");if(adm&&nb.length>=5){var n=notifs().length;if(n)nb[3].insertAdjacentHTML("beforeend",'<i class="nb">'+n+'</i>');
 if(["menu","pengguna","penyedia","ajasa","apesanan","trx","laporan","ulasan","setelan","aktivitas","tindakan"].indexOf(S.tab)>=0&&!S.trk&&!S.pw)nb[2].classList.add("on")}}catch(e){}};
+/* ---------- PENGATURAN AKUN: hub, akun, keamanan, notifikasi, tampilan, bahasa, bantuan, tentang ---------- */
+var APPV="1.0.0",SET=["akun","keamanan","notifset","tampilan","bahasa","bantuan","tentang"];
+TN.akun="Pengaturan Akun";TN.keamanan="Keamanan & Privasi";TN.notifset="Notifikasi";TN.tampilan="Tampilan";TN.bahasa="Bahasa";TN.bantuan="Bantuan";TN.tentang="Tentang Aplikasi";TN.setelan="Pengaturan Aplikasi";
+var st3=document.createElement("style");st3.textContent=`
+.pc{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;margin-bottom:10px;box-shadow:0 2px 10px rgba(15,23,42,.06)}
+.pcav{position:relative;flex:none}.pcx{flex:1;min-width:0;cursor:pointer}.pcn{font-size:16px;font-weight:800}
+.vb{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:#1d6bf3;color:#fff;font-size:11px;vertical-align:middle}
+.vchip{display:inline-block;background:#dcfce7;color:#15803d;border-radius:99px;padding:3px 10px;font-size:11.5px;font-weight:700}.vchip.w{background:#fef3c7;color:#92400e}.vchip.off{background:#e2e8f0;color:#475569}
+.cam{position:absolute;right:-4px;bottom:-2px;width:26px;height:26px;border-radius:50%;background:#fff;border:2px solid #dbeafe;display:grid;place-items:center;font-size:13px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.sgrp{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:12px}
+.sr{display:flex;align-items:center;gap:12px;padding:11px 12px;border-bottom:1px solid var(--line);cursor:pointer}.sr:last-child{border-bottom:0}
+.si{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:17px;flex:none;color:#fff}
+.sr .tx{flex:1;min-width:0}.sr .tx b{font-size:14px}.sr small{display:block;color:var(--mute);font-size:11.5px;line-height:1.3}.sr .chv{color:var(--mute);font-size:20px}
+.sbar{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#0a2a86,#1d4ed8);color:#fff;border-radius:16px;padding:10px 12px;margin-bottom:12px}
+.sbar button{background:rgba(255,255,255,.18);border:0;color:#fff;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer}.sbar b{font-size:16px}
+.sw{position:relative;width:42px;height:24px;border-radius:12px;background:#cbd5e1;flex:none;cursor:pointer;transition:.2s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}.sw.on{background:#1d4ed8}.sw.on::after{left:21px}
+.kel{color:#dc2626;border-color:#fecaca;background:#fef2f2;width:100%;margin-top:4px}
+`;document.head.appendChild(st3);
+var lsGet=function(k){try{return localStorage.getItem(k)}catch(e){return null}};
+var lsSet=function(k,v){try{localStorage.setItem(k,v)}catch(e){}};
+try{var z0=lsGet("sj_zoom"),ap0=document.getElementById("app");if(z0&&ap0)ap0.style.zoom=z0}catch(e){}
+var srow=function(ic,bg,t,d,act,right,nochv){return '<div class="sr" onclick="'+act+'"><div class="si" style="background:'+bg+'">'+ic+'</div><div class="tx"><b>'+t+'</b><small>'+d+'</small></div>'+(right||"")+(nochv?"":'<span class="chv">›</span>')+'</div>'};
+var sbar=function(t){return '<div class="sbar"><button onclick="SJ.back()" aria-label="Kembali">←</button><b>'+t+'</b></div>'};
+var lastT=null,_go2=go;
+go=function(t){if(S.tab!==t)lastT=S.tab;S.ed=null;_go2(t)};
+SJ.back=function(){go(lastT&&lastT!==S.tab&&lastT!=="notif"?lastT:"profil")};
+SJ.keluar=function(){if(confirm("Keluar dari portal admin?"))auth.signOut()};
+/* --- Hub --- */
+var hubView=function(){var c=cnt(),ok=U.emailVerified;
+return '<div class="pc"><div class="pcav">'+av(U.uid,UD.nama,64)+'<label class="cam" aria-label="Ganti foto">📷<input type="file" accept="image/*" style="display:none" onchange="SJ.foto(this)"></label></div><div class="pcx" onclick="go(\'akun\')"><div class="pcn">'+esc(UD.nama)+(ok?' <span class="vb">✔</span>':'')+'</div><div class="mute" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(U.email||UD.email)+'</div>'+(ok?'<span class="vchip" style="margin-top:5px">✔ Akun Terverifikasi</span>':'<span class="vchip w" style="margin-top:5px" onclick="event.stopPropagation();kirimVerif()">⚠ Email belum terverifikasi · kirim tautan</span>')+'</div><span class="chv" style="font-size:22px;color:var(--mute)" onclick="go(\'akun\')">›</span></div>'
++'<div class="mute" style="margin:-2px 2px 10px">🛡️ Administrator · 👥 '+fmtN(UAL.length)+' pengguna · ⏳ '+c.tot+' tindakan tertunda</div>'
++'<div class="sgrp">'+srow("👤","#1d4ed8","Pengaturan Akun","Kelola data akun dan keamanan","go('akun')")+srow("🛡️","#2563eb","Keamanan &amp; Privasi","Sandi, kunci PIN, data akun","go('keamanan')")+srow("🔔","#f59e0b","Notifikasi","Atur notifikasi aplikasi","go('notifset')")+srow("🎨","#c026d3","Tampilan","Mode terang, gelap dan ukuran","go('tampilan')")+srow("🌐","#2563eb","Bahasa","Pilih bahasa aplikasi","go('bahasa')")+'</div>'
++'<div class="sgrp">'+srow("⚙️","#475569","Pengaturan Aplikasi","QRIS, rekening, komisi, dompet","go('setelan')")+srow("🎧","#1d4ed8","Bantuan &amp; Pusat Bantuan","FAQ, panduan dan kontak kami","go('bantuan')")+srow("ℹ️","#2563eb","Tentang Aplikasi","Versi dan informasi lainnya","go('tentang')",'<span class="mute">v'+APPV+'</span>')+'</div>'
++'<button class="btn o kel" onclick="SJ.keluar()">⎋ Keluar</button>'};
+/* --- Foto & data akun --- */
+var profSet=async function(ch){var pf=PF[U.uid]||{},x={nama:ch.nama!==undefined?ch.nama:UD.nama,foto:ch.foto!==undefined?ch.foto:(pf.foto||""),bio:ch.bio!==undefined?ch.bio:(pf.bio||""),dom:ch.dom!==undefined?ch.dom:(pf.dom||""),at:Date.now()};await db.doc("profil/"+U.uid).set(x);PF[U.uid]=x;delete PUB[U.uid]};
+SJ.foto=async function(el){var f=el.files[0];if(!f)return;try{await profSet({foto:await avatarDari(f)});toast("Foto profil diperbarui ✓");render()}catch(e){toast(err(e))}};
+SJ.hapusFoto=async function(){if(!confirm("Hapus foto profil?"))return;try{await profSet({foto:""});toast("Foto dihapus");render()}catch(e){toast(err(e))}};
+var vals=function(){var pf=PF[U.uid]||{};return{nama:UD.nama||"",email:U.email||UD.email||"",hp:UD.hp||"",dom:pf.dom||"",bio:pf.bio||""}};
+var FL={nama:["👤","Nama Lengkap",40,"text"],email:["✉️","Email",80,"email"],hp:["📞","Nomor HP",16,"tel"],dom:["📍","Alamat / domisili",60,"text"],bio:["📝","Tentang saya",200,"text"]};
+var fld=function(k){var f=FL[k],v=vals()[k];
+if(S.ed===k)return '<div class="sr" style="cursor:default;display:block"><div style="font-weight:700">'+f[0]+' '+f[1]+'</div><input id="ef" type="'+f[3]+'" maxlength="'+f[2]+'" value="'+esc(v)+'" placeholder="'+f[1]+'" style="margin:6px 0"><div class="row" style="justify-content:flex-start;gap:8px"><button class="btn s y" onclick="SJ.save(\''+k+'\')">Simpan</button><button class="btn s o" onclick="SJ.ed(null)">Batal</button></div>'+(k==="email"?'<div class="mute" style="margin-top:6px">Tautan verifikasi dikirim ke email baru. Email berubah setelah tautan diklik, lalu masuk ulang.</div>':"")+'</div>';
+return '<div class="sr" onclick="SJ.ed(\''+k+'\')"><span style="font-size:18px;width:26px;text-align:center">'+f[0]+'</span><div class="tx" style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b style="font-weight:600">'+f[1]+'</b><span class="mute" style="max-width:55%;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(esc(v)||"Belum diisi")+'</span></div><span class="chv">›</span></div>'};
+SJ.ed=function(k){keep(function(){S.ed=k})};
+SJ.save=async function(k){var el=$("#ef"),v=el?el.value.trim():"";
+try{if(k==="nama"){if(v.length<3){toast("Nama minimal 3 huruf");return}await db.doc("users/"+U.uid).update({nama:v});try{await profSet({nama:v})}catch(e){}}
+else if(k==="hp"){if(!/^[0-9+][0-9\s-]{7,15}$/.test(v)){toast("Nomor HP tidak valid");return}await db.doc("users/"+U.uid).update({hp:v})}
+else if(k==="dom"){await profSet({dom:v.slice(0,60)})}
+else if(k==="bio"){await profSet({bio:v.slice(0,200)})}
+else if(k==="email"){if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){toast("Format email salah");return}if(v.toLowerCase()===(U.email||"").toLowerCase()){toast("Email sama dengan yang sekarang");return}
+var pw=prompt("Masukkan kata sandi Anda untuk konfirmasi");if(!pw)return;var u=auth.currentUser;await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email,pw));await u.verifyBeforeUpdateEmail(v);S.ed=null;render();toastL("📧 Tautan verifikasi dikirim ke "+v+". Email baru aktif setelah tautan diklik, lalu masuk ulang.");return}
+S.ed=null;toast("Tersimpan ✓");render()}catch(e){toast(err(e))}};
+SJ.hapus=function(){if(UAL.filter(function(u){return u.role==="admin"}).length<=1){toastL("Akun ini satu-satunya admin. Tambahkan admin lain dulu sebelum menghapus akun.");return}hapusAkun()};
+SJ.reset=async function(){try{await auth.sendPasswordResetEmail(U.email);toastL("Tautan reset kata sandi dikirim ke "+U.email+". Cek kotak masuk atau folder spam.")}catch(e){toast(e.code==="auth/too-many-requests"?"Terlalu sering, coba lagi nanti":err(e))}};
+SJ.unduhData=function(){var d={akun:{uid:U.uid,email:U.email,emailTerverifikasi:U.emailVerified,dibuat:(U.metadata||{}).creationTime,loginTerakhir:(U.metadata||{}).lastSignInTime},profil:UD,profilPublik:(function(){var p=PF[U.uid];if(!p)return null;var q={};Object.keys(p).forEach(function(k){if(k!=="foto")q[k]=p[k]});return q})()};
+var b=new Blob([JSON.stringify(d,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="data-akun-serba-jasa.json";document.body.appendChild(a);a.click();a.remove()};
+var prow=function(id,ic,nm){var on=U.providerData.some(function(p){return p.providerId===id});return '<div class="sr" onclick="SJ.prov(\''+id+'\')"><span style="font-size:20px;width:26px;text-align:center">'+ic+'</span><div class="tx"><b style="font-weight:600">'+nm+'</b></div><span class="'+(on?"vchip":"mute")+'" style="font-size:12px">'+(on?"✔ Terhubung":"Belum Terhubung")+'</span><span class="chv">›</span></div>'};
+var PERR={"auth/operation-not-allowed":"Metode login ini belum diaktifkan di Firebase Console (Authentication > Sign-in method).","auth/unauthorized-domain":"Domain situs belum diizinkan di Firebase (Authentication > Settings > Authorized domains).","auth/popup-blocked":"Pop-up diblokir browser. Izinkan pop-up lalu coba lagi.","auth/popup-closed-by-user":"Jendela login ditutup.","auth/cancelled-popup-request":"Jendela login ditutup.","auth/credential-already-in-use":"Akun ini sudah dipakai akun SERBA JASA lain.","auth/provider-already-linked":"Sudah terhubung.","auth/account-exists-with-different-credential":"Email ini sudah terdaftar dengan sandi. Masuk dengan email dulu, lalu hubungkan di Pengaturan Akun."};
+SJ.prov=async function(id){var u=auth.currentUser,on=u.providerData.some(function(p){return p.providerId===id});
+try{if(on){if(u.providerData.length<2){toast("Tidak bisa memutus satu-satunya metode login");return}if(!confirm("Putuskan akun ini dari login?"))return;await u.unlink(id);toast("Akun diputuskan")}
+else{await u.linkWithPopup(id==="google.com"?new firebase.auth.GoogleAuthProvider():new firebase.auth.FacebookAuthProvider());toast("Akun terhubung ✓")}render()}catch(e){toastL("⚠️ "+(PERR[e.code]||err(e)))}};
+SJ.gLogin=async function(){try{var r=await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()),u=r.user,ex=false;try{ex=(await db.doc("users/"+u.uid).get()).exists}catch(e){}
+if(!ex){try{await u.delete()}catch(e){await auth.signOut()}toastL("Akun Google ini belum terhubung ke akun admin. Masuk dengan email dulu, lalu hubungkan Google di Pengaturan Akun.")}}catch(e){toastL("⚠️ "+(PERR[e.code]||err(e)))}};
+var _auG=authView;
+authView=function(){var h=_auG(),a='<div style="text-align:center;margin:12px 0 4px;font-size:14px">',b='<div style="text-align:center;font-size:12px;opacity:.7;margin:10px 0 4px">atau</div><button class="btn o" onclick="SJ.gLogin()">🔵 Masuk dengan Google</button>';return h.indexOf(a)>=0?h.replace(a,b+a):h+b};
+var akunPage=function(){var pf=PF[U.uid]||{};
+return sbar("Pengaturan Akun")
++'<div class="pn" style="margin-top:0"><div class="row" style="justify-content:flex-start;gap:14px"><div class="pcav">'+av(U.uid,UD.nama,80)+'<label class="cam">📷<input type="file" accept="image/*" style="display:none" onchange="SJ.foto(this)"></label></div><div style="min-width:0"><div style="font-size:17px;font-weight:800">Foto Profil</div><div class="mute">Gunakan foto terbaik untuk akun Anda</div><div style="margin-top:8px"><label class="btn s y" style="cursor:pointer;display:inline-block">Ubah Foto<input type="file" accept="image/*" style="display:none" onchange="SJ.foto(this)"></label>'+(pf.foto?' <button class="btn s o" onclick="SJ.hapusFoto()">Hapus</button>':'')+'</div></div></div></div>'
++'<div class="sgrp" style="margin-top:12px">'+fld("nama")+fld("email")+fld("hp")+fld("dom")+fld("bio")+'</div>'
++'<div class="sgrp"><div class="sr" style="cursor:default"><div class="si" style="background:#1d4ed8">🔒</div><div class="tx"><b style="color:#1d4ed8">Ubah Kata Sandi</b><small>Untuk menjaga keamanan akun Anda</small></div></div>'+srow("🔑","#334155","Kata Sandi Baru","Minimal 8 karakter, huruf dan angka","S.pw=true;render()")+'</div>'
++'<div class="sgrp"><div class="sr" style="cursor:default"><div class="si" style="background:#2563eb">🔗</div><div class="tx"><b style="color:#1d4ed8">Akun Tertaut</b><small>Hubungkan akun lain untuk kemudahan login</small></div></div>'
++'<div class="sr" style="cursor:default"><span style="font-size:20px;width:26px;text-align:center">✉️</span><div class="tx"><b style="font-weight:600">Email &amp; kata sandi</b></div><span class="vchip" style="font-size:12px">✔ Terhubung</span></div>'+prow("google.com","🔵","Google")+prow("facebook.com","🟦","Facebook")+'</div>'
++'<div class="sgrp">'+srow("🗑️","#dc2626","<span style=\"color:#dc2626\">Hapus Akun</span>","Hapus akun Anda secara permanen","SJ.hapus()")+'</div>'};
+/* --- Keamanan, PIN --- */
+var PK=function(){return "sj_pin_"+(U?U.uid:"")};
+var hasPin=function(){return!!lsGet(PK())};
+var unlocked=function(){try{return sessionStorage.getItem("sj_unl")===U.uid}catch(e){return true}};
+var hash=async function(pin){var b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(U.uid+":"+pin));return Array.prototype.map.call(new Uint8Array(b),function(x){return("0"+x.toString(16)).slice(-2)}).join("")};
+SJ.setPin=async function(){var a=$("#pn1").value,b=$("#pn2").value;if(!/^\d{4,6}$/.test(a)){toast("PIN 4 sampai 6 angka");return}if(a!==b){toast("Konfirmasi PIN tidak sama");return}
+if(!(window.crypto&&crypto.subtle)){toast("Perangkat tidak mendukung kunci PIN");return}try{lsSet(PK(),await hash(a));try{sessionStorage.setItem("sj_unl",U.uid)}catch(e){}toast("Kunci aplikasi aktif ✓");render()}catch(e){toast("Gagal menyimpan PIN")}};
+SJ.offPin=async function(){var a=prompt("Masukkan PIN saat ini");if(a===null)return;var ok=false;try{ok=(await hash(a))===lsGet(PK())}catch(e){}if(!ok){toast("PIN salah");return}try{localStorage.removeItem(PK())}catch(e){}toast("Kunci aplikasi dimatikan");render()};
+var fails=0;
+var lockShow=function(){if(document.getElementById("lk")||!U)return;var d=document.createElement("div");d.id="lk";d.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;background:linear-gradient(160deg,#0a2a86,#2563eb);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#fff;padding:24px;text-align:center";
+d.innerHTML='<img src="logo.png" alt="" style="width:84px;height:84px;background:#fff;border-radius:22px;padding:6px;object-fit:contain"><h2 style="margin:6px 0 0;font-size:20px">Aplikasi terkunci</h2><div style="opacity:.9;font-size:13px">Masukkan PIN untuk membuka portal admin</div><input id="lkp" type="password" inputmode="numeric" maxlength="6" placeholder="PIN" style="max-width:220px;text-align:center;font-size:22px;letter-spacing:6px"><button class="btn y" style="max-width:220px" onclick="SJ.unlock()">Buka</button><a href="#" style="color:#fff;font-size:12.5px" onclick="SJ.forgot();return false">Lupa PIN? Keluar dan masuk ulang</a>';
+document.body.appendChild(d);var i=document.getElementById("lkp");if(i){i.onkeydown=function(e){if(e.key==="Enter")SJ.unlock()};setTimeout(function(){i.focus()},50)}};
+SJ.unlock=async function(){var i=document.getElementById("lkp"),p=i?i.value:"";if(!p)return;var ok=false;try{ok=(await hash(p))===lsGet(PK())}catch(e){}
+if(ok){fails=0;try{sessionStorage.setItem("sj_unl",U.uid)}catch(e){}var d=document.getElementById("lk");if(d)d.remove();render()}else{fails++;if(i)i.value="";toast("PIN salah ("+fails+"/5)");if(fails>=5)SJ.forgot()}};
+SJ.forgot=function(){try{localStorage.removeItem(PK())}catch(e){}try{sessionStorage.removeItem("sj_unl")}catch(e){}var d=document.getElementById("lk");if(d)d.remove();auth.signOut()};
+var hid=0;document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")hid=Date.now();else if(hid&&Date.now()-hid>12e4&&U&&UD&&hasPin()){try{sessionStorage.removeItem("sj_unl")}catch(e){}lockShow()}});
+var keamananPage=function(){var u=U,m=u.metadata||{},pin=hasPin(),fm=function(t){return t?new Date(t).toLocaleString("id-ID"):"-"};
+return sbar("Keamanan &amp; Privasi")+'<div class="sgrp">'
++srow("✉️","#2563eb","Verifikasi Email",u.emailVerified?"Email sudah terverifikasi":"Belum terverifikasi. Ketuk untuk kirim tautan",u.emailVerified?"toast('Email sudah terverifikasi')":"kirimVerif()",u.emailVerified?'<span class="vchip">✔</span>':"",!!u.emailVerified)
++srow("🔑","#334155","Ubah Kata Sandi","Gunakan sandi kuat","S.pw=true;render()")
++srow("📨","#0ea5e9","Kirim Tautan Reset Sandi","Ke "+esc(u.email),"SJ.reset()")
++srow("📱","#16a34a","Verifikasi Nomor HP (OTP)",u.phoneNumber?"Terverifikasi":"Aktif setelah layanan SMS disiapkan","verifHP()")+'</div>'
++'<div class="pn" style="margin-top:0"><div class="pt"><span>🔒 Kunci Aplikasi (PIN)</span><span class="vchip '+(pin?"":"off")+'" style="margin-left:auto">'+(pin?"Aktif":"Nonaktif")+'</span></div><div class="mute" style="margin:4px 0 8px">Minta PIN saat membuka portal admin dan setelah ditinggal 2 menit. PIN hanya disimpan di perangkat ini.</div>'
++(pin?'<button class="btn s o" onclick="SJ.offPin()">Matikan kunci</button>':'<input id="pn1" type="password" inputmode="numeric" maxlength="6" placeholder="PIN baru (4-6 angka)"><input id="pn2" type="password" inputmode="numeric" maxlength="6" placeholder="Ulangi PIN"><button class="btn s y" onclick="SJ.setPin()">Aktifkan kunci</button>')+'</div>'
++'<div class="sgrp" style="margin-top:12px"><div class="sr" style="cursor:default"><div class="si" style="background:#475569">🕘</div><div class="tx"><b>Aktivitas login</b><small>Akun dibuat: '+fm(m.creationTime)+'<br>Login terakhir: '+fm(m.lastSignInTime)+'</small></div></div>'
++srow("📥","#475569","Unduh Data Akun","Simpan data profil Anda (JSON)","SJ.unduhData()")+srow("📜","#475569","Kebijakan Privasi","Buka di tab baru","window.open('privacy.html','_blank')")+srow("📄","#475569","Syarat Layanan","Buka di tab baru","window.open('terms.html','_blank')")+'</div>'};
+/* --- Notifikasi --- */
+var NPD={pop:1,vib:1,sys:0,pay:1,ver:1,lap:1,sal:1};
+var NP=function(){var p={},k;try{var s=JSON.parse(lsGet("sj_np")||"{}");for(k in NPD)p[k]=s[k]!==undefined?s[k]:NPD[k]}catch(e){for(k in NPD)p[k]=NPD[k]}return p};
+SJ.np=function(k){var p=NP();p[k]=p[k]?0:1;lsSet("sj_np",JSON.stringify(p));keep(function(){})};
+SJ.npSys=async function(){var p=NP();if(!p.sys){if(!("Notification"in window)){toast("Perangkat tidak mendukung notifikasi sistem");return}var r=await Notification.requestPermission();if(r!=="granted"){toast("Izin notifikasi ditolak. Aktifkan di pengaturan browser.");return}}SJ.np("sys")};
+var fire=function(m){var p=NP();if(p.pop)toastL(m);if(p.vib){try{navigator.vibrate&&navigator.vibrate(150)}catch(e){}}
+if(p.sys&&window.Notification&&Notification.permission==="granted"&&document.visibilityState==="hidden"&&navigator.serviceWorker){navigator.serviceWorker.ready.then(function(r){r.showNotification("SERBA JASA Admin",{body:m,icon:"ikon-ungu-192.png"})}).catch(function(){})}};
+SJ.npTest=function(){fire("🔔 Ini contoh notifikasi dari portal admin.")};
+var prevC=null,quiet=0;
+auth.onAuthStateChanged(function(){prevC=null;quiet=Date.now()+10000});
+var watch=function(){var c=cnt(),cur={pay:c.pk+c.cm,ver:c.kt+c.pp,lap:c.lb,sal:c.is+c.tp};if(prevC===null||Date.now()<quiet){prevC=cur;return}
+var p=NP(),m=[];if(p.pay&&cur.pay>prevC.pay)m.push("💳 Ada pembayaran baru yang perlu diperiksa atau diteruskan");if(p.ver&&cur.ver>prevC.ver)m.push("🪪 Ada verifikasi KTP atau pengajuan penyedia baru");if(p.lap&&cur.lap>prevC.lap)m.push("🚨 Ada laporan atau pengaduan baru");if(p.sal&&cur.sal>prevC.sal)m.push("👛 Ada permintaan isi saldo atau penarikan baru");
+prevC=cur;m.forEach(fire)};
+var sw=function(on,act){return '<div class="sw '+(on?"on":"")+'" onclick="'+act+'" role="switch" aria-checked="'+(on?"true":"false")+'"></div>'};
+var notifPage=function(){var p=NP();
+return sbar("Notifikasi")+'<h3 style="margin-top:0">Cara pemberitahuan</h3><div class="sgrp">'
++srow("💬","#2563eb","Pop-up di layar","Tampilkan pesan saat ada hal baru","SJ.np('pop')",sw(p.pop),1)+srow("📳","#16a34a","Getar","Getarkan perangkat saat ada hal baru","SJ.np('vib')",sw(p.vib),1)+srow("📲","#7c3aed","Notifikasi sistem","Saat aplikasi di latar belakang (harus tetap terbuka)","SJ.npSys()",sw(p.sys),1)+'</div>'
++'<h3>Beri tahu saya tentang</h3><div class="sgrp">'+srow("💳","#d97706","Pembayaran","Bukti baru dan dana siap diteruskan","SJ.np('pay')",sw(p.pay),1)+srow("🪪","#e11d48","Verifikasi","KTP dan pengajuan penyedia","SJ.np('ver')",sw(p.ver),1)+srow("🚨","#dc2626","Pengaduan","Laporan dan komplain baru","SJ.np('lap')",sw(p.lap),1)+srow("👛","#0e7490","Saldo","Isi saldo dan penarikan","SJ.np('sal')",sw(p.sal),1)+'</div>'
++'<button class="btn y" onclick="SJ.npTest()">🔔 Coba notifikasi</button><p class="mute" style="margin-top:8px">Pengaturan ini disimpan di perangkat ini. Notifikasi hanya muncul saat portal admin terbuka.</p>'};
+/* --- Tampilan, bahasa --- */
+SJ.zoom=function(v){lsSet("sj_zoom",v);var a=document.getElementById("app");if(a)a.style.zoom=v==="1"?"":v;keep(function(){})};
+var tampilanPage=function(){var th=lsGet("sj_theme")||"auto",z=lsGet("sj_zoom")||"1",ck='<span class="vchip">✔</span>';
+return sbar("Tampilan")+'<h3 style="margin-top:0">Mode tampilan</h3><div class="sgrp">'+[["auto","🌓","Otomatis","Mengikuti pengaturan perangkat"],["light","☀️","Terang","Latar putih"],["dark","🌙","Gelap","Nyaman di malam hari"]].map(function(x){return srow(x[1],"#7c3aed",x[2],x[3],"SJ.theme('"+x[0]+"')",th===x[0]?ck:"",1)}).join("")+'</div>'
++'<h3>Ukuran tampilan</h3><div class="sgrp">'+[["0.92","📐","Ringkas","Muat lebih banyak isi"],["1","🔲","Normal","Ukuran standar"],["1.08","🔍","Nyaman","Lebih besar dan mudah dibaca"]].map(function(x){return srow(x[1],"#0ea5e9",x[2],x[3],"SJ.zoom('"+x[0]+"')",z===x[0]?ck:"",1)}).join("")+'</div>'};
+var bahasaPage=function(){return sbar("Bahasa")+'<div class="sgrp">'+srow("🇮🇩","#dc2626","Bahasa Indonesia","Bahasa utama aplikasi",'toast(\'Bahasa Indonesia sedang dipakai\')','<span class="vchip">✔ Aktif</span>',1)+srow("🇬🇧","#2563eb","English","Segera hadir","toast('English segera hadir')",'<span class="vchip off">Segera</span>',1)+'</div><p class="mute">Saat ini seluruh portal admin tersedia dalam Bahasa Indonesia.</p>'};
+/* --- Bantuan, tentang --- */
+var FAQ=[["Bagaimana menyetujui verifikasi KTP penyedia?","Buka Menu > Verifikasi &amp; Penyedia, ketuk Lihat KTP dan selfie, periksa kesesuaian data, lalu Setujui atau Tolak."],["Bagaimana alur dana pembayaran?","Pencari membayar (QRIS, transfer, atau online) lalu admin menyetujui bukti sehingga dana tertahan. Penyedia mengirim foto laporan selesai, pencari mengonfirmasi (otomatis 48 jam), admin meneruskan ke dompet penyedia, lalu penyedia menarik saldo."],["Bagaimana mengubah komisi, QRIS, atau rekening?","Buka Pengaturan > Pengaturan Aplikasi, ubah komisi, QRIS, dan rekening, lalu simpan."],["Bagaimana memblokir akun bermasalah?","Buka Pengguna, cari akunnya, lalu ketuk Blokir akun. Akun yang diblokir tidak bisa memesan, membuat jasa, atau chat."],["Bagaimana menangani pengaduan?","Buka Pengaduan, ubah status menjadi Diproses, lalu Tandai selesai dan tulis catatan penyelesaian untuk pelapor."],["Bagaimana mengunduh laporan?","Buka Laporan lalu pilih Unduh CSV transaksi, saldo, pengguna, atau jasa. Tersedia juga Cetak / simpan PDF."],["Dompet pengguna belum muncul?","Aktifkan lewat Menu > Pembayaran > Dompet pengguna, atau Pengaturan Aplikasi."]];
+SJ.fq=function(i){keep(function(){S.fq=S.fq===i?null:i})};
+var diag=function(){return "SERBA JASA Admin v"+APPV+"\nAkun: "+(U.email||"")+"\nUID: "+U.uid+"\nPerangkat: "+navigator.userAgent+"\nWaktu: "+new Date().toLocaleString("id-ID")};
+SJ.salinDiag=function(){salin(diag())};
+var bantuanPage=function(){var mail="mailto:serbajasaa@gmail.com?subject="+encodeURIComponent("Bantuan Portal Admin SERBA JASA")+"&body="+encodeURIComponent("\n\n---\n"+diag());
+return sbar("Bantuan &amp; Pusat Bantuan")+'<h3 style="margin-top:0">Pertanyaan umum</h3><div class="sgrp">'+FAQ.map(function(f,i){var o=S.fq===i;return '<div class="sr" onclick="SJ.fq('+i+')"><div class="tx"><b>'+f[0]+'</b>'+(o?'<small style="color:var(--ink);margin-top:4px;font-size:12.5px">'+f[1]+'</small>':'')+'</div><span class="chv">'+(o?"⌃":"⌄")+'</span></div>'}).join("")+'</div>'
++'<h3>Hubungi kami</h3><div class="sgrp"><a class="sr" style="text-decoration:none;color:inherit" href="'+mail+'"><div class="si" style="background:#1d4ed8">✉️</div><div class="tx"><b>Email dukungan</b><small>serbajasaa@gmail.com (info perangkat ikut terlampir)</small></div><span class="chv">›</span></a>'+srow("📋","#475569","Salin info perangkat","Untuk dikirim ke tim dukungan","SJ.salinDiag()")+'</div>'};
+SJ.update=async function(){if(!confirm("Muat versi terbaru aplikasi? Halaman akan dimuat ulang."))return;try{if(navigator.serviceWorker){var rs=await navigator.serviceWorker.getRegistrations();for(var i=0;i<rs.length;i++)await rs[i].unregister()}if(window.caches){var ks=await caches.keys();for(var j=0;j<ks.length;j++)await caches.delete(ks[j])}}catch(e){}location.href=location.pathname+"?v="+Date.now()};
+var tentangPage=function(){return sbar("Tentang Aplikasi")+'<div class="pc" style="justify-content:center;flex-direction:column;text-align:center"><img src="logo.png" alt="SERBA JASA" style="width:72px;height:72px;object-fit:contain"><div style="font-size:18px;font-weight:800">SERBA JASA <span style="color:#1d4ed8">Admin</span></div><div class="mute">Cari Jasa. Pesan Mudah. Selesai.</div><span class="vchip off">Versi '+APPV+'</span></div>'
++'<div class="sgrp"><div class="sr" style="cursor:default"><div class="tx"><b>Akun masuk</b><small>'+esc(U.email)+'</small></div></div><div class="sr" style="cursor:default"><div class="tx"><b>Perangkat</b><small style="word-break:break-word">'+esc(navigator.userAgent)+'</small></div></div>'
++srow("🔄","#2563eb","Periksa pembaruan","Muat versi terbaru dan bersihkan cache","SJ.update()")+srow("📜","#475569","Kebijakan Privasi","Buka di tab baru","window.open('privacy.html','_blank')")+srow("📄","#475569","Syarat Layanan","Buka di tab baru","window.open('terms.html','_blank')")+srow("🗑️","#dc2626","Informasi hapus akun","Buka di tab baru","window.open('hapus-akun.html','_blank')")+'</div>'};
+var setPage=function(t){return({akun:akunPage,keamanan:keamananPage,notifset:notifPage,tampilan:tampilanPage,bahasa:bahasaPage,bantuan:bantuanPage,tentang:tentangPage})[t]()};
+/* --- Pengaturan Aplikasi (pembayaran) --- */
+setelanView=function(){return sbar("Pengaturan Aplikasi")+'<h3 style="margin-top:0">Pembayaran &amp; komisi</h3>'+cfgBox2()
++'<h3>Dompet pengguna</h3><div class="card"><div class="in row"><div><b>👛 Dompet pengguna</b><div class="mute">'+(dwOn()?"Aktif: isi saldo dan bayar dengan saldo tersedia.":"Nonaktif. Aktifkan setelah aspek izin dan hukum dipastikan.")+'</div></div><button class="btn s '+(dwOn()?"o":"y")+'" onclick="toggleDw()">'+(dwOn()?"Matikan":"Aktifkan")+'</button></div></div>'+rekForm()};
+/* --- Penyambungan --- */
+var _av2=admView;
+admView=function(){if(S.trk||S.pw||S.tab==="pp")return _av2();var t=S.tab;if(t==="profil")return hubView();if(SET.indexOf(t)>=0)return setPage(t);return _av2()};
+var _r2=render;
+render=function(){_r2();try{var adm=U&&UD&&UD.role==="admin";if(!adm)return;var nb=document.querySelectorAll("#n button");if(nb.length>=5&&SET.indexOf(S.tab)>=0&&!S.pw)nb[4].classList.add("on");
+if(hasPin()&&!unlocked())lockShow();
+if(!SJ.es&&U.email&&UD.email&&U.email!==UD.email){SJ.es=1;db.doc("users/"+U.uid).update({email:U.email}).catch(function(){})}
+watch()}catch(e){}};
+
+/* ===== Tombol Kembali: ikuti riwayat langkah demi langkah ===== */
+var HK=null,popping=false,exitT=0,hsOK=typeof history!=="undefined"&&history.pushState;
+function hkey(){return [S.tab,S.det==null?"":S.det,S.prov||"",(S.trk?1:0),(S.pw?1:0)].join("|")}
+function hsnap(){return {sj:1,tab:S.tab,det:S.det==null?null:S.det,prov:S.prov||null,k:hkey()}}
+function hsync(){if(!hsOK||popping)return;var adm=false;try{adm=U&&UD&&UD.role==="admin"}catch(e){}if(!adm)return;
+var k=hkey();if(HK===null){try{history.replaceState({sj:"base"},"");history.pushState(hsnap(),"")}catch(e){}HK=k;return}
+if(k===HK)return;HK=k;try{history.pushState(hsnap(),"")}catch(e){}}
+var _r3=render;
+render=function(){_r3();hsync()};
+if(hsOK)window.addEventListener("popstate",function(e){var st=e.state,adm=false;try{adm=U&&UD&&UD.role==="admin"}catch(x){}if(!adm)return;
+if(st&&st.sj===1){popping=true;try{if(S.tab!==st.tab||S.trk||S.pw){_go2(st.tab)}S.det=st.det;S.prov=st.prov;render()}catch(x){}popping=false;HK=hkey();return}
+/* sudah di dasar riwayat: di Beranda minta konfirmasi sebelum keluar */
+if(S.tab!=="dash"){popping=true;try{_go2("dash")}catch(x){}popping=false;HK=hkey();try{history.pushState(hsnap(),"")}catch(x){}return}
+if(Date.now()-exitT<2000){exitT=0;HK=null;try{history.back()}catch(x){}return}
+exitT=Date.now();toast("Tekan Kembali sekali lagi untuk keluar");try{history.pushState(hsnap(),"")}catch(x){}});
+/* tombol ← di halaman pengaturan memakai riwayat yang sama */
+SJ.back=function(){if(hsOK&&HK!==null){history.back()}else go(lastT&&lastT!==S.tab&&lastT!=="notif"?lastT:"dash")};
+
 render();
 })();
 </script>
