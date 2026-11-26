@@ -1,7 +1,7 @@
 name = "serba-jasa-pay"
 main = "worker.js"
 compatibility_date = "2025-01-01"
-
+workers_dev = true
 # 03:00 WIB = 20:00 UTC. Cron pertama: pelepasan dana tiap 5 menit.
 [triggers]
 crons = ["*/5 * * * *", "0 20 * * *"]
@@ -9,7 +9,7 @@ crons = ["*/5 * * * *", "0 20 * * *"]
 [vars]
 FIREBASE_PROJECT = "serba-jasa"
 MIDTRANS_ENV = "sandbox"                 # ganti "production" saat live
-MIDTRANS_CLIENT_KEY = ""                 # Client Key Midtrans (boleh publik)
+MIDTRANS_CLIENT_KEY = "Mid-client-Nq6MtfK6hqZW9ki7"                 # Client Key Midtrans (boleh publik)
 SITE_URL = "https://nugrohosidik94-ops.github.io/Serba-jasa/"
 ALLOW_ORIGINS = "https://nugrohosidik94-ops.github.io,https://serba-jasa.web.app,https://serba-jasa.firebaseapp.com"
 AUTO_RELEASE = "konfirmasi"              # "konfirmasi" = tunggu pelanggan konfirmasi atau 2 hari
