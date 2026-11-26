@@ -132,3 +132,20 @@
   auth.onAuthStateChanged(() => { TKD = false; });
   try { render(); } catch (e) {}
 })();
+(function () {
+  if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
+  const Asli = window.Notification;
+  function Pengganti(judul, opsi) {
+    navigator.serviceWorker.getRegistration()
+      .then(r => r || navigator.serviceWorker.ready)
+      .then(r => r.showNotification(judul, opsi))
+      .catch(e => console.warn(e));
+  }
+  Pengganti.requestPermission = function () {
+    return Asli.requestPermission.apply(Asli, arguments);
+  };
+  Object.defineProperty(Pengganti, "permission", {
+    get: function () { return Asli.permission; }
+  });
+  window.Notification = Pengganti;
+})();
