@@ -74,6 +74,7 @@
 
   // Buang token usang di browser, lalu daftarkan token baru
   window.segarkanToken = async function () {
+    if (pref("notif_off") === "1") { toast("Notifikasi sedang dimatikan di Pengaturan"); return false; }
     try {
       try { await msg().deleteToken(); } catch (e) { console.warn(e); }
       const regs = await navigator.serviceWorker.getRegistrations();
