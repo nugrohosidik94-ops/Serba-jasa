@@ -10,8 +10,16 @@
   };
   const canRecv = "Notification" in window && "serviceWorker" in navigator &&
     typeof firebase !== "undefined" && !!firebase.messaging && firebase.messaging.isSupported();
-  let TKD = false, MAPP = null;
+  let TKD = false, MAPP = null, MINTA = false;
   window.NTD = false;
+
+  // Penyimpanan kecil per akun (di perangkat ini)
+  function pref(k) {
+    try { return localStorage.getItem("sj_" + k + ":" + (U ? U.uid : "")); } catch (e) { return null; }
+  }
+  function setPref(k, v) {
+    try { localStorage.setItem("sj_" + k + ":" + (U ? U.uid : ""), v); } catch (e) {}
+  }
 
   function msg() {
     if (!MAPP) {
@@ -49,16 +57,19 @@
   window.aktifkanNotif = async function () {
     try {
       const p = await Notification.requestPermission();
-      if (p !== "granted") { toast("Izin notifikasi tidak diberikan"); render(); return; }
+      if (p !== "granted") { render(); return false; }
+      setPref("notif_off", "0");
       await simpanToken();
       toast("Notifikasi aktif ✓");
       render();
+      return true;
     } catch (e) {
       toastL("⚠️ Notifikasi gagal diaktifkan: " + (e.message || e.code || e));
+      return false;
     }
   };
 
-  // BARU: buang token usang di browser, lalu daftarkan token baru
+  // Buang token usang di browser, lalu daftarkan token baru
   window.segarkanToken = async function () {
     try {
       try { await msg().deleteToken(); } catch (e) { console.warn(e); }
@@ -74,6 +85,44 @@
       return false;
     }
   };
+
+  // BARU: status notifikasi untuk menu pengaturan
+  // hasil: "aktif" | "mati" | "belum" | "diblokir" | "tidakdidukung"
+  window.notifStatus = function () {
+    if (!canRecv) return "tidakdidukung";
+    if (Notification.permission === "denied") return "diblokir";
+    if (Notification.permission === "default") return "belum";
+    return pref("notif_off") === "1" ? "mati" : "aktif";
+  };
+
+  // BARU: hidupkan/matikan notifikasi dari menu pengaturan (panggil dari klik tombol)
+  window.ubahNotif = async function (hidup) {
+    if (!canRecv) { toast("Perangkat ini belum mendukung notifikasi"); return; }
+    if (hidup) {
+      if (Notification.permission === "denied") {
+        toastL("Notifikasi diblokir di HP. Buka Pengaturan HP → Aplikasi → Chrome atau Serba Jasa → Notifikasi, lalu aktifkan.");
+        return;
+      }
+      setPref("notif_off", "0");
+      await window.aktifkanNotif();
+    } else {
+      setPref("notif_off", "1");
+      try { await msg().deleteToken(); } catch (e) { console.warn(e); }
+      toast("Notifikasi dimatikan");
+      render();
+    }
+  };
+
+  // BARU: izin hanya ditanyakan SEKALI per akun, pada ketukan pertama setelah masuk.
+  // Selanjutnya pengguna mengaturnya lewat menu pengaturan.
+  function mintaIzin() {
+    if (MINTA || !canRecv || !U || !UD || window.SJ_ADMIN || UD.role === "admin") return;
+    if (Notification.permission !== "default" || pref("notif_tanya") === "1") return;
+    MINTA = true;
+    setPref("notif_tanya", "1");
+    window.aktifkanNotif();
+  }
+  document.addEventListener("click", mintaIzin, true);
 
   if (canRecv) {
     try {
@@ -128,28 +177,18 @@
     } catch (e) {}
   });
 
-  const BN = `<div class="card" style="border-left:5px solid var(--acc)"><div class="in"><b>🔔 Aktifkan notifikasi</b><div class="mute" style="margin:4px 0 8px">Dapatkan kabar pesanan, pembayaran, dan chat walaupun aplikasi ditutup.</div><div class="row" style="justify-content:flex-start;gap:8px"><button class="btn s y" onclick="aktifkanNotif()">Aktifkan</button><button class="btn s o" onclick="NTD=true;render()">Nanti</button></div></div></div>`;
-  const _v = window.view;
-  window.view = function () {
-    const h = _v();
-    if (!canRecv || typeof h !== "string" || !U || !UD || window.SJ_ADMIN || UD.role === "admin" ||
-        window.NTD || Notification.permission !== "default") return h;
-    if (S.det || S.form || S.room || S.omap || S.loc || S.rev || S.lap || S.bayar || S.ep || S.pw ||
-        S.dp || S.isiv || S.trk || S.lb || S.lapa) return h;
-    return BN + h;
-  };
-
+  // Token disimpan otomatis setiap aplikasi dibuka, kecuali pengguna mematikannya di pengaturan
   const _r = window.render;
   window.render = function () {
     _r();
     try {
-      if (canRecv && U && UD && !TKD && Notification.permission === "granted") {
+      if (canRecv && U && UD && !TKD && Notification.permission === "granted" && pref("notif_off") !== "1") {
         TKD = true;
         simpanToken().catch(e => console.warn(e));
       }
     } catch (e) {}
   };
-  auth.onAuthStateChanged(() => { TKD = false; });
+  auth.onAuthStateChanged(() => { TKD = false; MINTA = false; });
   try { render(); } catch (e) {}
 })();
 (function () {
@@ -185,7 +224,7 @@
     } catch (e) { return { error: String(e) }; }
   }
 
-  // BARU: deteksi token usang dari balasan Worker/FCM
+  // Deteksi token usang dari balasan Worker/FCM
   const usang = j => /UNREGISTERED|NOT_FOUND|404/.test(JSON.stringify(j));
 
   window.ujiPushSekarang = async function () {
@@ -208,12 +247,14 @@
       : "Gagal: " + JSON.stringify(j).slice(0, 250));
   };
 
+  // Kartu tes hanya tampil jika alamat memakai ?uji=1
   const KT = `<div class="card" style="border-left:5px solid var(--acc)"><div class="in"><b>Notifikasi aktif</b><div class="mute" style="margin:4px 0 8px">Tes dulu agar yakin bisa muncul saat layar terkunci.</div><div class="row" style="justify-content:flex-start;gap:8px;flex-wrap:wrap"><button class="btn s y" onclick="ujiPushTunda()">Tes 15 detik (kunci layar)</button><button class="btn s o" onclick="ujiPushSekarang()">Tes sekarang</button><button class="btn s o" onclick="NTT=true;render()">Tutup</button></div></div></div>`;
   const _v = window.view;
   window.view = function () {
     const h = _v();
     if (typeof h !== "string" || !U || !UD || window.SJ_ADMIN || window.NTT ||
-        !("Notification" in window) || Notification.permission !== "granted") return h;
+        !("Notification" in window) || Notification.permission !== "granted" ||
+        !/[?&]uji=1/.test(location.search)) return h;
     if (S.det || S.form || S.room || S.omap || S.loc || S.rev || S.lap || S.bayar || S.ep ||
         S.pw || S.dp || S.isiv || S.trk || S.lb || S.lapa) return h;
     return KT + h;
