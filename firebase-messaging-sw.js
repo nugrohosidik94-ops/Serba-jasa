@@ -38,6 +38,7 @@ messaging.onBackgroundMessage(function (payload) {
     badge: ICON,
     tag: d.tag || "serba-jasa",
     renotify: true,
+    requireInteraction: true,
     vibrate: [200, 100, 200],
     data: { url: d.url || APP }
   });
