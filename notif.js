@@ -58,11 +58,31 @@
     }
   };
 
+  // BARU: buang token usang di browser, lalu daftarkan token baru
+  window.segarkanToken = async function () {
+    try {
+      try { await msg().deleteToken(); } catch (e) { console.warn(e); }
+      const regs = await navigator.serviceWorker.getRegistrations();
+      for (const r of regs) {
+        if (r.scope.includes("fcm-scope")) await r.unregister();
+      }
+      await simpanToken();
+      toast("Token diperbarui ✓");
+      return true;
+    } catch (e) {
+      toastL("⚠️ Gagal memperbarui token: " + (e.message || e.code || e));
+      return false;
+    }
+  };
+
   if (canRecv) {
     try {
       msg().onMessage(m => {
         const n = m.notification || {};
-        toastL("🔔 " + (n.title || "Notifikasi") + (n.body ? ": " + n.body : ""));
+        const d = m.data || {};
+        const judul = n.title || d.title || "Notifikasi";
+        const isi = n.body || d.body || "";
+        toastL("🔔 " + judul + (isi ? ": " + isi : ""));
       });
     } catch (e) {}
   }
@@ -164,13 +184,25 @@
       return await r.json();
     } catch (e) { return { error: String(e) }; }
   }
+
+  // BARU: deteksi token usang dari balasan Worker/FCM
+  const usang = j => /UNREGISTERED|NOT_FOUND|404/.test(JSON.stringify(j));
+
   window.ujiPushSekarang = async function () {
     toast("Mengirim tes...");
-    const j = await panggil(0);
+    let j = await panggil(0);
+    if (usang(j)) {
+      toast("Token usang, memperbarui...");
+      if (await window.segarkanToken()) j = await panggil(0);
+    }
     toastL("Hasil tes: " + JSON.stringify(j).slice(0, 300));
   };
   window.ujiPushTunda = async function () {
-    const j = await panggil(15);
+    let j = await panggil(15);
+    if (usang(j)) {
+      toast("Token usang, memperbarui...");
+      if (await window.segarkanToken()) j = await panggil(15);
+    }
     toastL(j.ok
       ? "Tes dijadwalkan. KUNCI LAYAR sekarang, notifikasi muncul dalam 15 detik."
       : "Gagal: " + JSON.stringify(j).slice(0, 250));
