@@ -1994,5 +1994,157 @@ render=function(){_rr();T(function(){
  ST.length=cur+1;ST.push({s:s,k:k,sc:0});cur++;history.pushState({sj:1,i:cur},"");LK=k})};
 render();
 })();
+ <script>
+/* SERBA JASA - tampilan: header menempel, dashboard admin ringkas, chat kolom ketik di bawah, warna biru */
+(function(){
+"use strict";
+var T=function(f){try{return f()}catch(e){console.error(e)}};
+var ADM=!!window.SJ_ADMIN;
+
+/* ---------- 1. CSS ---------- */
+var css=`
+/* Warna biru */
+:root{--teal:#0b3fae;--acc:#1d4ed8;--tagbg:#e1ecff;--line:#dbe5f8}
+body.adm{--teal:#1d4ed8;--tagbg:#dbeafe}
+body .hero,body .hero2{background:linear-gradient(135deg,#0a2a86,#1d4ed8 65%,#3b82f6)!important}
+body .foto{background:linear-gradient(135deg,#0a2a86,#2563eb)!important}
+body .mini{background:linear-gradient(135deg,#1d4ed8,#3b82f6)!important}
+body .chip.on,body .ks.on{background:#1d4ed8!important;border-color:#1d4ed8!important}
+body #splash{background:linear-gradient(160deg,#0a2a86,#2563eb)!important}
+body .bar{background:linear-gradient(90deg,#2563eb,#60a5fa)!important}
+body.adm .back{color:#1d4ed8}
+main a:not(.btn),main a:not(.btn):visited{color:#1d4ed8}
+/* Admin: header menempel dan dashboard ringkas */
+body.adm.dm header{display:flex;border-radius:0;box-shadow:none}
+body.adm header{position:sticky;top:env(safe-area-inset-top,0px);z-index:90;padding:6px 12px;gap:8px;border-radius:0 0 14px 14px}
+body.adm header .logo{width:30px;height:30px;border-radius:9px}
+body.adm header b{font-size:15px}
+body.adm header b small{font-size:9px;margin-top:1px}
+body.adm::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#0a2a86;z-index:95}
+body.adm .ah-top{display:none}
+body.adm .ah{margin:-12px -12px 0;padding:10px 14px 44px;min-height:0;border-radius:0 0 22px 22px;box-shadow:none}
+body.adm .ah::after{display:none}
+body.adm .ah-w{margin-top:0;max-width:62%}
+body.adm .ah-w .a{font-size:14px}
+body.adm .ah-w .b{font-size:19px;line-height:1.1}
+body.adm .ah-w p{font-size:11px;margin-top:4px;line-height:1.35}
+body.adm .ah-ph{top:4px;right:0;height:112px}
+body.adm .sg{gap:7px;margin-top:-30px}
+body.adm .sc{padding:8px 7px;border-radius:14px;gap:6px;box-shadow:0 4px 12px rgba(20,50,140,.12)}
+body.adm .sc .ic{width:34px;height:34px}
+body.adm .sc .ic svg{width:20px;height:20px}
+body.adm .sc .v{font-size:15px}
+body.adm .sc .v.sm{font-size:12px}
+body.adm .sc .l{font-size:11px}
+body.adm .sc .g{font-size:10.5px}
+body.adm .sc .ch{width:18px;height:18px;font-size:13px;right:5px;margin-top:-9px}
+body.adm .pn{padding:10px;border-radius:16px;margin-top:9px;box-shadow:0 3px 10px rgba(20,50,140,.07)}
+body.adm .pt{font-size:14px;gap:7px}
+body.adm .pt svg{width:19px;height:19px}
+body.adm .pt .lk{font-size:11.5px}
+body.adm .sg2 button{padding:4px 9px;font-size:11px}
+body.adm .pn svg[viewBox="0 0 340 170"]{max-height:150px}
+body.adm .mg{gap:6px;margin-top:8px}
+body.adm .mt{min-height:72px;font-size:10px;border-radius:13px;padding:6px 2px;gap:4px}
+body.adm .mt .ci{width:34px;height:34px}
+body.adm .mt .ci svg{width:19px;height:19px}
+body.adm .ev{margin:6px 0}
+body.adm .ev .tx{font-size:11.5px}
+body.adm .ev .av,body.adm .ev img{width:30px!important;height:30px!important}
+body.adm .fin{padding:9px;margin:8px 0}
+body.adm .fin b{font-size:16px}
+body.adm .fin .co,body.adm .fin .co svg{width:64px;height:64px}
+body.adm .al{padding:9px 10px;border-radius:16px;font-size:12.5px;margin-top:9px}
+body.adm .al .ex{width:30px;height:30px;font-size:16px}
+body.adm .al b{font-size:13px}
+body.adm .al button{padding:7px 12px;font-size:12px}
+body.adm .xq button{padding:7px 12px;font-size:11.5px}
+body.adm nav button{font-size:10.5px;padding:5px 2px 3px}
+body.adm nav button span svg{width:22px;height:22px}
+body.adm nav button:nth-child(3){flex:0 0 60px;margin-top:-24px}
+body.adm nav button:nth-child(3) span{width:50px;height:50px}
+body.adm nav button:nth-child(3) span svg{width:28px;height:28px}
+body.adm main>div[style*="text-align:center"] img{width:92px!important;height:92px!important}
+body.adm .hero{padding:14px 16px}
+body.adm .hero h2{font-size:18px}
+/* Chat: kolom ketik menempel di bawah */
+body.inchat{overflow:hidden}
+body.inchat #app{position:fixed;left:0;right:0;top:var(--vvt,0px);height:var(--vvh,100dvh);min-height:0;max-width:480px;margin:0 auto;overflow:hidden}
+body.inchat header{position:static;flex:none;padding-top:calc(8px + env(safe-area-inset-top,0px))}
+body.inchat nav{flex:none}
+body.inchat main{display:flex;flex-direction:column;padding:0;overflow:hidden;min-height:0}
+.chatw{flex:1;min-height:0;display:flex;flex-direction:column}
+.chat-top{flex:none;padding:8px 14px 0}
+.chat-top .back{padding-bottom:4px}
+.chat-top .ch-h{margin:4px 0 6px}
+#msgs.chat-msgs{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin:0!important;padding:8px 14px}
+.chat-comp{flex:none;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--line)}
+.chat-comp .row{flex-wrap:nowrap}
+.chat-comp #cf{margin:4px 0 0}
+body.inchat.kb nav{display:none}
+body.inchat.kb .chat-comp{padding-bottom:8px}
+`;
+var st=document.createElement("style");st.id="tampilan-sj";st.textContent=css;document.head.appendChild(st);
+
+/* ---------- 2. Warna: ungu/pink/indigo -> biru (atribut inline & SVG) ---------- */
+var MAP={"#4b1a8a":"#0b3fae","#3d1275":"#0a2a86","#6a2bb8":"#1d4ed8","#8a4fd1":"#3b82f6","#7b3fc4":"#2f6fe4","#9b5fe0":"#5b9bff","#b07be8":"#7fb0ff",
+"#6d3fe0":"#3b6fe8","#3b1f9a":"#1e3a8a","#5b21b6":"#1d4ed8","#2e1a6e":"#0f2a73","#2a1b8a":"#0f2a8a","#5b34cf":"#2f63e0","#7c3aed":"#2563eb","#c084fc":"#60a5fa",
+"#8b5cf6":"#3b82f6","#a78bfa":"#7fb0ff","#ede9fe":"#dbeafe","#f5f3ff":"#eff6ff","#ddd6fe":"#bfdbfe","#efe7fb":"#e0ecff","#ece6ff":"#e1ecff","#e6d9fa":"#d6e4ff",
+"#4338ca":"#1d4ed8","#818cf8":"#60a5fa","#6366f1":"#3b82f6","#3730a3":"#1e40af","#be185d":"#0e7490","#f472b6":"#22d3ee","#c026d3":"#3b82f6","#a855f7":"#3b82f6","#ec4899":"#3b82f6"};
+var RE=new RegExp(Object.keys(MAP).join("|"),"gi");
+function recolor(root){T(function(){
+ var els=(root||document.body).querySelectorAll("[style],[fill],[stroke]");
+ for(var i=0;i<els.length;i++){var el=els[i];
+  for(var a=0;a<3;a++){var n=["style","fill","stroke"][a],v=el.getAttribute(n);
+   if(v&&v.indexOf("#")>-1){var w=v.replace(RE,function(m){return MAP[m.toLowerCase()]});if(w!==v)el.setAttribute(n,w)}}}})}
+var pend=false;
+new MutationObserver(function(){if(pend)return;pend=true;requestAnimationFrame(function(){pend=false;recolor()})}).observe(document.body,{childList:true,subtree:true});
+recolor();
+
+/* ---------- 3. Header: perbaiki sebelum login & lonceng admin ---------- */
+var SVG_BELL='<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M12 2.5a6 6 0 0 0-6 6v4L4 16.5v1h16v-1L18 12.5v-4a6 6 0 0 0-6-6z"/><path d="M9.5 19.5a2.6 2.6 0 0 0 5 0z"/></svg>';
+if(ADM){
+ window.bel=function(){T(function(){var h=document.querySelector("header .hb");if(!h)return;var n=(U&&UD)?notifs().length:0;
+  h.innerHTML=SVG_BELL+(n?"<em>"+n+"</em>":"");h.style.cursor="pointer";h.onclick=function(){if(U&&UD){NL=notifs();markSeen();go("notif")}}})};
+}
+function resetHeader(){var hd=document.querySelector("header");if(!hd||hd.dataset.pre)return;
+ hd.dataset.pre="1";hd.innerHTML='<img class="logo" src="logo.png" alt="SERBA JASA" style="background:#fff;padding:2px;object-fit:contain"><b>Serba <i style="color:#ffc229;font-style:normal">Jasa</i><small>'+(ADM?"Portal pengelola":"Cari Jasa. Pesan Mudah. Selesai.")+'</small></b>'}
+
+/* ---------- 4. Chat: kolom ketik di bawah, naik di atas keyboard ---------- */
+var vv=window.visualViewport,root=document.documentElement;
+function toEnd(){var m=document.getElementById("msgs");if(m&&document.body.classList.contains("inchat"))m.scrollTop=m.scrollHeight}
+function fit(){var h=vv?vv.height:window.innerHeight,t=vv?vv.offsetTop:0;root.style.setProperty("--vvh",h+"px");root.style.setProperty("--vvt",t+"px");
+ if(document.body.classList.contains("inchat")){window.scrollTo(0,0);toEnd()}}
+if(vv){vv.addEventListener("resize",fit);vv.addEventListener("scroll",fit)}
+window.addEventListener("resize",fit);
+document.addEventListener("focusin",function(e){if(e.target&&e.target.id==="cm"){document.body.classList.add("kb");setTimeout(fit,250)}});
+document.addEventListener("focusout",function(e){if(e.target&&e.target.id==="cm"){document.body.classList.remove("kb");setTimeout(fit,250)}});
+document.addEventListener("pointerdown",function(e){var b=e.target&&e.target.closest?e.target.closest(".chat-comp button"):null;if(b)e.preventDefault()},true);
+function build(msgs){var m=document.getElementById("m");if(!m||msgs.closest(".chatw"))return;
+ var wrap=document.createElement("div"),top=document.createElement("div"),comp=document.createElement("div"),before=true;
+ wrap.className="chatw";top.className="chat-top";comp.className="chat-comp";
+ [].slice.call(m.childNodes).forEach(function(n){if(n===msgs){before=false;return}(before?top:comp).appendChild(n)});
+ msgs.classList.add("chat-msgs");wrap.appendChild(top);wrap.appendChild(msgs);wrap.appendChild(comp);m.appendChild(wrap);
+ new MutationObserver(toEnd).observe(msgs,{childList:true,subtree:true});
+ msgs.addEventListener("load",toEnd,true)}
+
+/* ---------- 5. Sambungkan ke render ---------- */
+var _r=render;
+render=function(){var a=document.activeElement,f=!!(a&&a.id==="cm"),p=f?a.selectionStart:0;
+ _r();
+ T(function(){
+  if(!(U&&UD))resetHeader();else{var hd=document.querySelector("header");if(hd)delete hd.dataset.pre}
+  var msgs=document.getElementById("msgs"),on=!!(msgs&&S.room&&U&&UD);
+  document.body.classList.toggle("inchat",on);
+  if(!on){document.body.classList.remove("kb");return}
+  build(msgs);fit();toEnd();
+  if(f){var i=document.getElementById("cm");if(i){i.focus();try{i.setSelectionRange(p,p)}catch(e){}}}
+ });
+ recolor()};
+fit();T(function(){render()});
+})();
+
+</script>
+
 </script>
 </body></html>
