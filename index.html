@@ -1550,6 +1550,29 @@ try{await db.doc("users/"+id).update({ktp:"ditolak",ktpAlasan:al.slice(0,150)});
 const _pvA=profilView;
 window.profilView=function(){let h=_pvA();if(UD&&UD.ktp==="ditolak"&&UD.ktpAlasan)h=h.replace("KTP ditolak.","KTP ditolak: "+esc(UD.ktpAlasan)+".");return h};
 </script>
+<script>
+window.sheetSyarat=function(){
+const k=UD&&UD.ktp;
+const S={menunggu:["Menunggu verifikasi","Admin sedang memeriksa KTP dan selfie Anda."],disetujui:["Terverifikasi","KTP disetujui. Nama akun dikunci dan menjadi nama pemilik rekening Anda."],ditolak:["KTP ditolak","Unggah ulang foto KTP dan selfie sesuai syarat di bawah."]}[k]||["Verifikasi KTP","Unggah KTP dan selfie untuk verifikasi."];
+const al=(k==="ditolak"&&UD.ktpAlasan)?'<div class="nt" style="margin-top:10px"><b>Alasan penolakan:</b> '+esc(UD.ktpAlasan)+'</div>':"";
+let o=document.getElementById("hpsov");if(o)o.remove();
+o=document.createElement("div");o.id="hpsov";
+o.innerHTML='<div class="sheet"><h2 style="margin:0 0 4px">'+S[0]+'</h2><p class="mute" style="margin:0">'+S[1]+'</p>'+al+
+'<h3 style="margin:16px 0 6px">Syarat verifikasi</h3><div class="mute" style="line-height:1.55">1. Nama akun harus sama persis dengan nama di KTP.<br>2. Foto KTP jelas: tidak buram, tidak silau, semua sisi terlihat.<br>3. Selfie jelas, wajah terlihat, sesuai dengan foto di KTP.<br>4. Satu orang hanya boleh memiliki satu akun.<br>5. Nama pemilik rekening penarikan dan pembayaran harus sama dengan nama KTP.<br>6. Setelah disetujui, nama akun tidak bisa diubah.<br>7. Data KTP hanya dipakai untuk verifikasi dan hanya bisa dilihat admin.<br>8. Data palsu atau KTP milik orang lain akan ditolak dan akun dapat dinonaktifkan.</div>'+
+'<a class="btn y" style="display:block;text-align:center;margin-top:14px;text-decoration:none" href="terms.html" target="_blank" rel="noopener">Baca Syarat dan Ketentuan lengkap</a><button class="btn o" style="margin-top:8px" onclick="document.getElementById(\'hpsov\').remove()">Tutup</button></div>';
+o.onclick=function(e){if(e.target===o)o.remove()};
+document.body.appendChild(o)};
+document.addEventListener("click",function(e){
+if(!UD||UD.role==="admin")return;
+let n=e.target;
+for(let i=0;i<4&&n&&n!==document.body;i++,n=n.parentElement){
+const t=(n.textContent||"").trim();
+if(t.length<45&&/^(KTP\b|Menunggu verifikasi|Terverifikasi)/i.test(t)){e.stopPropagation();e.preventDefault();sheetSyarat();return}}
+},true);
+new MutationObserver(function(){document.querySelectorAll("p.mute").forEach(function(p){
+if(!p.dataset.sk&&p.textContent.indexOf("Foto KTP dipakai hanya untuk verifikasi")===0){p.dataset.sk=1;
+p.innerHTML+=' Nama akun harus sama dengan nama di KTP. <a href="#" onclick="sheetSyarat();return false" style="color:var(--acc);font-weight:700">Lihat syarat verifikasi</a>'}})}).observe(document.body,{childList:true,subtree:true});
+</script>
 <!-- ===== TEMA V2 bagian 3: tombol Opsi chat (laporkan, blokir) dan pengembalian dana ===== -->
 <script>
 (function(){
