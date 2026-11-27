@@ -258,7 +258,7 @@
   }
 
   // Deteksi token usang dari balasan Worker/FCM
-  const usang = j => /UNREGISTERED|NOT_FOUND|404/.test(JSON.stringify(j));
+  const usang = j => !j.ok && /UNREGISTERED|NOT_FOUND|404/.test(JSON.stringify(j));
 
   window.ujiPushSekarang = async function () {
     toast("Mengirim tes...");
