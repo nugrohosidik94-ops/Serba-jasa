@@ -10,8 +10,9 @@
   };
   const canRecv = "Notification" in window && "serviceWorker" in navigator &&
     typeof firebase !== "undefined" && !!firebase.messaging && firebase.messaging.isSupported();
-  let TKD = false, MAPP = null, MINTA = false;
+  let TKD = false, MAPP = null, MINTA = false, SYNCD = false;
   window.NTD = false;
+  window.SJ_PUSH_OK = false;
 
   // Penyimpanan kecil per akun (di perangkat ini)
   function pref(k) {
@@ -52,6 +53,7 @@
       body: JSON.stringify({ token: t })
     });
     if (!r.ok) throw new Error("Gagal menyimpan token (" + r.status + ")");
+    window.SJ_PUSH_OK = true;
   }
 
   window.aktifkanNotif = async function () {
@@ -61,6 +63,7 @@
       setPref("notif_off", "0");
       await simpanToken();
       toast("Notifikasi aktif ✓");
+      SYNCD = false;
       render();
       return true;
     } catch (e) {
@@ -86,35 +89,55 @@
     }
   };
 
-  // BARU: status notifikasi untuk menu pengaturan
-  // hasil: "aktif" | "mati" | "belum" | "diblokir" | "tidakdidukung"
-  window.notifStatus = function () {
-    if (!canRecv) return "tidakdidukung";
-    if (Notification.permission === "denied") return "diblokir";
-    if (Notification.permission === "default") return "belum";
-    return pref("notif_off") === "1" ? "mati" : "aktif";
-  };
-
-  // BARU: hidupkan/matikan notifikasi dari menu pengaturan (panggil dari klik tombol)
+  // Hidupkan/matikan notifikasi push. Mengembalikan true jika berhasil.
   window.ubahNotif = async function (hidup) {
-    if (!canRecv) { toast("Perangkat ini belum mendukung notifikasi"); return; }
+    if (!canRecv) { toast("Perangkat ini belum mendukung notifikasi"); return false; }
     if (hidup) {
       if (Notification.permission === "denied") {
         toastL("Notifikasi diblokir di HP. Buka Pengaturan HP → Aplikasi → Chrome atau Serba Jasa → Notifikasi, lalu aktifkan.");
-        return;
+        return false;
       }
       setPref("notif_off", "0");
-      await window.aktifkanNotif();
-    } else {
-      setPref("notif_off", "1");
-      try { await msg().deleteToken(); } catch (e) { console.warn(e); }
-      toast("Notifikasi dimatikan");
-      render();
+      return await window.aktifkanNotif();
     }
+    setPref("notif_off", "1");
+    window.SJ_PUSH_OK = false;
+    try { await msg().deleteToken(); } catch (e) { console.warn(e); }
+    toast("Notifikasi dimatikan");
+    render();
+    return true;
   };
 
-  // BARU: izin hanya ditanyakan SEKALI per akun, pada ketukan pertama setelah masuk.
-  // Selanjutnya pengguna mengaturnya lewat menu pengaturan.
+  // ---- Sambungkan saklar "Notifikasi Perangkat" (kunci sj_nd) di Pengaturan ----
+  const pgTogAsli = window.pgTog;
+
+  // Baca keadaan saklar dari penyimpanan perangkat (tanpa mengubah index.html)
+  function ndOn() {
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.indexOf("sj_nd") === 0) return localStorage.getItem(k) === "1";
+      }
+    } catch (e) {}
+    return false;
+  }
+  // Samakan tampilan saklar dengan keadaan sebenarnya
+  function setToggle(hidup) {
+    if (typeof pgTogAsli === "function" && ndOn() !== hidup) pgTogAsli.call(window, "sj_nd", 0);
+  }
+  if (typeof pgTogAsli === "function") {
+    window.pgTog = function (k) {
+      if (k !== "sj_nd") return pgTogAsli.apply(this, arguments);
+      if (ndOn()) {                       // pengguna mematikan
+        window.ubahNotif(false);
+        return pgTogAsli.apply(this, arguments);
+      }
+      window.ubahNotif(true).then(ok => { if (ok) setToggle(true); else render(); });  // menghidupkan
+    };
+  }
+
+  // Izin hanya ditanyakan SEKALI per akun, pada ketukan pertama setelah masuk.
+  // Selanjutnya pengguna mengaturnya lewat Pengaturan → Notifikasi.
   function mintaIzin() {
     if (MINTA || !canRecv || !U || !UD || window.SJ_ADMIN || UD.role === "admin") return;
     if (Notification.permission !== "default" || pref("notif_tanya") === "1") return;
@@ -177,7 +200,8 @@
     } catch (e) {}
   });
 
-  // Token disimpan otomatis setiap aplikasi dibuka, kecuali pengguna mematikannya di pengaturan
+  // Setiap aplikasi dibuka: simpan token (kecuali dimatikan di pengaturan)
+  // dan samakan saklar di Pengaturan dengan keadaan sebenarnya.
   const _r = window.render;
   window.render = function () {
     _r();
@@ -186,15 +210,24 @@
         TKD = true;
         simpanToken().catch(e => console.warn(e));
       }
+      if (canRecv && U && UD && !SYNCD) {
+        SYNCD = true;
+        setToggle(Notification.permission === "granted" && pref("notif_off") !== "1");
+      }
     } catch (e) {}
   };
-  auth.onAuthStateChanged(() => { TKD = false; MINTA = false; });
+  auth.onAuthStateChanged(() => { TKD = false; MINTA = false; SYNCD = false; });
   try { render(); } catch (e) {}
 })();
 (function () {
   if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
   const Asli = window.Notification;
   function Pengganti(judul, opsi) {
+    // Jika push sudah aktif, lewati notifikasi lokal bawaan agar tidak muncul dobel.
+    // Tombol "Kirim Notifikasi Uji" di Pengaturan tetap diizinkan.
+    const isi = String((opsi && opsi.body) || "");
+    const uji = /aktif ✓|are on ✓/.test(isi);
+    if (window.SJ_PUSH_OK && judul === "SERBA JASA" && !uji) return;
     navigator.serviceWorker.getRegistration()
       .then(r => r || navigator.serviceWorker.ready)
       .then(r => r.showNotification(judul, opsi))
