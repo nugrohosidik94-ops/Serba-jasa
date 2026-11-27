@@ -1523,6 +1523,13 @@ catch(e){toast(e.code==="auth/wrong-password"||e.code==="auth/invalid-credential
 try{render()}catch(e){}
 })();
 </script>
+<script>
+window.simpanRek=async function(){
+const b=$("#rb").value.trim(),n=$("#rn").value.trim(),a=$("#ra").value.trim();
+if(!b||n.length<5||!a){toast("Lengkapi bank, nomor rekening, dan atas nama");return}
+if(a.toLowerCase()!==String(UD.nama||"").trim().toLowerCase()){toast("Atas nama harus sama dengan nama KTP: "+UD.nama);return}
+try{const up={rek:[b,n,a].join(" | ")};if(UD&&UD.rek)up.rt=firebase.firestore.FieldValue.serverTimestamp();await db.doc("users/"+U.uid).update(up);EDR=false;render();window.scrollTo(0,0);toast("Rekening tersimpan")}catch(e){toast(err(e))}};
+</script>
 <!-- ===== TEMA V2 bagian 3: tombol Opsi chat (laporkan, blokir) dan pengembalian dana ===== -->
 <script>
 (function(){
