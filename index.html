@@ -1530,6 +1530,26 @@ if(!b||n.length<5||!a){toast("Lengkapi bank, nomor rekening, dan atas nama");ret
 if(a.toLowerCase()!==String(UD.nama||"").trim().toLowerCase()){toast("Atas nama harus sama dengan nama KTP: "+UD.nama);return}
 try{const up={rek:[b,n,a].join(" | ")};if(UD&&UD.rek)up.rt=firebase.firestore.FieldValue.serverTimestamp();await db.doc("users/"+U.uid).update(up);EDR=false;render();window.scrollTo(0,0);toast("Rekening tersimpan")}catch(e){toast(err(e))}};
 </script>
+<script>
+const _uRowOld=uRow;
+window.uRow=function(u,t){
+if(t!=="k")return _uRowOld(u,t);
+const id=esc(u.id),sh=SEL&&SEL.id===u.id;
+let h='<div class="card"><div class="in"><b style="font-size:17px">'+esc(u.nama)+'</b><div class="mute">'+esc(u.hp)+' · '+esc(u.email||"")+'</div>';
+h+='<button class="btn s o" style="margin-top:8px" onclick="lihat(\''+id+'\')">Lihat foto KTP dan selfie</button>';
+if(sh){
+h+='<img alt="KTP" src="'+SEL.ktp+'" style="width:100%;border-radius:10px;margin-top:8px"><img alt="Selfie" src="'+SEL.selfie+'" style="width:100%;border-radius:10px;margin-top:10px">';
+h+='<label class="mute" style="display:flex;gap:8px;align-items:flex-start;margin-top:10px"><input type="checkbox" style="width:auto;margin:3px 0 0" onchange="document.getElementById(\'ok_'+id+'\').disabled=!this.checked"><span>Nama di KTP sama persis dengan nama akun: <b>'+esc(u.nama)+'</b>, dan wajah selfie sama dengan foto KTP</span></label>';
+h+='<div class="row" style="margin-top:10px;justify-content:flex-start"><button id="ok_'+id+'" class="btn s" disabled onclick="setuju(\''+id+'\',\'k\',1)">Setujui</button><button class="btn s o" onclick="tolakKtp(\''+id+'\')">Tolak</button></div>';
+}else h+='<div class="mute" style="margin-top:8px">Buka foto KTP dulu untuk memeriksa.</div>';
+return h+'</div></div>'};
+window.tolakKtp=async function(id){
+const al=(prompt("Alasan penolakan (wajib), misalnya: nama di KTP berbeda")||"").trim();
+if(al.length<5){toast("Alasan wajib diisi (min. 5 huruf)");return}
+try{await db.doc("users/"+id).update({ktp:"ditolak",ktpAlasan:al.slice(0,150)});SEL=null;LOADED=0;toast("KTP ditolak");render()}catch(e){toast(err(e))}};
+const _pvA=profilView;
+window.profilView=function(){let h=_pvA();if(UD&&UD.ktp==="ditolak"&&UD.ktpAlasan)h=h.replace("KTP ditolak.","KTP ditolak: "+esc(UD.ktpAlasan)+".");return h};
+</script>
 <!-- ===== TEMA V2 bagian 3: tombol Opsi chat (laporkan, blokir) dan pengembalian dana ===== -->
 <script>
 (function(){
