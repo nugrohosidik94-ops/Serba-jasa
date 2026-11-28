@@ -269,7 +269,9 @@ async function buat(env, req) {
 // ---------- POST /webhook (notifikasi Midtrans) ----------
 async function webhook(env, req) {
   const b = await req.json().catch(() => ({}));
-  const sig = await sha512hex(String(b.order_id) + String(b.status_code) + String(b.gross_amount) + env.MIDTRANS_SERVER_KEY);
+  // Sejak 28 Okt 2026 Midtrans menandatangani notifikasi dengan Signature Secret Key (terpisah dari Server Key).
+  const sigKey = env.MIDTRANS_SIGNATURE_KEY || env.MIDTRANS_SERVER_KEY;
+  const sig = await sha512hex(String(b.order_id) + String(b.status_code) + String(b.gross_amount) + sigKey);
   if (sig !== b.signature_key) return reply("signature salah", 403);
 
   const sr = await fetch(API(env) + "/v2/" + encodeURIComponent(b.order_id) + "/status", {headers: {Accept: "application/json", Authorization: basic(env)}});
